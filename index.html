@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>MIRA · A new medium for research</title>
+<meta name="description" content="Modular Interoperable Research Attribution. An open architecture that publishes research as a graph of questions, claims, evidence, and sources, with provenance and attribution on every record." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:ital,wght@0,400..700;1,400&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#ffffff;
+    --ink:#16181b;
+    --ink-2:#33373c;
+    --muted:#5b616a;
+    --faint:#8b9099;
+    --line:#e9eaec;
+    --line-soft:#f3f4f5;
+    --accent:#1d5440;
+    --accent-deep:#163f30;
+    --sans:"Schibsted Grotesk",-apple-system,BlinkMacSystemFont,sans-serif;
+    --mono:"Geist Mono",ui-monospace,SFMono-Regular,monospace;
+    --maxw:1080px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+  body{
+    background:var(--bg);color:var(--ink);font-family:var(--sans);
+    font-size:17px;line-height:1.6;font-weight:400;letter-spacing:-.005em;
+    -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+  }
+  a{color:inherit;text-decoration:none}
+  ::selection{background:var(--accent);color:#fff}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 32px}
+
+  .eyebrow{
+    font-family:var(--mono);font-size:12px;font-weight:500;letter-spacing:.06em;
+    text-transform:uppercase;color:var(--accent);
+  }
+
+  /* NAV */
+  nav{position:sticky;top:0;z-index:60;background:rgba(255,255,255,.85);backdrop-filter:blur(10px);border-bottom:1px solid transparent;transition:border-color .3s}
+  nav.scrolled{border-color:var(--line)}
+  .nav-in{display:flex;align-items:center;justify-content:space-between;height:66px}
+  .brand{font-size:18px;font-weight:600;letter-spacing:.02em}
+  .nav-right{display:flex;align-items:center;gap:32px}
+  .nav-links{display:flex;gap:28px}
+  .nav-links a{font-size:14.5px;color:var(--muted);transition:color .2s}
+  .nav-links a:hover{color:var(--ink)}
+  .nav-cta{font-size:14px;font-weight:500;background:var(--ink);color:var(--bg);padding:9px 17px;border-radius:7px;transition:background .2s,transform .2s}
+  .nav-cta:hover{background:var(--accent-deep);transform:translateY(-1px)}
+  @media(max-width:760px){.nav-links{display:none}}
+
+  /* HERO */
+  .hero{padding:120px 0 96px;border-bottom:1px solid var(--line)}
+  .hero .eyebrow{display:block;margin-bottom:26px}
+  h1{font-size:clamp(42px,6vw,76px);line-height:1.02;font-weight:500;letter-spacing:-.035em;max-width:15ch;margin-bottom:30px}
+  .hero .lede{font-size:21px;line-height:1.55;color:var(--muted);max-width:60ch;margin-bottom:38px}
+  .hero .lede b{color:var(--ink-2);font-weight:500}
+  .actions{display:flex;align-items:center;gap:24px;flex-wrap:wrap}
+  .btn{font-size:15px;font-weight:500;padding:13px 24px;border-radius:8px;display:inline-flex;align-items:center;gap:9px;transition:all .22s ease;cursor:pointer}
+  .btn-primary{background:var(--accent);color:#fff;box-shadow:0 1px 2px rgba(22,63,48,.18)}
+  .btn-primary:hover{background:var(--accent-deep);transform:translateY(-1px);box-shadow:0 8px 22px -10px rgba(22,63,48,.5)}
+  .btn-primary .arr{transition:transform .22s}
+  .btn-primary:hover .arr{transform:translateX(3px)}
+  .btn-text{font-size:15px;font-weight:500;color:var(--ink)}
+  .btn-text .u{box-shadow:inset 0 -1px 0 var(--line);transition:box-shadow .2s;padding-bottom:2px}
+  .btn-text:hover .u{box-shadow:inset 0 -1px 0 var(--ink)}
+
+  /* SECTION */
+  section{padding:104px 0;border-bottom:1px solid var(--line)}
+  .sec-head{max-width:660px;margin-bottom:52px}
+  .sec-head .eyebrow{display:block;margin-bottom:18px}
+  .sec-head h2{font-size:clamp(28px,3.6vw,40px);line-height:1.12;font-weight:500;letter-spacing:-.028em}
+  .sec-head p.sub{font-size:18.5px;color:var(--muted);margin-top:20px;max-width:62ch}
+  .sec-head p.sub b{color:var(--ink-2);font-weight:500}
+
+  /* two-up text blocks */
+  .duo{display:grid;grid-template-columns:1fr 1fr;gap:48px}
+  .duo .block .k{font-family:var(--mono);font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:12px}
+  .duo .block h3{font-size:21px;font-weight:600;letter-spacing:-.02em;margin-bottom:10px}
+  .duo .block p{font-size:16px;color:var(--muted);max-width:46ch}
+  @media(max-width:720px){.duo{grid-template-columns:1fr;gap:34px}}
+
+  /* audiences */
+  .aud{display:grid;grid-template-columns:1fr 1fr;gap:56px}
+  .aud .col .role{font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid var(--line)}
+  .aud .row{padding:18px 0;border-bottom:1px solid var(--line-soft)}
+  .aud .row:last-child{border-bottom:0}
+  .aud .row .t{font-size:16.5px;font-weight:600;letter-spacing:-.01em;margin-bottom:3px}
+  .aud .row .d{font-size:15.5px;color:var(--muted)}
+  @media(max-width:720px){.aud{grid-template-columns:1fr;gap:40px}}
+
+  /* stats / who */
+  .stats{display:flex;gap:64px;flex-wrap:wrap;margin-bottom:40px}
+  .stat .n{font-size:clamp(34px,4.4vw,48px);font-weight:500;letter-spacing:-.03em;line-height:1}
+  .stat .l{font-family:var(--mono);font-size:12.5px;color:var(--muted);letter-spacing:.02em;margin-top:10px}
+
+  /* CTA */
+  .cta{text-align:center;padding:124px 0;border-bottom:0}
+  .cta .eyebrow{display:block;margin-bottom:20px}
+  .cta h2{font-size:clamp(32px,4.6vw,52px);line-height:1.06;font-weight:500;letter-spacing:-.03em;max-width:18ch;margin:0 auto 22px}
+  .cta p{font-size:19px;color:var(--muted);max-width:52ch;margin:0 auto 36px}
+  .cta .actions{justify-content:center}
+
+  /* footer */
+  footer{border-top:1px solid var(--line);padding:52px 0 60px}
+  .foot{display:flex;justify-content:space-between;gap:40px;flex-wrap:wrap}
+  .foot .brand{font-size:17px;font-weight:600;margin-bottom:10px}
+  .foot .tg{font-size:14px;color:var(--muted);max-width:32ch}
+  .foot-cols{display:flex;gap:56px;flex-wrap:wrap}
+  .fcol h5{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin-bottom:14px}
+  .fcol a{display:block;font-size:14.5px;color:var(--muted);padding:4px 0;transition:color .2s}
+  .fcol a:hover{color:var(--ink)}
+  .fine{font-family:var(--mono);font-size:12px;color:var(--faint);margin-top:38px}
+
+  .reveal{opacity:0;transform:translateY(18px);transition:opacity .8s cubic-bezier(.2,.7,.2,1),transform .8s cubic-bezier(.2,.7,.2,1)}
+  .reveal.in{opacity:1;transform:none}
+  @media(prefers-reduced-motion:reduce){.reveal{opacity:1!important;transform:none!important;transition:none!important}}
+
+  @media(max-width:560px){.wrap{padding:0 22px}.hero{padding:84px 0 64px}section{padding:76px 0}.stats{gap:40px}}
+
+  /* email capture */
+  .signup{display:flex;flex-direction:column;gap:12px;max-width:440px}
+  .signup-fields{display:flex;gap:10px;width:100%;flex-wrap:wrap}
+  .signup input[type=email]{flex:1;min-width:220px;font-family:var(--sans);font-size:15px;color:var(--ink);background:#fff;border:1px solid var(--line);border-radius:8px;padding:13px 15px;transition:border-color .2s,box-shadow .2s}
+  .signup input[type=email]::placeholder{color:var(--faint)}
+  .signup input[type=email]:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(29,84,64,.1)}
+  .signup .btn{border:0;font-family:var(--sans)}
+  .signup-done{display:none;font-size:15.5px;color:var(--accent);font-weight:500}
+  .signup.done .signup-fields{display:none}
+  .signup.done .signup-done{display:block}
+
+  /* who: tools + institutions */
+  .stat{max-width:182px}
+  .tools{display:grid;grid-template-columns:1fr 1fr;gap:0 56px;margin-top:6px}
+  .tool{padding:24px 0;border-top:1px solid var(--line)}
+  .tool .nm{font-size:16.5px;font-weight:600;letter-spacing:-.01em;margin-bottom:6px}
+  .tool .ds{font-size:15px;line-height:1.5;color:var(--muted);max-width:42ch}
+  @media(max-width:620px){.tools{grid-template-columns:1fr}}
+  .tools-label{font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);margin-top:46px}
+  .deployed{margin-top:46px}
+  .deployed .lab{font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);margin-bottom:16px}
+  .insts{display:flex;flex-wrap:wrap;gap:10px 26px}
+  .insts span{font-size:17px;color:var(--ink-2)}
+  .insts span:not(:last-child)::after{content:"·";margin-left:26px;color:var(--faint)}
+
+  /* get involved */
+  .involved{border-bottom:0}
+  .involved .sec-head{margin-bottom:30px}
+
+  /* footer */
+  .foot .fine{margin-top:6px;text-align:right}
+  @media(max-width:560px){.foot .fine{text-align:left;margin-top:18px}}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="nav">
+  <div class="wrap nav-in">
+    <a href="#top" class="brand">MIRA</a>
+    <div class="nav-right">
+      <div class="nav-links">
+        <a href="#what">What it is</a>
+        <a href="#why">Why it matters</a>
+        <a href="#who">Who's using it</a>
+      </div>
+      <a href="#involved" class="nav-cta">Get involved</a>
+    </div>
+  </div>
+</nav>
+
+<div id="top"></div>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="wrap">
+    <span class="eyebrow">Modular Interoperable Research Attribution</span>
+    <h1>A new medium for research.</h1>
+    <p class="lede">Research today is shipped as a sealed document. MIRA turns it into a graph of signed, citable records: the questions a field is asking, the claims that answer them, and the evidence behind each one.</p>
+    <form class="signup" novalidate>
+      <div class="signup-fields">
+        <input type="email" placeholder="you@lab.edu" aria-label="Email address" required />
+        <button type="submit" class="btn btn-primary">Keep me posted</button>
+      </div>
+      <p class="signup-done">Thanks. We will keep you posted.</p>
+    </form>
+  </div>
+</header>
+
+<!-- WHAT IT IS -->
+<section id="what">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow">What it is</span>
+      <h2>A shared schema for research in progress.</h2>
+      <p class="sub">MIRA is an open architecture that defines a structure for research records and the relations that connect them. Notebook plugins, authoring tools, and publishing platforms all speak this format, so researchers using different tools still collaborate on one shared graph.</p>
+    </div>
+    <div class="duo reveal">
+      <div class="block">
+        <span class="k">A medium, technically</span>
+        <h3>An interface between tools</h3>
+        <p>Any tool can be extended to create, query, and write to a graph. MIRA itself hosts nothing.</p>
+      </div>
+      <div class="block">
+        <span class="k">A medium, as an ecosystem</span>
+        <h3>Maintained by its users</h3>
+        <p>MIRA is maintained in the open by the teams that build tools around it.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHY IT MATTERS -->
+<section id="why">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow">What becomes possible</span>
+      <h2>Higher fidelity on the research you care about.</h2>
+    </div>
+
+    <div class="aud reveal">
+      <div class="col">
+        <span class="role">For funders</span>
+        <div class="row">
+          <div class="t">See the whole field</div>
+          <div class="d">Query the live graph of a field you fund and see which claims are well supported, which are contested, and which questions still have no answer. See more than what's in the spotlight.</div>
+        </div>
+        <div class="row">
+          <div class="t">Catch dropped lines of insight</div>
+          <div class="d">When a line of work stalls, the graph shows where it stopped: the question that never got an answer, the proposed experiment still waiting for a lab.</div>
+        </div>
+        <div class="row">
+          <div class="t">Spot bottlenecks and emerging trends</div>
+          <div class="d">The shape of the record shows where a field is stuck and where momentum is building, years before citation counts catch up.</div>
+        </div>
+        <div class="row">
+          <div class="t">Recognize the full breadth of contributions</div>
+          <div class="d">Credit attaches to each claim, question, and piece of evidence a researcher adds. Work that would once have vanished into a co-author line can be recognized and rewarded.</div>
+        </div>
+        <div class="row">
+          <div class="t">Forecast where a field is going</div>
+          <div class="d">A provenanced record is one you can compute on. When people or agents draw new conclusions from it, every inference traces back to vetted evidence.</div>
+        </div>
+      </div>
+
+      <div class="col">
+        <span class="role">For labs</span>
+        <div class="row">
+          <div class="t">A shared map across labs</div>
+          <div class="d">Collaborating labs work from one graph of claims, evidence, and requests. That shared map gives them the precision to take on questions too big for any single lab.</div>
+        </div>
+        <div class="row">
+          <div class="t">Surface your unknown unknowns</div>
+          <div class="d">Structuring work as claims, evidence, and requests reveals what's already latent in your research: the insights you haven't named and the questions you didn't know you were asking.</div>
+        </div>
+        <div class="row">
+          <div class="t">Assisted peer review</div>
+          <div class="d">Most of peer review is untangling what a paper claims and what its evidence shows. In the graph that structure is explicit, so AI can carry a real share of the work.</div>
+        </div>
+        <div class="row">
+          <div class="t">Granular attribution</div>
+          <div class="d">Every record is signed by the person who made it. However many labs share a project, each researcher can point to the exact contributions that are theirs.</div>
+        </div>
+        <div class="row">
+          <div class="t">AI as a trusted collaborator</div>
+          <div class="d">A graph of claims and evidence is the rules of science in machine-readable form, and agents run far better on it than on cluttered PDFs. They can navigate and add to the record while human contributions stay plainly in evidence.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHO'S USING IT -->
+<section id="who">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow">Who's using it</span>
+      <h2>Deployed in real labs.</h2>
+    </div>
+    <div class="reveal">
+      <div class="stats">
+        <div class="stat"><div class="n">100+</div><div class="l">researchers writing in it weekly, in their own notebooks</div></div>
+        <div class="stat"><div class="n">6,000+</div><div class="l">signed research records authored</div></div>
+        <div class="stat"><div class="n">10+</div><div class="l">life-science labs deployed</div></div>
+      </div>
+      <div class="deployed">
+        <div class="lab">Deployed with researchers at</div>
+        <div class="insts">
+          <span>McGill</span>
+          <span>University of Washington</span>
+          <span>NYU</span>
+          <span>Quantum Biology Institute</span>
+        </div>
+      </div>
+      <div class="tools-label">Tools that integrate MIRA today</div>
+      <div class="tools">
+        <div class="tool">
+          <div class="nm">Discourse Graphs</div>
+          <div class="ds">Typed claim, evidence, and relation authoring inside Roam and Obsidian. A multi-year deployment across more than ten life-science labs.</div>
+        </div>
+        <div class="tool">
+          <div class="nm">Semble (Cosmik)</div>
+          <div class="ds">AT-Protocol-native social curation of research objects, with thousands of active users.</div>
+        </div>
+        <div class="tool">
+          <div class="nm">eLife Pathways</div>
+          <div class="ds">Open manuscript submission, peer review, and publication with broad reach in the life sciences.</div>
+        </div>
+        <div class="tool">
+          <div class="nm">OXA (CSF)</div>
+          <div class="ds">Structured scientific-document exchange across MyST, Curvenote, JATS, Quarto, and Stencila.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GET INVOLVED -->
+<section class="involved" id="involved">
+  <div class="wrap reveal">
+    <div class="sec-head">
+      <span class="eyebrow">Get involved</span>
+      <h2>Help establish the shared record for science.</h2>
+    </div>
+    <form class="signup" novalidate>
+      <div class="signup-fields">
+        <input type="email" placeholder="you@lab.edu" aria-label="Email address" required />
+        <button type="submit" class="btn btn-primary">Keep me posted</button>
+      </div>
+      <p class="signup-done">Thanks. We will keep you posted.</p>
+    </form>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap foot">
+    <div>
+      <div class="brand">MIRA</div>
+      <p class="tg">Modular Interoperable Research Attribution. An open architecture for collaborative research communication.</p>
+    </div>
+    <p class="fine">© 2026 MIRA</p>
+  </div>
+</footer>
+
+<script>
+  const nav=document.getElementById('nav');
+  addEventListener('scroll',()=>nav.classList.toggle('scrolled',scrollY>8),{passive:true});
+  const io=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}})},{threshold:.14});
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+  document.querySelectorAll('form.signup').forEach(f=>{
+    f.addEventListener('submit',e=>{
+      e.preventDefault();
+      const input=f.querySelector('input[type=email]');
+      if(input && !input.value.trim()){input.focus();return;}
+      f.classList.add('done');
+    });
+  });
+</script>
+</body>
+</html>
