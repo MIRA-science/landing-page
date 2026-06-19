@@ -8,30 +8,127 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:ital,wght@0,400..700;1,400&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<script>
+  /* set theme before first paint to avoid a flash */
+  (function(){
+    try{
+      var stored=localStorage.getItem('mira-theme');
+      var sys=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches;
+      document.documentElement.setAttribute('data-theme', stored || (sys?'dark':'light'));
+    }catch(e){document.documentElement.setAttribute('data-theme','light');}
+  })();
+</script>
 <style>
   :root{
+    color-scheme:light;
     --bg:#ffffff;
     --ink:#16181b;
     --ink-2:#33373c;
     --muted:#5b616a;
-    --faint:#8b9099;
+    --faint:#6b717a;
     --line:#e9eaec;
     --line-soft:#f3f4f5;
     --accent:#1d5440;
     --accent-deep:#163f30;
+
+    /* section contrast scheme */
+    --tint-1:#f6f8f7;
+    --tint-2:#eef2f0;
+    --card-bg:#ffffff;
+    --tool-logo-bg:#eef2f0;
+    --tool-logo-fg:#1d5440;
+
+    /* form fields */
+    --input-bg:#ffffff;
+    --input-border:#e9eaec;
+    --input-text:#16181b;
+
+    /* HERO band */
+    --hero-bg:radial-gradient(125% 120% at 82% -15%, #235e46 0%, #163f30 48%, #102e22 100%);
+    --hero-text:#ffffff;
+    --hero-muted:#b6cdc1;
+    --hero-eyebrow:#8ed8b3;
+    --hero-btn:#7fd3a8;
+    --hero-btn-hover:#9ce3c1;
+    --hero-btn-text:#0f2c21;
+
+    /* CTA band */
+    --cta-bg:radial-gradient(125% 130% at 50% -25%, #235e46 0%, #163f30 55%, #102e22 100%);
+    --cta-text:#ffffff;
+    --cta-muted:#b6cdc1;
+    --cta-eyebrow:#8ed8b3;
+    --cta-btn:#7fd3a8;
+    --cta-btn-hover:#9ce3c1;
+    --cta-btn-text:#0f2c21;
+
+    /* footer */
+    --footer-bg:#0f2c21;
+    --footer-text:#ffffff;
+    --footer-muted:#b6cdc1;
+
     --sans:"Schibsted Grotesk",-apple-system,BlinkMacSystemFont,sans-serif;
     --mono:"Geist Mono",ui-monospace,SFMono-Regular,monospace;
     --maxw:1080px;
   }
+
+  /* DARK MODE — inverted scheme: very dark green sections resolving to a
+     vibrant/pastel-green CTA, per the eLife brand suggestion. */
+  [data-theme="dark"]{
+    color-scheme:dark;
+    --bg:#0c1411;
+    --ink:#e9efeb;
+    --ink-2:#cad6d0;
+    --muted:#93a39b;
+    --faint:#7f8f87;
+    --line:#1f2b26;
+    --line-soft:#172019;
+    --accent:#7fd3a8;
+    --accent-deep:#9ce3c1;
+
+    --tint-1:#0f1814;
+    --tint-2:#121d18;
+    --card-bg:#16241d;
+    --tool-logo-bg:#1c2c24;
+    --tool-logo-fg:#9ce3c1;
+
+    --input-bg:#0f1b16;
+    --input-border:#27332c;
+    --input-text:#e9efeb;
+
+    /* hero: deepest, very dark green */
+    --hero-bg:radial-gradient(125% 120% at 82% -15%, #15392a 0%, #0e271d 50%, #081711 100%);
+    --hero-text:#eafaf2;
+    --hero-muted:#9fb4aa;
+    --hero-eyebrow:#7fd3a8;
+    --hero-btn:#7fd3a8;
+    --hero-btn-hover:#9ce3c1;
+    --hero-btn-text:#08251a;
+
+    /* CTA: the bright pastel highlight at the end of the page */
+    --cta-bg:radial-gradient(125% 130% at 50% -25%, #c2f5da 0%, #8fdcb4 55%, #6cc79b 100%);
+    --cta-text:#0a2419;
+    --cta-muted:#1d4636;
+    --cta-eyebrow:#0e3a28;
+    --cta-btn:#0f2c21;
+    --cta-btn-hover:#163f30;
+    --cta-btn-text:#eafff4;
+
+    /* footer: deep green to ground the page under the bright CTA */
+    --footer-bg:#0a1d15;
+    --footer-text:#e9efeb;
+    --footer-muted:#8ba197;
+  }
+
   *{box-sizing:border-box;margin:0;padding:0}
   html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
   body{
     background:var(--bg);color:var(--ink);font-family:var(--sans);
     font-size:17px;line-height:1.6;font-weight:400;letter-spacing:-.005em;
     -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+    transition:background-color .3s ease,color .3s ease;
   }
   a{color:inherit;text-decoration:none}
-  ::selection{background:var(--accent);color:#fff}
+  ::selection{background:var(--accent);color:var(--bg)}
   .wrap{max-width:var(--maxw);margin:0 auto;padding:0 32px}
 
   .eyebrow{
@@ -40,36 +137,50 @@
   }
 
   /* NAV */
-  nav{position:sticky;top:0;z-index:60;background:rgba(255,255,255,.85);backdrop-filter:blur(10px);border-bottom:1px solid transparent;transition:border-color .3s}
+  nav{position:sticky;top:0;z-index:60;background:var(--bg);border-bottom:1px solid transparent;transition:border-color .3s,background-color .3s}
   nav.scrolled{border-color:var(--line)}
   .nav-in{display:flex;align-items:center;justify-content:space-between;height:66px}
-  .brand{font-size:18px;font-weight:600;letter-spacing:.02em}
-  .nav-right{display:flex;align-items:center;gap:32px}
+  .brand{display:inline-flex;align-items:center}
+  .logo{height:21px;width:auto;display:block;color:inherit}
+  .logo text{font-family:var(--sans)}
+  .nav-right{display:flex;align-items:center;gap:24px}
   .nav-links{display:flex;gap:28px}
   .nav-links a{font-size:14.5px;color:var(--muted);transition:color .2s}
   .nav-links a:hover{color:var(--ink)}
-  .nav-cta{font-size:14px;font-weight:500;background:var(--ink);color:var(--bg);padding:9px 17px;border-radius:7px;transition:background .2s,transform .2s}
+  .theme-toggle{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:8px;border:1px solid var(--line);background:transparent;color:var(--muted);cursor:pointer;transition:color .2s,border-color .2s}
+  .theme-toggle:hover{color:var(--ink);border-color:var(--ink-2)}
+  .theme-toggle svg{width:18px;height:18px}
+  .theme-toggle .ico-sun{display:none}
+  [data-theme="dark"] .theme-toggle .ico-moon{display:none}
+  [data-theme="dark"] .theme-toggle .ico-sun{display:block}
+  .nav-cta{font-size:14px;font-weight:500;background:var(--accent);color:var(--bg);padding:9px 17px;border-radius:7px;transition:background .2s,transform .2s}
   .nav-cta:hover{background:var(--accent-deep);transform:translateY(-1px)}
   @media(max-width:760px){.nav-links{display:none}}
 
   /* HERO */
-  .hero{padding:120px 0 96px;border-bottom:1px solid var(--line)}
-  .hero .eyebrow{display:block;margin-bottom:26px}
+  .hero{background:var(--hero-bg);color:var(--hero-text);padding:124px 0 108px;border-bottom:0}
+  .hero .eyebrow{display:block;margin-bottom:26px;color:var(--hero-eyebrow)}
   h1{font-size:clamp(42px,6vw,76px);line-height:1.02;font-weight:500;letter-spacing:-.035em;max-width:15ch;margin-bottom:30px}
-  .hero .lede{font-size:21px;line-height:1.55;color:var(--muted);max-width:60ch;margin-bottom:38px}
-  .hero .lede b{color:var(--ink-2);font-weight:500}
+  .hero .lede{font-size:21px;line-height:1.55;color:var(--hero-muted);max-width:60ch;margin-bottom:38px}
+  .hero .lede b{color:var(--hero-text);font-weight:500}
+
   .actions{display:flex;align-items:center;gap:24px;flex-wrap:wrap}
   .btn{font-size:15px;font-weight:500;padding:13px 24px;border-radius:8px;display:inline-flex;align-items:center;gap:9px;transition:all .22s ease;cursor:pointer}
-  .btn-primary{background:var(--accent);color:#fff;box-shadow:0 1px 2px rgba(22,63,48,.18)}
+  .btn-primary{background:var(--accent);color:var(--bg);box-shadow:0 1px 2px rgba(22,63,48,.18)}
   .btn-primary:hover{background:var(--accent-deep);transform:translateY(-1px);box-shadow:0 8px 22px -10px rgba(22,63,48,.5)}
   .btn-primary .arr{transition:transform .22s}
   .btn-primary:hover .arr{transform:translateX(3px)}
-  .btn-text{font-size:15px;font-weight:500;color:var(--ink)}
-  .btn-text .u{box-shadow:inset 0 -1px 0 var(--line);transition:box-shadow .2s;padding-bottom:2px}
-  .btn-text:hover .u{box-shadow:inset 0 -1px 0 var(--ink)}
+  /* band buttons */
+  .hero .btn-primary{background:var(--hero-btn);color:var(--hero-btn-text);box-shadow:0 1px 2px rgba(0,0,0,.25)}
+  .hero .btn-primary:hover{background:var(--hero-btn-hover);transform:translateY(-1px);box-shadow:0 10px 26px -12px rgba(0,0,0,.5)}
+  .involved .btn-primary{background:var(--cta-btn);color:var(--cta-btn-text);box-shadow:0 1px 2px rgba(0,0,0,.25)}
+  .involved .btn-primary:hover{background:var(--cta-btn-hover);transform:translateY(-1px);box-shadow:0 10px 26px -12px rgba(0,0,0,.4)}
 
   /* SECTION */
-  section{padding:104px 0;border-bottom:1px solid var(--line)}
+  section{padding:104px 0;border-bottom:0;transition:background-color .3s ease}
+  #what{background:var(--bg)}
+  #why{background:var(--tint-1)}
+  #who{background:var(--tint-2)}
   .sec-head{max-width:660px;margin-bottom:52px}
   .sec-head .eyebrow{display:block;margin-bottom:18px}
   .sec-head h2{font-size:clamp(28px,3.6vw,40px);line-height:1.12;font-weight:500;letter-spacing:-.028em}
@@ -78,81 +189,84 @@
 
   /* two-up text blocks */
   .duo{display:grid;grid-template-columns:1fr 1fr;gap:48px}
-  .duo .block .k{font-family:var(--mono);font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:12px}
   .duo .block h3{font-size:21px;font-weight:600;letter-spacing:-.02em;margin-bottom:10px}
   .duo .block p{font-size:16px;color:var(--muted);max-width:46ch}
   @media(max-width:720px){.duo{grid-template-columns:1fr;gap:34px}}
 
-  /* audiences */
-  .aud{display:grid;grid-template-columns:1fr 1fr;gap:56px}
-  .aud .col .role{font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid var(--line)}
-  .aud .row{padding:18px 0;border-bottom:1px solid var(--line-soft)}
-  .aud .row:last-child{border-bottom:0}
-  .aud .row .t{font-size:16.5px;font-weight:600;letter-spacing:-.01em;margin-bottom:3px}
-  .aud .row .d{font-size:15.5px;color:var(--muted)}
-  @media(max-width:720px){.aud{grid-template-columns:1fr;gap:40px}}
+  /* audiences — full-width rows */
+  .aud .group{margin-top:56px}
+  .aud .group:first-child{margin-top:0}
+  .aud .role{font-family:var(--mono);font-size:12.5px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:6px}
+  .aud .item{display:grid;grid-template-columns:300px 1fr;gap:40px;align-items:start;padding:26px 0;border-top:1px solid var(--line)}
+  .aud .item .t{font-size:20px;font-weight:600;letter-spacing:-.015em}
+  .aud .item .d{font-size:16.5px;color:var(--muted);max-width:74ch}
+  @media(max-width:720px){.aud .item{grid-template-columns:1fr;gap:8px;padding:22px 0}.aud .item .t{font-size:18px}}
 
   /* stats / who */
   .stats{display:flex;gap:64px;flex-wrap:wrap;margin-bottom:40px}
+  .stat{max-width:182px}
   .stat .n{font-size:clamp(34px,4.4vw,48px);font-weight:500;letter-spacing:-.03em;line-height:1}
-  .stat .l{font-family:var(--mono);font-size:12.5px;color:var(--muted);letter-spacing:.02em;margin-top:10px}
-
-  /* CTA */
-  .cta{text-align:center;padding:124px 0;border-bottom:0}
-  .cta .eyebrow{display:block;margin-bottom:20px}
-  .cta h2{font-size:clamp(32px,4.6vw,52px);line-height:1.06;font-weight:500;letter-spacing:-.03em;max-width:18ch;margin:0 auto 22px}
-  .cta p{font-size:19px;color:var(--muted);max-width:52ch;margin:0 auto 36px}
-  .cta .actions{justify-content:center}
+  .stat .l{font-size:15px;line-height:1.5;color:var(--muted);margin-top:10px}
 
   /* footer */
-  footer{border-top:1px solid var(--line);padding:52px 0 60px}
+  footer{background:var(--footer-bg);color:var(--footer-text);border-top:0;padding:56px 0 60px;transition:background-color .3s ease}
   .foot{display:flex;justify-content:space-between;gap:40px;flex-wrap:wrap}
-  .foot .brand{font-size:17px;font-weight:600;margin-bottom:10px}
-  .foot .tg{font-size:14px;color:var(--muted);max-width:32ch}
-  .foot-cols{display:flex;gap:56px;flex-wrap:wrap}
-  .fcol h5{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin-bottom:14px}
-  .fcol a{display:block;font-size:14.5px;color:var(--muted);padding:4px 0;transition:color .2s}
-  .fcol a:hover{color:var(--ink)}
-  .fine{font-family:var(--mono);font-size:12px;color:var(--faint);margin-top:38px}
+  .foot .brand{margin-bottom:12px;color:var(--footer-text)}
+  .foot .brand .logo{height:22px}
+  .foot .tg{font-size:14px;color:var(--footer-muted);max-width:32ch}
+  .fine{font-family:var(--mono);font-size:12px;color:var(--footer-muted);margin-top:38px}
 
   .reveal{opacity:0;transform:translateY(18px);transition:opacity .8s cubic-bezier(.2,.7,.2,1),transform .8s cubic-bezier(.2,.7,.2,1)}
   .reveal.in{opacity:1;transform:none}
   @media(prefers-reduced-motion:reduce){.reveal{opacity:1!important;transform:none!important;transition:none!important}}
 
-  @media(max-width:560px){.wrap{padding:0 22px}.hero{padding:84px 0 64px}section{padding:76px 0}.stats{gap:40px}}
+  @media(max-width:560px){.wrap{padding:0 22px}.hero{padding:88px 0 72px}section{padding:76px 0}.stats{gap:40px}}
 
   /* email capture */
-  .signup{display:flex;flex-direction:column;gap:12px;max-width:440px}
+  .signup{display:flex;flex-direction:column;gap:10px;max-width:440px}
+  .signup-label{font-size:14px;font-weight:500;color:var(--ink-2)}
   .signup-fields{display:flex;gap:10px;width:100%;flex-wrap:wrap}
-  .signup input[type=email]{flex:1;min-width:220px;font-family:var(--sans);font-size:15px;color:var(--ink);background:#fff;border:1px solid var(--line);border-radius:8px;padding:13px 15px;transition:border-color .2s,box-shadow .2s}
-  .signup input[type=email]::placeholder{color:var(--faint)}
-  .signup input[type=email]:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(29,84,64,.1)}
+  .signup input[type=email]{flex:1;min-width:220px;font-family:var(--sans);font-size:15px;color:var(--input-text);background:var(--input-bg);border:1px solid var(--input-border);border-radius:8px;padding:13px 15px;transition:border-color .2s,box-shadow .2s}
+  .signup input[type=email]::placeholder{color:var(--muted)}
+  .signup input[type=email]:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(127,211,168,.22)}
   .signup .btn{border:0;font-family:var(--sans)}
+  .signup-hint{font-size:13.5px;color:var(--muted)}
   .signup-done{display:none;font-size:15.5px;color:var(--accent);font-weight:500}
   .signup.done .signup-fields{display:none}
+  .signup.done .signup-hint{display:none}
   .signup.done .signup-done{display:block}
+  /* signup on the hero band */
+  .hero .signup-label{color:var(--hero-text)}
+  .hero .signup-hint{color:var(--hero-muted)}
+  .hero .signup-done{color:var(--hero-eyebrow)}
+  /* signup on the CTA band */
+  .involved .signup-label{color:var(--cta-text)}
+  .involved .signup-hint{color:var(--cta-muted)}
+  .involved .signup-done{color:var(--cta-eyebrow)}
 
-  /* who: tools + institutions */
-  .stat{max-width:182px}
-  .tools{display:grid;grid-template-columns:1fr 1fr;gap:0 56px;margin-top:6px}
-  .tool{padding:24px 0;border-top:1px solid var(--line)}
-  .tool .nm{font-size:16.5px;font-weight:600;letter-spacing:-.01em;margin-bottom:6px}
-  .tool .ds{font-size:15px;line-height:1.5;color:var(--muted);max-width:42ch}
-  @media(max-width:620px){.tools{grid-template-columns:1fr}}
-  .tools-label{font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);margin-top:46px}
+  /* who: institutions */
+  .tools-label,.deployed .lab{font-family:var(--mono);font-size:11.5px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+  .tools-label{margin-top:46px;margin-bottom:6px}
   .deployed{margin-top:46px}
-  .deployed .lab{font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);margin-bottom:16px}
+  .deployed .lab{margin-bottom:16px}
   .insts{display:flex;flex-wrap:wrap;gap:10px 26px}
   .insts span{font-size:17px;color:var(--ink-2)}
   .insts span:not(:last-child)::after{content:"·";margin-left:26px;color:var(--faint)}
 
-  /* get involved */
-  .involved{border-bottom:0}
-  .involved .sec-head{margin-bottom:30px}
+  /* tools as cards */
+  .tools{display:grid;grid-template-columns:repeat(auto-fit,minmax(228px,1fr));gap:16px;margin-top:18px}
+  .tool-card{display:flex;flex-direction:column;background:var(--card-bg);border:1px solid var(--line);border-radius:14px;padding:22px 22px 24px;transition:border-color .2s,box-shadow .2s,transform .2s}
+  .tool-card:hover{border-color:var(--accent);box-shadow:0 14px 32px -20px rgba(22,63,48,.45);transform:translateY(-2px)}
+  .tool-logo{width:42px;height:42px;border-radius:10px;background:var(--tool-logo-bg);color:var(--tool-logo-fg);font-family:var(--mono);font-size:13px;font-weight:500;display:flex;align-items:center;justify-content:center;margin-bottom:16px}
+  .tool-card .nm{font-size:16.5px;font-weight:600;letter-spacing:-.01em;margin-bottom:8px}
+  .tool-card .ds{font-size:14.5px;line-height:1.5;color:var(--muted)}
+  .tool-card .more{margin-top:auto;padding-top:16px;font-family:var(--mono);font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--accent)}
 
-  /* footer */
-  .foot .fine{margin-top:6px;text-align:right}
-  @media(max-width:560px){.foot .fine{text-align:left;margin-top:18px}}
+  /* get involved — high-contrast CTA band */
+  .involved{background:var(--cta-bg);color:var(--cta-text);border-bottom:0}
+  .involved .eyebrow{color:var(--cta-eyebrow)}
+  .involved h2{color:var(--cta-text)}
+  .involved .sec-head{margin-bottom:30px}
 </style>
 </head>
 <body>
@@ -160,13 +274,32 @@
 <!-- NAV -->
 <nav id="nav">
   <div class="wrap nav-in">
-    <a href="#top" class="brand">MIRA</a>
+    <a href="#top" class="brand" aria-label="MIRA — home">
+      <svg class="logo" viewBox="0 0 96 24" role="img" aria-label="MIRA" xmlns="http://www.w3.org/2000/svg">
+        <title>MIRA</title>
+        <g stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+          <line x1="5" y1="6.5" x2="5" y2="17.5"/>
+          <line x1="5" y1="6.5" x2="17" y2="12"/>
+          <line x1="5" y1="17.5" x2="17" y2="12"/>
+        </g>
+        <g fill="currentColor">
+          <circle cx="5" cy="6.5" r="2.7"/>
+          <circle cx="5" cy="17.5" r="2.7"/>
+          <circle cx="17" cy="12" r="3.4"/>
+        </g>
+        <text x="29" y="17" fill="currentColor" font-size="17" font-weight="600" letter-spacing="0.4">MIRA</text>
+      </svg>
+    </a>
     <div class="nav-right">
       <div class="nav-links">
         <a href="#what">What it is</a>
         <a href="#why">Why it matters</a>
         <a href="#who">Who's using it</a>
       </div>
+      <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Switch to dark theme" aria-pressed="false" title="Toggle light / dark">
+        <svg class="ico-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg>
+        <svg class="ico-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+      </button>
       <a href="#involved" class="nav-cta">Get involved</a>
     </div>
   </div>
@@ -181,11 +314,13 @@
     <h1>A new medium for research.</h1>
     <p class="lede">Research today is shipped as a sealed document. MIRA turns it into a graph of signed, citable records: the questions a field is asking, the claims that answer them, and the evidence behind each one.</p>
     <form class="signup" novalidate>
+      <label class="signup-label" for="hero-email">Get updates on MIRA</label>
       <div class="signup-fields">
-        <input type="email" placeholder="you@lab.edu" aria-label="Email address" required />
+        <input id="hero-email" name="email" type="email" placeholder="you@lab.edu" aria-describedby="hero-email-hint" required />
         <button type="submit" class="btn btn-primary">Keep me posted</button>
       </div>
-      <p class="signup-done">Thanks. We will keep you posted.</p>
+      <p id="hero-email-hint" class="signup-hint">Occasional updates on MIRA's progress and how to get involved. No spam, unsubscribe anytime.</p>
+      <p class="signup-done" role="status">Thanks. We will keep you posted.</p>
     </form>
   </div>
 </header>
@@ -200,12 +335,10 @@
     </div>
     <div class="duo reveal">
       <div class="block">
-        <span class="k">A medium, technically</span>
         <h3>An interface between tools</h3>
         <p>Any tool can be extended to create, query, and write to a graph. MIRA itself hosts nothing.</p>
       </div>
       <div class="block">
-        <span class="k">A medium, as an ecosystem</span>
         <h3>Maintained by its users</h3>
         <p>MIRA is maintained in the open by the teams that build tools around it and the researchers who use it.</p>
       </div>
@@ -217,54 +350,54 @@
 <section id="why">
   <div class="wrap">
     <div class="sec-head reveal">
-      <span class="eyebrow">What becomes possible</span>
+      <span class="eyebrow">Why it matters</span>
       <h2>Higher fidelity on the research you care about.</h2>
     </div>
 
     <div class="aud reveal">
-      <div class="col">
-        <span class="role">For funders</span>
-        <div class="row">
+      <div class="group">
+        <h3 class="role">For funders</h3>
+        <div class="item">
           <div class="t">See the whole field</div>
           <div class="d">Query the live graph of a field you fund and see which claims are well supported, which are contested, and which questions still have no answer. See more than what's in the spotlight.</div>
         </div>
-        <div class="row">
+        <div class="item">
           <div class="t">Catch dropped lines of insight</div>
           <div class="d">When a line of work stalls, the graph shows where it stopped: the question that never got an answer, the proposed experiment still waiting for a lab.</div>
         </div>
-        <div class="row">
+        <div class="item">
           <div class="t">Spot bottlenecks and emerging trends</div>
           <div class="d">The shape of the record shows where a field is stuck and where momentum is building, years before citation counts catch up.</div>
         </div>
-        <div class="row">
+        <div class="item">
           <div class="t">Recognize the full breadth of contributions</div>
           <div class="d">Credit attaches to each claim, question, and piece of evidence a researcher adds. Work that would once have vanished into a co-author line can be recognized and rewarded.</div>
         </div>
-        <div class="row">
+        <div class="item">
           <div class="t">Forecast where a field is going</div>
           <div class="d">A provenanced record is one you can compute on. When people or agents draw new conclusions from it, every inference traces back to vetted evidence.</div>
         </div>
       </div>
 
-      <div class="col">
-        <span class="role">For labs</span>
-        <div class="row">
+      <div class="group">
+        <h3 class="role">For labs</h3>
+        <div class="item">
           <div class="t">A shared map across labs</div>
           <div class="d">Collaborating labs work from a shared graph of claims, evidence, and requests. That shared map gives them the precision to take on questions too big for any single lab.</div>
         </div>
-        <div class="row">
+        <div class="item">
           <div class="t">Surface your unknown unknowns</div>
           <div class="d">Structuring work as claims, evidence, and requests reveals what's already latent in your research: the insights you haven't named and the questions you didn't know you were asking.</div>
         </div>
-        <div class="row">
+        <div class="item">
           <div class="t">Assisted peer review</div>
           <div class="d">Most of peer review is untangling what a paper claims and what its evidence shows. In the graph that structure is explicit, so AI can carry a real share of the work.</div>
         </div>
-        <div class="row">
+        <div class="item">
           <div class="t">Granular attribution</div>
           <div class="d">Every record is signed by the person who made it. However many labs share a project, each researcher can point to the exact contributions that are theirs.</div>
         </div>
-        <div class="row">
+        <div class="item">
           <div class="t">AI as a trusted collaborator</div>
           <div class="d">A graph of claims and evidence is the rules of science in machine-readable form, and agents run far better on it than on cluttered PDFs. They can navigate and add to the record while human contributions stay plainly in evidence.</div>
         </div>
@@ -296,22 +429,32 @@
         </div>
       </div>
       <div class="tools-label">Tools that integrate MIRA already</div>
+      <!-- cards. When URLs/logos are available, wrap each in <a href="..."> and swap
+           the .tool-logo monogram for <img src="..." alt="… logo" />. -->
       <div class="tools">
-        <div class="tool">
+        <div class="tool-card">
+          <div class="tool-logo" aria-hidden="true">DG</div>
           <div class="nm">Discourse Graphs</div>
           <div class="ds">Typed claim, evidence, and relation authoring inside Roam and Obsidian. A multi-year deployment across more than ten life-science labs.</div>
+          <div class="more">Learn more →</div>
         </div>
-        <div class="tool">
+        <div class="tool-card">
+          <div class="tool-logo" aria-hidden="true">Se</div>
           <div class="nm">Semble (Cosmik)</div>
           <div class="ds">AT-Protocol-native social curation of research objects, with thousands of active users.</div>
+          <div class="more">Learn more →</div>
         </div>
-        <div class="tool">
+        <div class="tool-card">
+          <div class="tool-logo" aria-hidden="true">eL</div>
           <div class="nm">eLife Pathways</div>
           <div class="ds">Open manuscript submission, peer review, and publication with broad reach in the life sciences.</div>
+          <div class="more">Learn more →</div>
         </div>
-        <div class="tool">
+        <div class="tool-card">
+          <div class="tool-logo" aria-hidden="true">OX</div>
           <div class="nm">OXA (CSF)</div>
           <div class="ds">Structured scientific-document exchange across MyST, Curvenote, JATS, Quarto, and Stencila.</div>
+          <div class="more">Learn more →</div>
         </div>
       </div>
     </div>
@@ -326,11 +469,13 @@
       <h2>Help establish the shared record for science.</h2>
     </div>
     <form class="signup" novalidate>
+      <label class="signup-label" for="involved-email">Get updates on MIRA</label>
       <div class="signup-fields">
-        <input type="email" placeholder="you@lab.edu" aria-label="Email address" required />
+        <input id="involved-email" name="email" type="email" placeholder="you@lab.edu" aria-describedby="involved-email-hint" required />
         <button type="submit" class="btn btn-primary">Keep me posted</button>
       </div>
-      <p class="signup-done">Thanks. We will keep you posted.</p>
+      <p id="involved-email-hint" class="signup-hint">Occasional updates on MIRA's progress and how to get involved. No spam, unsubscribe anytime.</p>
+      <p class="signup-done" role="status">Thanks. We will keep you posted.</p>
     </form>
   </div>
 </section>
@@ -339,7 +484,22 @@
 <footer>
   <div class="wrap foot">
     <div>
-      <div class="brand">MIRA</div>
+      <div class="brand">
+        <svg class="logo" viewBox="0 0 96 24" role="img" aria-label="MIRA" xmlns="http://www.w3.org/2000/svg">
+          <title>MIRA</title>
+          <g stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+            <line x1="5" y1="6.5" x2="5" y2="17.5"/>
+            <line x1="5" y1="6.5" x2="17" y2="12"/>
+            <line x1="5" y1="17.5" x2="17" y2="12"/>
+          </g>
+          <g fill="currentColor">
+            <circle cx="5" cy="6.5" r="2.7"/>
+            <circle cx="5" cy="17.5" r="2.7"/>
+            <circle cx="17" cy="12" r="3.4"/>
+          </g>
+          <text x="29" y="17" fill="currentColor" font-size="17" font-weight="600" letter-spacing="0.4">MIRA</text>
+        </svg>
+      </div>
       <p class="tg">Modular Interoperable Research Attribution. An open architecture for collaborative research communication.</p>
     </div>
     <p class="fine">© 2026 MIRA</p>
@@ -360,6 +520,24 @@
       f.classList.add('done');
     });
   });
+
+  /* theme toggle */
+  (function(){
+    const root=document.documentElement;
+    const btn=document.getElementById('theme-toggle');
+    function sync(){
+      const dark=root.getAttribute('data-theme')==='dark';
+      btn.setAttribute('aria-pressed',String(dark));
+      btn.setAttribute('aria-label',dark?'Switch to light theme':'Switch to dark theme');
+    }
+    sync();
+    btn.addEventListener('click',()=>{
+      const next=root.getAttribute('data-theme')==='dark'?'light':'dark';
+      root.setAttribute('data-theme',next);
+      try{localStorage.setItem('mira-theme',next);}catch(e){}
+      sync();
+    });
+  })();
 </script>
 </body>
 </html>
