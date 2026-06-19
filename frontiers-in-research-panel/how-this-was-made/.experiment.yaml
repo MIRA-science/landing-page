@@ -1,0 +1,9 @@
+graph: dg-team
+slug: how-this-was-made
+title: "How this was made: Catalyze Open Science panel — companion Q&A post-show notes"
+kind: build-log            # not a wet-lab analysis; documents how a web artifact was produced
+exp_uid: "(local-only — not pushed to Roam)"
+project_uid: "2_fnkmeUI"   # [[Catalyze Frontiers in Open Science Learning Session]] prep page (dg-team), for reference only
+created_date: 2026-06-19
+roam: local-only           # user chose to keep this log local; no Roam page/blocks created
+artifact: "../index.html"   # the companion post-show-notes page this log documents

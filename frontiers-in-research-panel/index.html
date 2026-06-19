@@ -1,0 +1,1353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Frontiers in Research: Open Science — Post-Show Notes</title>
+  <meta name="description" content="Companion post-show notes to the Catalyze 'Frontiers in Research: Open Science' panel: a question-and-answer recap (not an official transcript) of the conversation with Richard Sever, Joel Chan, and Ronen Tamari, moderated by Sandeep Patel.">
+
+  <!--
+    ============================================================
+    CONTENT NOTES FOR DOWNSTREAM AGENTS
+    ------------------------------------------------------------
+    SOURCE OF TRUTH:
+      - Transcript (clean text): ../transcript.txt
+      - Zoom chat (audience questions): "../2026-06-18 12.00.26 Frontiers in Research_ Open Science_chat.txt"
+      - Granola summary + Roam prep doc ("Catalyze Frontiers in Open Science Learning Session", dg-team graph)
+
+    QUOTE CONVENTION:
+      - <blockquote> text is drawn from the panel transcript and LIGHTLY cleaned for
+        readability (fixing speech-to-text artifacts only: e.g. "bioarchive"->"bioRxiv",
+        "med archive"->"medRxiv", "discourse crafts"->"discourse graphs", "cotton harbor"->
+        "Cold Spring Harbor", "Yaniv Erlich" spelling, filler words trimmed). Wording and
+        meaning are preserved. Bracketed [text] marks editorial clarification.
+      - Audience-question text is quoted from the Zoom chat (verbatim, sic where noted).
+      - Numbers NOT spoken on the panel (e.g. project totals like "10+ labs / 6,000+ findings")
+        are clearly framed as project context, NOT as panel quotes.
+
+    FOR THE HYPERLINK AGENT — entities that should be linked to canonical sources:
+      People: Richard Sever, Joel Chan, Ronen Tamari, Sandeep Patel, Matt Akamatsu,
+        Akiko Iwasaki, Jennifer Doudna, Craig Venter, Yaniv Erlich.
+      Orgs/projects: Catalyze (rndcatalyst.com), bioRxiv, medRxiv, openRxiv, MOSAIC
+        (platform.rndcatalyst.com/portfolios/mosaic), AT Protocol, Bluesky, Cosmic,
+        Discourse Graphs project, University of Maryland, MIRA (mira.science),
+        Chan Zuckerberg Initiative (CZI), Continuous Science Foundation, PREreview.
+      Works/specs/events: "arsenic life" paper (Science), COVID Moonshot,
+        dexamethasone (RECOVERY trial), "The Last Human-Written Paper" (arXiv ~2604.24658),
+        Astra spec, IPCC Seventh Assessment Report (AR7), UK Foresight Obesity System Map,
+        Cold Spring Harbor Laboratory "Biology of Genomes" & biology-in-AI meetings.
+      GLP-1 / muscle loss (used as a worked example of a hard-to-answer claim).
+    ============================================================
+  -->
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Spectral:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500&display=swap" rel="stylesheet">
+
+  <style>
+    /* =========================================================
+       Frontiers in Research: Open Science — Q&A recap
+       Design language: impeccable (brand register, long-form)
+       Type:    Spectral (reading serif)  +  Archivo (structure grotesque)
+       Palette: cool document off-white, tinted near-black ink,
+                single deep ink-teal accent (the marked-up-manuscript hue)
+       ========================================================= */
+
+    :root {
+      /* --- color: cool, document-precise; tinted, never pure black/gray --- */
+      --bg:        #fbfbf9;   /* faint cool off-white, not cream */
+      --bg-deep:   #f1f3f2;   /* recessed panel / rail */
+      --surface:   #ffffff;
+      --ink:       #16191b;   /* tinted near-black */
+      --ink-soft:  #353b3e;   /* secondary prose */
+      --ink-mute:  #565d61;   /* metadata — passes 4.5:1 on --bg */
+      --rule:      #d9dddb;   /* hairlines */
+      --rule-soft: #e6e9e7;
+      --accent:        #0c5c63;  /* deep ink-teal */
+      --accent-press:  #094046;  /* darker, for active/hover ink */
+      --accent-tint:   #e3eeec;  /* accent wash for surfaces */
+      --accent-ink:    #073b40;  /* text-safe accent for small text */
+
+      /* --- type --- */
+      --serif: "Spectral", Iowan Old Style, "Palatino Linotype", Palatino, Georgia, "Times New Roman", serif;
+      --sans:  "Archivo", "Helvetica Neue", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+
+      /* --- modular type scale (~1.25 ratio); stepped at one breakpoint
+             rather than clamp(), for predictable rendering and zoom --- */
+      --fs-meta:  0.8125rem;  /* 13px */
+      --fs-small: 0.9375rem;  /* 15px */
+      --fs-body:  1.125rem;   /* 18px reading body */
+      --fs-lead:  1.375rem;   /* 22px */
+      --fs-quote: 1.3125rem;  /* 21px */
+      --fs-q:     1.375rem;   /* 22px question */
+      --fs-h2:    1.875rem;   /* 30px */
+      --fs-h1:    2.625rem;   /* 42px */
+
+      /* --- 4pt-based spacing --- */
+      --sp-1: 0.25rem; --sp-2: 0.5rem;  --sp-3: 0.75rem; --sp-4: 1rem;
+      --sp-5: 1.5rem;  --sp-6: 2rem;    --sp-7: 3rem;    --sp-8: 4rem;
+      --sp-9: clamp(3.5rem, 2.5rem + 4vw, 6rem);
+
+      --measure: 68ch;
+      --ease: cubic-bezier(0.22, 1, 0.36, 1); /* ease-out-quint, no bounce */
+
+      /* semantic z-scale */
+      --z-rail: 10;
+      --z-progress: 20;
+    }
+
+    /* display type breathes up one step on wider viewports */
+    @media (min-width: 48rem) {
+      :root {
+        --fs-lead:  1.5rem;     /* 24px */
+        --fs-q:     1.5rem;     /* 24px */
+        --fs-h2:    2.25rem;    /* 36px */
+        --fs-h1:    3.75rem;    /* 60px */
+      }
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--serif);
+      font-size: var(--fs-body);
+      line-height: 1.62;
+      font-weight: 400;
+      font-kerning: normal;
+      font-optical-sizing: auto;
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* reading-progress hairline */
+    .progress {
+      position: fixed; inset: 0 auto auto 0;
+      height: 2px; width: 0%;
+      background: var(--accent);
+      z-index: var(--z-progress);
+      transform-origin: 0 50%;
+    }
+    @media (prefers-reduced-motion: reduce) { .progress { display: none; } }
+
+    /* skip link */
+    .skip {
+      position: absolute; left: var(--sp-4); top: -3.5rem;
+      background: var(--ink); color: #fff; padding: 0.6rem 1rem;
+      font-family: var(--sans); font-size: var(--fs-small); border-radius: 2px;
+      z-index: 999; transition: top 0.2s var(--ease);
+    }
+    .skip:focus { top: var(--sp-4); }
+
+    a { color: var(--accent-ink); text-decoration-thickness: 1px; text-underline-offset: 0.16em; }
+    a:hover { color: var(--accent-press); text-decoration-color: var(--accent); }
+
+    :focus-visible {
+      outline: 2.5px solid var(--accent);
+      outline-offset: 3px;
+      border-radius: 2px;
+    }
+
+    /* ------------------------------------------------------------------
+       SHELL — sticky TOC rail + reading column
+       ------------------------------------------------------------------ */
+    .shell {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 0 clamp(1.1rem, 0.6rem + 2.6vw, 3rem);
+    }
+
+    .masthead {
+      padding-top: clamp(2rem, 1.2rem + 3vw, 3.75rem);
+      border-bottom: 1px solid var(--ink);
+      padding-bottom: var(--sp-7);
+      margin-bottom: var(--sp-8);
+    }
+
+    /* breadcrumb-style kicker (NOT a tracked-caps eyebrow chip) */
+    .kicker {
+      font-family: var(--sans);
+      font-size: var(--fs-meta);
+      font-weight: 500;
+      color: var(--ink-mute);
+      letter-spacing: 0.01em;
+      display: flex; flex-wrap: wrap; align-items: center; gap: 0.55rem;
+      margin: 0 0 var(--sp-5);
+    }
+    .kicker b { color: var(--accent-ink); font-weight: 600; }
+    .kicker .sep { width: 4px; height: 4px; border-radius: 50%; background: var(--rule); display: inline-block; }
+
+    h1 {
+      font-family: var(--sans);
+      font-weight: 700;
+      font-size: var(--fs-h1);
+      line-height: 1.08;
+      letter-spacing: -0.022em;
+      margin: 0 0 var(--sp-5);
+      max-width: 20ch;
+      text-wrap: balance;
+    }
+
+    .lede {
+      font-family: var(--serif);
+      font-size: var(--fs-lead);
+      line-height: 1.45;
+      color: var(--ink-soft);
+      max-width: 52ch;
+      margin: 0;
+      text-wrap: pretty;
+    }
+
+    /* dossier-style metadata block — each .row pairs a label with one
+       or more stacked values; bulletproof flex, no grid auto-flow quirks */
+    .dossier {
+      margin: var(--sp-7) 0 0;
+      max-width: 64ch;
+      font-family: var(--sans);
+      font-size: var(--fs-small);
+    }
+    .dossier .row {
+      display: flex;
+      align-items: baseline;
+      gap: var(--sp-6);
+      padding: 0.5rem 0;
+      border-top: 1px solid var(--rule-soft);
+    }
+    .dossier .row:first-child { border-top: 0; }
+    .dossier dt {
+      flex: 0 0 8.5rem;
+      font-size: var(--fs-meta);
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--ink-mute);
+      line-height: 1.5;
+    }
+    .dossier .vals {
+      flex: 1 1 auto;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+    .dossier dd { margin: 0; color: var(--ink-soft); line-height: 1.5; }
+    .dossier .who { color: var(--ink); font-weight: 600; }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: var(--sp-8);
+      align-items: start;
+      padding-bottom: var(--sp-9);
+    }
+    @media (min-width: 64rem) {
+      .layout {
+        grid-template-columns: 15rem minmax(0, var(--measure));
+        gap: clamp(2.5rem, 1rem + 5vw, 6rem);
+        justify-content: center;
+      }
+    }
+
+    /* ------------------------------------------------------------------
+       TABLE OF CONTENTS RAIL
+       ------------------------------------------------------------------ */
+    .toc {
+      font-family: var(--sans);
+      order: -1;
+    }
+    @media (min-width: 64rem) {
+      .toc {
+        position: sticky;
+        top: var(--sp-5);
+        max-height: calc(100vh - var(--sp-7));
+        overflow-y: auto;
+        order: 0;
+        z-index: var(--z-rail);
+      }
+    }
+    .toc h2 {
+      font-size: var(--fs-meta);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--ink-mute);
+      margin: 0 0 var(--sp-4);
+      padding-bottom: var(--sp-3);
+      border-bottom: 1px solid var(--rule);
+    }
+    .toc ol { list-style: none; margin: 0; padding: 0; counter-reset: toc; }
+    .toc li { counter-increment: toc; margin: 0; }
+    .toc a {
+      display: grid;
+      grid-template-columns: 1.9rem 1fr;
+      gap: 0.4rem;
+      align-items: baseline;
+      padding: 0.5rem 0.6rem 0.5rem 0;
+      font-size: 0.9rem;
+      line-height: 1.3;
+      color: var(--ink-soft);
+      text-decoration: none;
+      border-left: 2px solid transparent;
+      padding-left: 0.7rem;
+      transition: color 0.2s var(--ease), border-color 0.2s var(--ease);
+    }
+    .toc a::before {
+      content: counter(toc, decimal-leading-zero);
+      font-size: var(--fs-meta);
+      font-variant-numeric: tabular-nums;
+      color: var(--ink-mute);
+      font-weight: 500;
+    }
+    .toc a:hover { color: var(--ink); }
+    .toc a[aria-current="true"] {
+      color: var(--accent-press);
+      border-left-color: var(--accent);
+      font-weight: 600;
+    }
+    .toc a[aria-current="true"]::before { color: var(--accent); }
+
+    /* ------------------------------------------------------------------
+       THEME SECTIONS
+       ------------------------------------------------------------------ */
+    main { min-width: 0; }
+
+    .theme { margin: 0 0 var(--sp-9); scroll-margin-top: var(--sp-5); }
+    .theme:last-child { margin-bottom: var(--sp-7); }
+
+    .theme-head { margin-bottom: var(--sp-6); }
+    /* a short accent rule opens each section — a deliberate cadence,
+       not 01/02/03 numbered scaffolding */
+    .theme-head::before {
+      content: "";
+      display: block;
+      width: 3.25rem;
+      height: 3px;
+      background: var(--accent);
+      border-radius: 2px;
+      margin-bottom: var(--sp-4);
+    }
+    .theme > .theme-head > h2 {
+      font-family: var(--sans);
+      font-weight: 700;
+      font-size: var(--fs-h2);
+      line-height: 1.1;
+      letter-spacing: -0.018em;
+      color: var(--ink);
+      margin: 0 0 var(--sp-4);
+      text-wrap: balance;
+    }
+    .theme-intro {
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: var(--fs-lead);
+      line-height: 1.5;
+      color: var(--ink-soft);
+      max-width: 60ch;
+      margin: 0;
+      text-wrap: pretty;
+    }
+
+    /* ------------------------------------------------------------------
+       Q&A ARTICLE
+       ------------------------------------------------------------------ */
+    .qa {
+      margin: var(--sp-7) 0;
+      padding-top: var(--sp-6);
+      border-top: 1px solid var(--rule-soft);
+    }
+    .qa:first-of-type { border-top: 0; padding-top: 0; }
+
+    .question {
+      position: relative;
+      font-family: var(--sans);
+      font-weight: 600;
+      font-size: var(--fs-q);
+      line-height: 1.3;
+      letter-spacing: -0.012em;
+      color: var(--ink);
+      margin: 0 0 var(--sp-3);
+      padding-left: 2.5rem;
+      text-wrap: pretty;
+    }
+    .question::before {
+      content: "Q";
+      position: absolute;
+      left: 0; top: -0.04em;
+      font-family: var(--sans);
+      font-weight: 700;
+      font-size: 1.5rem;
+      line-height: 1;
+      color: var(--accent);
+      width: 1.7rem;
+      text-align: left;
+    }
+
+    .asked-by {
+      font-family: var(--sans);
+      font-size: var(--fs-meta);
+      font-weight: 500;
+      letter-spacing: 0.01em;
+      color: var(--ink-mute);
+      margin: 0 0 var(--sp-5);
+      padding-left: 2.5rem;
+    }
+    .asked-by::before {
+      content: "Asked";
+      position: absolute;
+      width: 1px; height: 1px;
+      overflow: hidden; clip: rect(0 0 0 0);
+    }
+
+    .answer { position: relative; padding-left: 2.5rem; }
+    /* the answer rail — a quiet "A" anchor */
+    .answer::before {
+      content: "A";
+      position: absolute;
+      left: 0; top: 0.02em;
+      font-family: var(--sans);
+      font-weight: 700;
+      font-size: 1.5rem;
+      line-height: 1;
+      color: var(--rule);
+    }
+    .answer > p { margin: 0 0 var(--sp-4); max-width: var(--measure); }
+    .answer > p:last-child { margin-bottom: 0; }
+    .answer strong { font-weight: 600; color: var(--ink); }
+    .answer em { font-style: italic; }
+
+    /* lists inside answers */
+    .answer ul {
+      margin: var(--sp-5) 0;
+      padding: 0;
+      list-style: none;
+      max-width: var(--measure);
+    }
+    .answer ul li {
+      position: relative;
+      padding-left: 1.5rem;
+      margin: 0 0 var(--sp-4);
+      line-height: 1.55;
+    }
+    .answer ul li::before {
+      content: "";
+      position: absolute;
+      left: 0; top: 0.62em;
+      width: 0.5rem; height: 0.5rem;
+      border: 1.5px solid var(--accent);
+      border-radius: 50%;
+    }
+    .answer ul li strong { color: var(--ink); }
+
+    /* ------------------------------------------------------------------
+       PULL-QUOTES
+       ------------------------------------------------------------------ */
+    blockquote {
+      position: relative;
+      margin: var(--sp-6) 0;
+      padding: 0 0 0 var(--sp-5);
+      border-left: 2px solid var(--accent);
+      max-width: var(--measure);
+    }
+    blockquote::before {
+      content: "\201C";
+      position: absolute;
+      left: -0.18em; top: -0.32em;
+      font-family: var(--serif);
+      font-size: 3.4rem;
+      line-height: 1;
+      color: var(--accent-tint);
+      z-index: 0;
+      pointer-events: none;
+    }
+    blockquote p {
+      position: relative;
+      font-family: var(--serif);
+      font-style: italic;
+      font-weight: 400;
+      font-size: var(--fs-quote);
+      line-height: 1.4;
+      color: var(--ink);
+      margin: 0 0 var(--sp-3);
+      text-wrap: pretty;
+    }
+    blockquote p:last-of-type { margin-bottom: var(--sp-3); }
+    blockquote cite {
+      display: block;
+      font-family: var(--sans);
+      font-style: normal;
+      font-size: var(--fs-meta);
+      font-weight: 500;
+      letter-spacing: 0.01em;
+      color: var(--ink-mute);
+    }
+    blockquote cite::before {
+      content: "";
+      display: inline-block;
+      width: 1.4rem; height: 1px;
+      background: var(--rule);
+      vertical-align: middle;
+      margin-right: 0.55rem;
+      /* the em-dash glyph already opens each cite; this is purely decorative spacing */
+    }
+
+    /* ------------------------------------------------------------------
+       TAG (project-context marker) — short label, allowed uppercase
+       ------------------------------------------------------------------ */
+    .tag {
+      display: inline-block;
+      font-family: var(--sans);
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      color: var(--accent-ink);
+      background: var(--accent-tint);
+      padding: 0.15rem 0.5rem 0.2rem;
+      border-radius: 3px;
+      vertical-align: 0.08em;
+      margin-right: 0.15rem;
+      white-space: nowrap;
+    }
+
+    /* ------------------------------------------------------------------
+       PANELISTS — definition-style roster, not card soup
+       ------------------------------------------------------------------ */
+    .panelist-list { list-style: none; margin: var(--sp-5) 0 0; padding: 0; }
+    .panelist-list li {
+      padding: var(--sp-5) 0;
+      border-top: 1px solid var(--rule-soft);
+      max-width: var(--measure);
+      line-height: 1.55;
+      color: var(--ink-soft);
+    }
+    .panelist-list li:first-child { border-top: 0; padding-top: 0; }
+    .panelist-list .name {
+      display: block;
+      font-family: var(--sans);
+      font-weight: 600;
+      font-size: 1.0625rem;
+      color: var(--ink);
+      margin-bottom: var(--sp-1);
+      letter-spacing: -0.005em;
+    }
+    .panelist-list strong { color: var(--ink); font-weight: 600; }
+
+    /* ------------------------------------------------------------------
+       FOOTER
+       ------------------------------------------------------------------ */
+    footer.page {
+      border-top: 1px solid var(--ink);
+      margin-top: var(--sp-8);
+      padding: var(--sp-6) 0 var(--sp-9);
+    }
+    footer.page p {
+      font-family: var(--sans);
+      font-size: var(--fs-small);
+      line-height: 1.55;
+      color: var(--ink-mute);
+      max-width: 78ch;
+      margin: 0;
+    }
+
+    /* ------------------------------------------------------------------
+       RESPONSIVE
+       ------------------------------------------------------------------ */
+    @media (max-width: 40rem) {
+      .question, .asked-by, .answer { padding-left: 1.9rem; }
+      .question::before, .answer::before { font-size: 1.25rem; }
+      /* stack label over values on narrow screens */
+      .dossier .row { flex-direction: column; gap: 0.3rem; }
+      .dossier dt { flex-basis: auto; }
+    }
+    /* ------------------------------------------------------------------
+       ACCORDION — tap/click to expand each answer (native <details>)
+       ------------------------------------------------------------------ */
+    .qa-controls { display: flex; justify-content: flex-end; margin: 0 0 var(--sp-6); }
+    .toggle-all {
+      font-family: var(--sans);
+      font-size: var(--fs-meta);
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--accent-ink);
+      background: transparent;
+      border: 1px solid var(--rule);
+      border-radius: 999px;
+      padding: 0.45rem 0.95rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.55rem;
+      transition: border-color 0.2s var(--ease), background 0.2s var(--ease), color 0.2s var(--ease);
+    }
+    .toggle-all:hover { border-color: var(--accent); background: var(--accent-tint); color: var(--accent-press); }
+    .toggle-all .ic { width: 0.72rem; height: 0.72rem; position: relative; flex: 0 0 auto; }
+    .toggle-all .ic::before, .toggle-all .ic::after { content: ""; position: absolute; background: currentColor; border-radius: 1px; }
+    .toggle-all .ic::before { inset: 44% 0 44% 0; }                 /* — */
+    .toggle-all .ic::after  { inset: 0 44% 0 44%; transition: opacity 0.2s var(--ease); }  /* | */
+    .toggle-all[aria-expanded="true"] .ic::after { opacity: 0; }    /* + collapses to — */
+
+    .q-summary {
+      list-style: none;
+      display: flex;
+      align-items: flex-start;
+      gap: var(--sp-4);
+      cursor: pointer;
+      padding: var(--sp-4) var(--sp-3);
+      margin: 0 calc(-1 * var(--sp-3));
+      border-radius: 6px;
+      transition: background 0.18s var(--ease);
+      -webkit-tap-highlight-color: transparent;
+    }
+    .q-summary::-webkit-details-marker { display: none; }
+    .q-summary::marker { content: ""; }
+    .q-summary:hover { background: var(--bg-deep); }
+    .q-summary:hover .question { color: var(--accent-press); }
+    .q-summary:focus-visible { outline: 2.5px solid var(--accent); outline-offset: 2px; }
+    .q-summary .question { margin: 0; flex: 1 1 auto; }
+
+    .q-toggle { flex: 0 0 auto; width: 1.4rem; height: 1.4rem; margin-top: 0.28rem; position: relative; color: var(--accent); }
+    .q-toggle::before {
+      content: "";
+      position: absolute; top: 0.26rem; left: 0.3rem;
+      width: 0.55rem; height: 0.55rem;
+      border-right: 2px solid currentColor;
+      border-bottom: 2px solid currentColor;
+      transform: rotate(45deg);                       /* chevron points down (closed) */
+      transition: transform 0.3s var(--ease);
+    }
+    .qa-d[open] .q-toggle::before { transform: rotate(-135deg); }  /* points up (open) */
+
+    .qa-body { padding: var(--sp-4) var(--sp-3) 0; }
+
+    @media (prefers-reduced-motion: no-preference) {
+      .qa-d[open] .qa-body { animation: qaReveal 0.34s var(--ease); }
+      @keyframes qaReveal { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+    }
+    /* smoothest height reveal where the browser supports it; ignored elsewhere */
+    @supports (interpolate-size: allow-keywords) {
+      :root { interpolate-size: allow-keywords; }
+      @media (prefers-reduced-motion: no-preference) {
+        .qa-d::details-content {
+          height: 0; overflow: clip;
+          transition: height 0.34s var(--ease), content-visibility 0.34s allow-discrete;
+        }
+        .qa-d[open]::details-content { height: auto; }
+      }
+    }
+
+    @media print {
+      .qa-controls, .q-toggle { display: none !important; }
+      .qa-body { display: block !important; }
+      .qa-d::details-content { height: auto !important; }
+    }
+
+    /* ------------------------------------------------------------------
+       RECORDING — embedded panel video (near the top, above the layout)
+       ------------------------------------------------------------------ */
+    .recording { margin: 0 0 var(--sp-8); max-width: 880px; }
+    .recording .vid {
+      position: relative;
+      aspect-ratio: 16 / 9;
+      background: var(--bg-deep);
+      border: 1px solid var(--rule);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .recording .vid iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+    .recording figcaption {
+      font-family: var(--sans);
+      font-size: var(--fs-small);
+      color: var(--ink-mute);
+      margin-top: var(--sp-3);
+    }
+
+  </style>
+</head>
+<body>
+  <div class="progress" id="progress" aria-hidden="true"></div>
+  <a class="skip" href="#framing">Skip to the recap</a>
+
+  <div class="shell">
+    <header class="masthead">
+      <p class="kicker">
+        <b>Catalyze</b>
+        <span class="sep" aria-hidden="true"></span>
+        <span>Frontiers in Science</span>
+        <span class="sep" aria-hidden="true"></span>
+        <span>Session 5</span>
+        <span class="sep" aria-hidden="true"></span>
+        <span>Post-show notes</span>
+      </p>
+      <h1>Frontiers in Research: Open Science</h1>
+      <p class="lede">These are companion <strong>post-show notes</strong> to the panel, a question-and-answer recap of the conversation rather than an official transcript. The session itself asked a big question: what does the next decade&rsquo;s scientific stack look like, and how fast can it move science? These notes follow that conversation through preprints, modular research, and social media as research infrastructure.</p>
+
+      <dl class="dossier">
+        <div class="row">
+          <dt>Date</dt>
+          <div class="vals">
+            <dd>June 18, 2026</dd>
+          </div>
+        </div>
+
+        <div class="row">
+          <dt>Moderator</dt>
+          <div class="vals">
+            <dd><span class="who"><a href="https://www.rndcatalyst.com/team" target="_blank" rel="noopener">Sandeep Patel</a></span> — CEO, <a href="https://www.rndcatalyst.com/" target="_blank" rel="noopener">Catalyze</a> (open-science funding network)</dd>
+          </div>
+        </div>
+
+        <div class="row">
+          <dt>Panelists</dt>
+          <div class="vals">
+            <dd><span class="who"><a href="https://facultyprofiles.cshl.edu/richard.sever" target="_blank" rel="noopener">Richard Sever</a></span> — co-founder of <a href="https://www.biorxiv.org/" target="_blank" rel="noopener">bioRxiv</a> &amp; <a href="https://www.medrxiv.org/" target="_blank" rel="noopener">medRxiv</a>; now leading <a href="https://openrxiv.org/" target="_blank" rel="noopener">openRxiv</a></dd>
+            <dd><span class="who"><a href="https://ischool.umd.edu/directory/joel-chan/" target="_blank" rel="noopener">Joel Chan</a></span> — Associate Professor (Human–Computer Interaction), <a href="https://ischool.umd.edu/" target="_blank" rel="noopener">University of Maryland</a>; <a href="https://discoursegraphs.com/" target="_blank" rel="noopener">Discourse Graphs</a> project</dd>
+            <dd><span class="who"><a href="https://ronentk.me/" target="_blank" rel="noopener">Ronen Tamari</a></span> — co-founder of Cosmic; lead of <a href="https://platform.rndcatalyst.com/portfolios/mosaic" target="_blank" rel="noopener">MOSAIC</a>, building open-science infrastructure on the <a href="https://atproto.com/" target="_blank" rel="noopener">AT Protocol</a></dd>
+          </div>
+        </div>
+
+        <div class="row">
+          <dt>Also credited</dt>
+          <div class="vals">
+            <dd><span class="who"><a href="https://biology.washington.edu/people/matthew-akamatsu" target="_blank" rel="noopener">Matt Akamatsu</a></span> — collaborator on the Discourse Graphs work (University of Washington)</dd>
+          </div>
+        </div>
+      </dl>
+    </header>
+
+    <figure class="recording">
+      <div class="vid">
+        <iframe
+          src="https://www.youtube-nocookie.com/embed/b5SQuNGSdlY"
+          title="Frontiers in Research: Open Science — full panel recording"
+          loading="lazy"
+          referrerpolicy="strict-origin-when-cross-origin"
+          allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowfullscreen></iframe>
+      </div>
+      <figcaption>The full session recording on <a href="https://www.youtube.com/watch?v=b5SQuNGSdlY" target="_blank" rel="noopener">YouTube</a>. These notes recap and annotate it.</figcaption>
+    </figure>
+
+    <div class="layout">
+      <nav class="toc" aria-label="Contents">
+        <h2>On this page</h2>
+        <ol>
+          <li><a href="#framing">Why infrastructure comes first</a></li>
+          <li><a href="#preprints">Preprints &amp; peer review</a></li>
+          <li><a href="#modular">Inside the lab: modular research &amp; discourse graphs</a></li>
+          <li><a href="#social">Social media as scientific infrastructure</a></li>
+          <li><a href="#ai-unit">AI, the unit of communication &amp; the future of narratives</a></li>
+          <li><a href="#impact">What we&rsquo;re missing: self-correction, synthesis &amp; acceleration</a></li>
+          <li><a href="#funding">Where philanthropic capital can move the needle</a></li>
+          <li><a href="#scratch">If you built it from scratch in 2026</a></li>
+          <li><a href="#panelists">Panelists &amp; projects</a></li>
+        </ol>
+      </nav>
+
+      <main id="recap">
+
+        <div class="qa-controls">
+          <button type="button" class="toggle-all" id="toggleAll" aria-expanded="false" aria-controls="recap">
+            <span class="ic" aria-hidden="true"></span>
+            <span class="toggle-all-label">Expand all</span>
+          </button>
+        </div>
+
+      <!-- ============================ FRAMING ============================ -->
+      <section class="theme" id="framing">
+        <div class="theme-head">
+          <h2>Why infrastructure comes first</h2>
+          <p class="theme-intro">Sandeep Patel opened by reframing where science funding usually goes, and where it doesn&rsquo;t.</p>
+        </div>
+
+        <article class="qa">
+          <details class="qa-d" id="q1" open>
+            <summary class="q-summary">
+              <h3 class="question">Why should funders care about &ldquo;infrastructure&rdquo; at all, rather than research itself?</h3>
+              <span class="q-toggle" aria-hidden="true"></span>
+            </summary>
+            <div class="qa-body">
+          <p class="asked-by">Asked by Sandeep Patel, in his opening remarks</p>
+          <div class="answer">
+            <p>Most science funding, whether government or philanthropic, goes into research projects, or into the buildings, equipment, and services that power them. But the layer underneath all of that — how research is produced, shared, evaluated, celebrated, and reused — is rarely funded directly, and it is the layer that sets the pace.</p>
+            <blockquote>
+              <p>&ldquo;Science moves&hellip; at the speed of infrastructure&hellip; the layer that sits underneath all of this&hellip; how research is produced, how it&rsquo;s shared, how it&rsquo;s evaluated, how it&rsquo;s celebrated, and how it&rsquo;s reused across the system. And&hellip; that infrastructure is severely outdated. It&rsquo;s chronically underfunded.&rdquo;</p>
+              <cite>— Sandeep Patel, panel transcript</cite>
+            </blockquote>
+            <p>His through-line for the whole session: with AI and shifting research norms, this is a generational opening for philanthropic capital to reshape that underlying layer, and improve the pace and quality of science broadly.</p>
+          </div>
+            </div>
+          </details>
+        </article>
+      </section>
+
+      <!-- ============================ PREPRINTS ============================ -->
+      <section class="theme" id="preprints">
+        <div class="theme-head">
+          <h2>Preprints &amp; peer review</h2>
+          <p class="theme-intro">Richard Sever on what preprints changed, and why traditional peer review is slower and weaker than most people assume.</p>
+        </div>
+
+        <article class="qa">
+          <details class="qa-d" id="q2">
+            <summary class="q-summary">
+              <h3 class="question">What are preprints, why do they matter, and how have they changed the way researchers publish?</h3>
+              <span class="q-toggle" aria-hidden="true"></span>
+            </summary>
+            <div class="qa-body">
+          <p class="asked-by">Asked by Sandeep Patel, to Richard Sever</p>
+          <div class="answer">
+            <p>Traditional publishing was built for the print era: a journal filters work <em>before</em> anyone can read it, because page counts were limited. On the web that ordering no longer makes sense. From submission, it takes <strong>seven to eight months on average</strong> to get through peer review and acceptance, and sometimes two or three years. Preprints simply reverse the order: post the work immediately with a datestamp, then let evaluation and filtering happen afterward.</p>
+            <blockquote>
+              <p>&ldquo;Somebody who&rsquo;s an expert&hellip; [says] I don&rsquo;t want to wait eight months. I can read it tomorrow, make a judgment for myself, and then start the next set of research.&rdquo;</p>
+              <cite>— Richard Sever, panel transcript</cite>
+            </blockquote>
+            <p>COVID was the stress test. Treatments like <a href="https://www.recoverytrial.net/results/dexamethasone-results" target="_blank" rel="noopener">dexamethasone</a> were disseminated rapidly enough to change clinical practice immediately; Yale&rsquo;s <a href="https://medicine.yale.edu/profile/akiko-iwasaki/" target="_blank" rel="noopener">Akiko Iwasaki</a> said she couldn&rsquo;t imagine COVID research happening without preprints.</p>
+            <blockquote>
+              <p>&ldquo;One physician came up to me and said, it&rsquo;s no exaggeration to say that there are people alive today who wouldn&rsquo;t have been because of preprints.&rdquo;</p>
+              <cite>— Richard Sever, relaying a physician&rsquo;s comment, panel transcript</cite>
+            </blockquote>
+            <p>And because preprint servers do no editorial or peer-review evaluation, the cost structure collapses: they are <strong>free to post and free to read</strong>. bioRxiv and medRxiv run on a few million dollars a year, against a multi-billion-dollar publishing industry.</p>
+          </div>
+            </div>
+          </details>
+        </article>
+
+        <article class="qa">
+          <details class="qa-d" id="q3">
+            <summary class="q-summary">
+              <h3 class="question">Did preprints change how comfortable researchers are sharing work, given the fear of being scooped?</h3>
+              <span class="q-toggle" aria-hidden="true"></span>
+            </summary>
+            <div class="qa-body">
+          <p class="asked-by">Asked by Sandeep Patel, to Richard Sever</p>
+          <div class="answer">
+            <p>Biomedical research is hyper-competitive (very few senior positions, a narrow career bottleneck), so people are wary of putting work out before it&rsquo;s &ldquo;safe.&rdquo; A preprint flips that calculus: a public datestamp gives you priority, on your own timeline.</p>
+            <blockquote>
+              <p>&ldquo;You put it online, you as the researcher [are] in&hellip; total control of the dissemination timing. So it can go online with a datestamp.&rdquo;</p>
+              <cite>— Richard Sever, panel transcript</cite>
+            </blockquote>
+            <p>The visible effect was at conferences. Before preprints, a great talk might draw the response, &ldquo;that was interesting data when they did it two years ago; it&rsquo;s just come out in <em>Cell</em>.&rdquo; People only felt safe discussing work once a journal had stamped it. After bioRxiv, researchers began posting the day or week before a talk and presenting genuinely current work. Sever pointed to a recent <a href="https://www.cshl.edu/" target="_blank" rel="noopener">Cold Spring Harbor</a> biology-in-AI meeting where <a href="https://doudnalab.org/" target="_blank" rel="noopener">Jennifer Doudna</a>&rsquo;s keynote alone had three bioRxiv QR codes, and every subsequent talk cited one too, the kind of speed that makes waiting eight months look absurd in a field moving as fast as AI-for-biology.</p>
+          </div>
+            </div>
+          </details>
+        </article>
+
+        <article class="qa">
+          <details class="qa-d" id="q4">
+            <summary class="q-summary">
+              <h3 class="question">What exactly is peer review, and how does &ldquo;verification&rdquo; differ for a preprint?</h3>
+              <span class="q-toggle" aria-hidden="true"></span>
+            </summary>
+            <div class="qa-body">
+          <p class="asked-by">Asked by Sandeep Patel, to Richard Sever</p>
+          <div class="answer">
+            <p>In the journal process, an editor screens incoming papers (rejecting many at the gate, and each rejection restarts the clock), then sends the survivors to roughly three experts with a 14-day window. Those reviewers are already overstretched, so they routinely miss deadlines and revision cycles stack up, which is how you reach an eight-month average. A good review is thorough, but whether reviews are consistent from one journal to the next is the open question.</p>
+            <p>Sever&rsquo;s deeper point is that real verification isn&rsquo;t a one-time gate at all:</p>
+            <blockquote>
+              <p>&ldquo;The veracity of the work, the importance of the work, is something that may better emerge over time&hellip; from scrutiny of more people rather than just the three that you could beg to do it within&hellip; 14 days.&rdquo;</p>
+              <cite>— Richard Sever, panel transcript</cite>
+            </blockquote>
+            <p>The cautionary case is the &ldquo;arsenic life&rdquo; paper in <em><a href="https://www.science.org/doi/10.1126/science.1197258" target="_blank" rel="noopener">Science</a></em>: it passed full peer review at the most prestigious venue, was widely disbelieved almost immediately, and was retracted 15 years later. Sever&rsquo;s suspicion is that as a preprint, the flaws would have been spotted within days. Conversely, a flawed myocarditis preprint on medRxiv was caught and corrected within 24&ndash;48 hours, a flaw conventional review would almost certainly have missed, because it hinged on a wrong population denominator for one region of Canada that only a local would catch.</p>
+          </div>
+            </div>
+          </details>
+        </article>
+      </section>
+
+      <!-- ============================ MODULAR ============================ -->
+      <section class="theme" id="modular">
+        <div class="theme-head">
+          <h2>Inside the lab: modular research &amp; discourse graphs</h2>
+          <p class="theme-intro">Joel Chan on how labs actually lose knowledge, and what it means to share the building blocks of science rather than only finished papers.</p>
+        </div>
+
+        <article class="qa">
+          <details class="qa-d" id="q5">
+            <summary class="q-summary">
+              <h3 class="question">How does a typical research lab operate, and what are discourse graphs?</h3>
+              <span class="q-toggle" aria-hidden="true"></span>
+            </summary>
+            <div class="qa-body">
+          <p class="asked-by">Asked by Sandeep Patel, to Joel Chan</p>
+          <div class="answer">
+            <p>A lab&rsquo;s real asset is its accumulated know-how, but most of it never gets written down in a durable, findable form.</p>
+            <blockquote>
+              <p>&ldquo;A lot of the knowledge is just fragmented and messy across notebooks, Google Docs, slide decks, Slack channels, annotations, lots of paper notebooks and loose-leaf papers. And the most durable artifacts are the&hellip; narrative manuscripts.&rdquo;</p>
+              <cite>— Joel Chan, panel transcript</cite>
+            </blockquote>
+            <p>Ask what a finding from three years ago was, or which protocol set up an experiment, and you have to find the right person: &ldquo;and if that person leaves the lab, then you&rsquo;re sort of often hosed.&rdquo; Discourse graphs are a way of capturing the intermediate units that usually get lost — the driving <strong>question</strong>, the <strong>hypothesis</strong>, the individual <strong>results</strong>, and the <strong>data</strong> and <strong>protocols</strong> behind them — so they can be found, shared, and built on, not just the final paper.</p>
+            <p>In labs that adopt this, knowledge starts to compound. Undergraduates navigate the lab&rsquo;s open questions and requests, pick something that interests them, and produce a documented result within one to three months, with attribution attached from the start. A null result from years ago resurfaces to set a new experiment&rsquo;s parameters; a departed student&rsquo;s finding still motivates active work. <span class="tag">Project context</span> Across 10+ labs, 6,000+ findings have been captured; the deepest dataset (the Akamatsu lab at UW) holds roughly 2,000 findings and 434 open &ldquo;requests for experiments&rdquo; over about 40 months, of which ~29% have been claimed and ~38% of those have yielded documented results. <em>(These project totals are context, not figures spoken on the panel.)</em></p>
+          </div>
+            </div>
+          </details>
+        </article>
+
+        <article class="qa">
+          <details class="qa-d" id="q6">
+            <summary class="q-summary">
+              <h3 class="question">What do &ldquo;modular research tools&rdquo; actually mean, and where is modularity stuck?</h3>
+              <span class="q-toggle" aria-hidden="true"></span>
+            </summary>
+            <div class="qa-body">
+          <p class="asked-by">A prepared question for Joel Chan, and a core theme of the session</p>
+          <div class="answer">
+            <p>Almost everything we know is locked inside PDFs: long narrative papers. To build on someone&rsquo;s work, you (or, increasingly, an AI) read the whole paper, dig out the one finding you need, and copy it into your own notes. Every lab does this, over and over, for the same findings. Modular research tools let scientists share the individual pieces — a single finding, the data behind it, the method — so others can find and reuse them directly. Joel&rsquo;s analogy: imagine there were no grocery stores, so every time you cooked you had to buy finished restaurant dishes and pick the ingredients back out. That&rsquo;s science today; modular tools are the grocery store: the ingredients on the shelf, ready to use.</p>
+            <p>The waste is visible whenever the field tries to synthesize. Joel described the recurring frustration at a workshop on AI-assisted systematic reviews:</p>
+            <blockquote>
+              <p>&ldquo;What are we doing? Why are we putting all this work into pulling these things out of these PDFs and then squeezing that back into a PDF again, and then&hellip; rinse and repeat?&rdquo;</p>
+              <cite>— Joel Chan, panel transcript</cite>
+            </blockquote>
+            <p>The deeper point: those findings were never <em>not</em> modular. The scientist who ran the study already had the claim, the data, and the method as separate things; the paper is just where that structure gets melted down, and everyone downstream pays to reconstruct it. The fix isn&rsquo;t faster extraction; it&rsquo;s not throwing the structure away in the first place.</p>
+          </div>
+            </div>
+          </details>
+        </article>
+
+        <article class="qa">
+          <details class="qa-d" id="q7">
+            <summary class="q-summary">
+              <h3 class="question">Can discourse graphs make collaboration easier, or richer?</h3>
+              <span class="q-toggle" aria-hidden="true"></span>
+            </summary>
+            <div class="qa-body">
+          <p class="asked-by">Asked by Sandeep Patel, to Joel Chan</p>
+          <div class="answer">
+            <p>Yes, especially when the representation is paired with new kinds of dashboards or social networks built on top of it. Instead of advertising yourself with 20 published papers, you expose your open hypotheses, your requests, and a network of connected work, and tools help match you to people asking the same question, often in a different field, or holding the one protocol you need.</p>
+            <blockquote>
+              <p>&ldquo;I can&hellip; use tools to help me find other people who are interested in the same question, but might be in a different field, or [have] a critical&hellip; method or protocol that will help me with my request for the experiment&hellip; they start off not cold.&rdquo;</p>
+              <cite>— Joel Chan, panel transcript</cite>
+            </blockquote>
+            <p>That matters most in interdisciplinary areas, where the right collaborator is someone you&rsquo;d never run into at a conference and whom keyword search over papers can&rsquo;t surface.</p>
+          </div>
+            </div>
+          </details>
+        </article>
+      </section>
+
+      <!-- ============================ SOCIAL ============================ -->
+      <section class="theme" id="social">
+        <div class="theme-head">
+          <h2>Social media as scientific infrastructure</h2>
+          <p class="theme-intro">Ronen Tamari on the &ldquo;dark matter&rdquo; of science, what COVID-era Twitter made possible, and why open protocols matter now.</p>
+        </div>
+
+        <article class="qa">
+          <details class="qa-d" id="q8">
+            <summary class="q-summary">
+              <h3 class="question">What is the AT Protocol, and how do scientists actually use social media: as a communication tool, or something more?</h3>
+              <span class="q-toggle" aria-hidden="true"></span>
+            </summary>
+            <div class="qa-body">
+          <p class="asked-by">Asked by Sandeep Patel, to Ronen Tamari</p>
+          <div class="answer">
+            <p>Ronen did his AI PhD during COVID, largely on Twitter, and says he might not have finished it without the community he found there. That experience led him to a thesis about how invisible this all is to science:</p>
+            <blockquote>
+              <p>&ldquo;Social media is really this kind of under-theorized dark matter in science. It exerts a lot of influence, and it shapes collective attention, prestige, [and] researchers&rsquo; personal intellectual journeys.&rdquo;</p>
+              <cite>— Ronen Tamari, panel transcript</cite>
+            </blockquote>
+            <p>The striking part: these effects are an accidental side effect of a platform never designed for science. Done intentionally, with the right design and engineering, there is far more on the table. The AT Protocol (the open layer beneath <a href="https://bsky.app/" target="_blank" rel="noopener">Bluesky</a>) is where that experimentation is now possible, and the question Ronen is pursuing is how to treat this activity as <em>research infrastructure</em> rather than ephemeral platform content.</p>
+            <blockquote>
+              <p>&ldquo;If it&rsquo;s on LinkedIn or on Twitter, there&rsquo;s really very little we can do with it&hellip; if we take this seriously, [we] start thinking about how social media should actually be&hellip; treated as research infrastructure.&rdquo;</p>
+              <cite>— Ronen Tamari, panel transcript</cite>
+            </blockquote>
+          </div>
+            </div>
+          </details>
+        </article>
+
+        <article class="qa">
+          <details class="qa-d" id="q9">
+            <summary class="q-summary">
+              <h3 class="question">The COVID Moonshot: was that a one-off, or does that kind of collaboration keep happening?</h3>
+              <span class="q-toggle" aria-hidden="true"></span>
+            </summary>
+            <div class="qa-body">
+          <p class="asked-by">Asked by Sandeep Patel, to Ronen Tamari</p>
+          <div class="answer">
+            <p>One researcher posted a question and some experimental evidence on Twitter and asked for help. Within a few weeks, 150+ researchers were collaborating on what they called a &ldquo;Twitter-fueled open global drug discovery effort,&rdquo; producing preclinical antiviral candidates for COVID.</p>
+            <blockquote>
+              <p>&ldquo;They called it a way of working none of us realized was possible.&rdquo;</p>
+              <cite>— Ronen Tamari, on the COVID Moonshot, panel transcript</cite>
+            </blockquote>
+            <p>It is rarer than you might hope, and it has grown rarer still. After Elon Musk bought Twitter in 2022, researchers began leaving, API access grew expensive, the third-party tools people had built broke, and the community fragmented. The upside is that open platforms now create room to rebuild that collaborative energy deliberately.</p>
+          </div>
+            </div>
+          </details>
+        </article>
+      </section>
+
+      <!-- ============================ AI / UNIT ============================ -->
+      <section class="theme" id="ai-unit">
+        <div class="theme-head">
+          <h2>AI, the unit of communication &amp; the future of narratives</h2>
+          <p class="theme-intro">Is there one ideal unit of scientific communication? Does AI change the answer? And do we still need humans writing and reading narratives?</p>
+        </div>
+
+        <article class="qa">
+          <details class="qa-d" id="q10">
+            <summary class="q-summary">
+              <h3 class="question">Is there an ideal, or unified, unit of scientific communication, and how is it changing?</h3>
+              <span class="q-toggle" aria-hidden="true"></span>
+            </summary>
+            <div class="qa-body">
+          <p class="asked-by">Asked by Sandeep Patel, to all panelists</p>
+          <div class="answer">
+            <p>The panel&rsquo;s shared answer: no single unit wins. Papers, preprints, discourse-graph nodes, and social curation serve different purposes and audiences. Sever&rsquo;s framing is a <strong>constellation</strong>:</p>
+            <blockquote>
+              <p>&ldquo;The way I like to picture it is&hellip; like a constellation. You&rsquo;ve got a paper&hellip; [and] that constellation links out to many pieces of different data in other places. There might be a pre-registration, there may be peer reviews, maybe a big dump of data&hellip; if you&rsquo;re interested in the genome sequence, then&hellip; that&rsquo;s the center.&rdquo;</p>
+              <cite>— Richard Sever, panel transcript</cite>
+            </blockquote>
+            <p>The center of the constellation shifts depending on who&rsquo;s reading and why. And we should drop the fiction that the millions of papers published each year are being read cover to cover:</p>
+            <blockquote>
+              <p>&ldquo;The brutal truth&hellip; is most papers are not read by even the people who open them to read them.&rdquo;</p>
+              <cite>— Richard Sever, panel transcript</cite>
+            </blockquote>
+          </div>
+            </div>
+          </details>
+        </article>
+
+        <article class="qa">
+          <details class="qa-d" id="q11">
+            <summary class="q-summary">
+              <h3 class="question">Does AI change how we access papers, and is the paper optimized for AI, or do discourse graphs and social media make more sense?</h3>
+              <span class="q-toggle" aria-hidden="true"></span>
+            </summary>
+            <div class="qa-body">
+          <p class="asked-by">Asked by Sandeep Patel, to all panelists</p>
+          <div class="answer">
+            <p>Sever&rsquo;s point: an AI agent can do what almost no human does — read a 40-page paper end to end, every figure — and then take a human down a tunnel to the one piece of data they need, or back up to a higher-level summary. Joel added that coding agents have shifted the economics fast, roughly since late 2025:</p>
+            <blockquote>
+              <p>&ldquo;Agents don&rsquo;t get tired. So they can&hellip; have the formal structures in there; if [they&rsquo;re] formal structures, you can check them.&rdquo;</p>
+              <cite>— Joel Chan, panel transcript</cite>
+            </blockquote>
+            <p>He pointed to an emerging spec (&ldquo;Astra&rdquo;) for agent-produced results that are structured rather than narrative-shaped, and to a paper provocatively titled &ldquo;<a href="https://arxiv.org/abs/2604.24658" target="_blank" rel="noopener">The Last Human-Written Paper</a>.&rdquo; Crucially, narratives and modular pieces aren&rsquo;t in competition: a narrative is still a good way to say &ldquo;this is a bundle of work I feel confident about,&rdquo; shipped <em>alongside</em> the constellation of pieces that let others verify and synthesize over time. Ronen added the durable counterweight: expert curation survives AI.</p>
+            <blockquote>
+              <p>&ldquo;Even the AGI people on Twitter, they&rsquo;re still sharing papers with each other&hellip; getting their best reads from social media. So the curation is really still crucial.&rdquo;</p>
+              <cite>— Ronen Tamari, panel transcript</cite>
+            </blockquote>
+          </div>
+            </div>
+          </details>
+        </article>
+
+        <article class="qa">
+          <details class="qa-d" id="q12">
+            <summary class="q-summary">
+              <h3 class="question">Are narratives themselves still valuable for humans to write, read, and discuss, or should we let AI do it?</h3>
+              <span class="q-toggle" aria-hidden="true"></span>
+            </summary>
+            <div class="qa-body">
+          <p class="asked-by">Audience question (asked live) &middot; Ezra B</p>
+          <div class="answer">
+            <p>Ezra argued that narratives are part of the human experience of science and worth preserving, which means we may need to make papers easier to read and discuss, since people increasingly lean on AI summaries instead. Sever agreed we&rsquo;ll always need narratives; what changes is the ratio.</p>
+            <blockquote>
+              <p>&ldquo;The narrative is more than the data, and the data are more than the narrative. They&rsquo;re different things, and what we may see is the ratio change.&rdquo;</p>
+              <cite>— Richard Sever, panel transcript</cite>
+            </blockquote>
+            <p>A <em>Nature</em> News &amp; Views piece covering three advances is read by far more people than the underlying papers; that&rsquo;s a narrative-to-data ratio we already accept. Meanwhile, many papers function less as communication than as career currency:</p>
+            <blockquote>
+              <p>&ldquo;They are being generated as&hellip; career currency, as demonstrations of output. They are not&hellip; being written with the idea that many, many people are reading them first to last.&rdquo;</p>
+              <cite>— Richard Sever, panel transcript</cite>
+            </blockquote>
+          </div>
+            </div>
+          </details>
+        </article>
+      </section>
+
+      <!-- ============================ IMPACT ============================ -->
+      <section class="theme" id="impact">
+        <div class="theme-head">
+          <h2>What we&rsquo;re missing: self-correction, synthesis &amp; acceleration</h2>
+          <p class="theme-intro">What discoveries aren&rsquo;t we making because the system coordinates so poorly, and what would &ldquo;accelerating science&rdquo; actually mean?</p>
+        </div>
+
+        <article class="qa">
+          <details class="qa-d" id="q13">
+            <summary class="q-summary">
+              <h3 class="question">What real impact does all this have? What aren&rsquo;t we discovering because of how poorly we coordinate?</h3>
+              <span class="q-toggle" aria-hidden="true"></span>
+            </summary>
+            <div class="qa-body">
+          <p class="asked-by">Asked by Sandeep Patel, to all panelists</p>
+          <div class="answer">
+            <p>Sever&rsquo;s first answer: we&rsquo;re not correcting the record fast enough. Whole swaths of the literature are quietly wrong. For instance, thousands of papers used an antibody everyone believed targeted one protein when it actually targeted another of the same name. Faster, more open dissemination catches these sooner. His favorite illustration:</p>
+            <blockquote>
+              <p>&ldquo;The late Craig Venter&hellip; published a paper in PNAS&hellip; saying that his group could predict what you looked like based on your genome sequence. And that very afternoon&hellip; that data had been completely reanalyzed by Yaniv Erlich at the New York Genome Center. And he had posted a paper on bioRxiv saying the work was wrong.&rdquo;</p>
+              <cite>— Richard Sever, panel transcript</cite>
+            </blockquote>
+            <p>Joel&rsquo;s answer was about synthesis and cumulative theory-building, which is throttled by how scattered the evidence is. A systematic review takes 12&ndash;18 months for a single narrow question; the UK&rsquo;s <a href="https://www.gov.uk/government/collections/tackling-obesities-future-choices" target="_blank" rel="noopener">Foresight obesity map</a> took nearly a year, was never linked directly to its evidence, and was out of date almost as soon as it was used; the <a href="https://www.ipcc.ch/assessment-report/ar7/" target="_blank" rel="noopener">IPCC</a> is openly worried that climate synthesis can&rsquo;t keep pace as the literature grows exponentially.</p>
+            <blockquote>
+              <p>&ldquo;On average&hellip; systematic reviews these days&hellip; take about 12 to 18 months to do for&hellip; a single, narrow question.&rdquo;</p>
+              <cite>— Joel Chan, panel transcript</cite>
+            </blockquote>
+          </div>
+            </div>
+          </details>
+        </article>
+
+        <article class="qa">
+          <details class="qa-d" id="q14">
+            <summary class="q-summary">
+              <h3 class="question">What does &ldquo;accelerating science&rdquo; actually mean: more papers, better papers, faster decisions, or more reuse?</h3>
+              <span class="q-toggle" aria-hidden="true"></span>
+            </summary>
+            <div class="qa-body">
+          <p class="asked-by">A prepared question for the panel</p>
+          <div class="answer">
+            <p>Not more papers; we&rsquo;re drowning in papers. The honest target is <strong>reuse</strong>: how fast a good finding gets picked up and built on. Four dials are worth watching: rate of reuse, rate of self-correction (do wrong results get caught?), real-world decisions (does a policymaker actually act on a finding?), and how fast validated findings get shared at all. The place the new stack compresses most is the gap between &ldquo;I have a result&rdquo; and &ldquo;someone builds on it,&rdquo; today often measured in years.</p>
+            <p>And acceleration has a second half that AI made urgent: trust. AI made <em>producing</em> plausible science nearly free, while <em>checking</em> whether it&rsquo;s true (and whether it matters) got no cheaper. Acceleration isn&rsquo;t only making findings faster; it&rsquo;s being able to trust them faster. <span class="tag">Project context</span> The scale of the synthesis bottleneck is large enough that the Wellcome Trust and ESRC recently committed ~$100M to evidence-synthesis infrastructure, and a Lancet working group estimated $100B/year in research time wasted partly on redundant studies timely synthesis would have prevented.</p>
+          </div>
+            </div>
+          </details>
+        </article>
+      </section>
+
+      <!-- ============================ FUNDING ============================ -->
+      <section class="theme" id="funding">
+        <div class="theme-head">
+          <h2>Where philanthropic capital can move the needle</h2>
+          <p class="theme-intro">If a funder wants high-leverage impact on how science works, where should the money go?</p>
+        </div>
+
+        <article class="qa">
+          <details class="qa-d" id="q15">
+            <summary class="q-summary">
+              <h3 class="question">From a philanthropic funder&rsquo;s view, where could money go, and what could it actually do?</h3>
+              <span class="q-toggle" aria-hidden="true"></span>
+            </summary>
+            <div class="qa-body">
+          <p class="asked-by">Asked by Sandeep Patel, to all panelists</p>
+          <div class="answer">
+            <p>Ronen: the AT Protocol science ecosystem is full of energy and badly under-resourced: 20+ projects, mostly volunteer-run, many built on weekends. He noted a striking convergence: &ldquo;the properties that make social media protocols compelling are the same properties that the research communities actually want.&rdquo; Grants would let people pursue this seriously, and he has curated a portfolio of them, <a href="https://platform.rndcatalyst.com/portfolios/mosaic" target="_blank" rel="noopener">MOSAIC</a> (Modular Open Science, AI and Collective Intelligence), to surface these projects to funders on Catalyze.</p>
+            <p>Sever&rsquo;s answer was blunt and structural:</p>
+            <blockquote>
+              <p>&ldquo;Infrastructure, infrastructure, infrastructure&hellip; The science publishing industry is a multi-billion-dollar industry. bioRxiv [and] medRxiv cost a few million dollars a year to run&hellip; In terms of&hellip; bang for your buck in changing the world, investing in this type of infrastructure&hellip; is really good.&rdquo;</p>
+              <cite>— Richard Sever, panel transcript</cite>
+            </blockquote>
+            <p>The point is leverage: bioRxiv and medRxiv are the substrate that lets every downstream experiment — decoupled review, trust signals, modular reuse — exist at all. He credited <a href="https://chanzuckerberg.com/" target="_blank" rel="noopener">Chan Zuckerberg Initiative</a> funding for enabling 35,000+ COVID papers to go up on the servers during the pandemic.</p>
+            <p>Joel pointed to two concrete units of funding. The first is convening: meeting funds and hackathons that put scientists, builders, and standards developers in the same room. He and Matt had run one, the <a href="https://mira.science" target="_blank" rel="noopener">MIRA workshop</a>, the week before.</p>
+            <blockquote>
+              <p>&ldquo;You can fund meeting funds or hackathons; we just ran one last week, where you had scientists, builders, and standards developers all in the same room, prototyping. That&rsquo;s the short term. Longer term, you seed social change by encouraging, as a condition of funding, that research experiment with different ways of sharing your work.&rdquo;</p>
+              <cite>— Joel Chan, panel transcript</cite>
+            </blockquote>
+            <p>That second unit is the funder pilot: making &ldquo;experiment with new ways of sharing your work&rdquo; a condition of the grant, so new norms get seeded rather than left to chance.</p>
+          </div>
+            </div>
+          </details>
+        </article>
+
+        <article class="qa">
+          <details class="qa-d" id="q16">
+            <summary class="q-summary">
+              <h3 class="question">Shouldn&rsquo;t we also fund <em>human</em> infrastructure: people learning to collaborate and think in systems?</h3>
+              <span class="q-toggle" aria-hidden="true"></span>
+            </summary>
+            <div class="qa-body">
+          <p class="asked-by">Audience question (asked live) &middot; Rajesh K</p>
+          <div class="answer">
+            <p>Rajesh pushed the panel past tools: the harder skill is generative, systems-level collaboration (within a lab and across labs), and that should be invested in too. The panel agreed completely. Joel pointed again to hackathons and to community norming work (<a href="https://prereview.org/" target="_blank" rel="noopener">PREreview</a>, the bioRxiv community) as infrastructure in its own right. Ronen connected it back to the lineage of these tools:</p>
+            <blockquote>
+              <p>&ldquo;There&rsquo;s some testimonials from researchers that have been using them and they report huge improvements in thinking and doing of science&hellip; it&rsquo;s tools for thought they&rsquo;re called, and they&hellip; help you think.&rdquo;</p>
+              <cite>— Ronen Tamari, panel transcript</cite>
+            </blockquote>
+            <p>Sandeep closed the session on the same note: a funder who cares about curing a disease should care about the infrastructure underneath the science that gets there, because you don&rsquo;t cure a disease without researchers sharing, collaborating, creating knowledge, and vetting it.</p>
+          </div>
+            </div>
+          </details>
+        </article>
+      </section>
+
+      <!-- ============================ FROM SCRATCH ============================ -->
+      <section class="theme" id="scratch">
+        <div class="theme-head">
+          <h2>If you built it from scratch in 2026</h2>
+          <p class="theme-intro">A prepared closing prompt: build open-science infrastructure from scratch today. What would you build, and is the paper still the right unit?</p>
+        </div>
+
+        <article class="qa">
+          <details class="qa-d" id="q17">
+            <summary class="q-summary">
+              <h3 class="question">If you were building open-science infrastructure from scratch in 2026, what would you build that doesn&rsquo;t exist yet?</h3>
+              <span class="q-toggle" aria-hidden="true"></span>
+            </summary>
+            <div class="qa-body">
+          <p class="asked-by">A prepared question for the panel</p>
+          <div class="answer">
+            <p>The framing the team came ready with: the paper is a great <em>story</em> and a terrible <em>database</em>. Keep it as the narrative front page; stop using it as the storage format. Concretely, from scratch you&rsquo;d build:</p>
+            <ul>
+              <li><strong>Addresses for findings</strong>: modular, citable identifiers (think DOIs, but for the individual results inside a paper), with versioning, indexing, and provenance. Today we&rsquo;ve only minted addresses for whole papers, so the pieces inside can&rsquo;t be linked or tracked; a concrete, fundable gap.</li>
+              <li><strong>&ldquo;Killer experiment&rdquo; dashboards</strong> that match the experiments most worth running to the people who can run them.</li>
+              <li><strong>A lab-notebook layer that captures human <em>and</em> AI reasoning</strong> behind a result; today those agent conversations just vanish, and the trail of who and what contributed is lost.</li>
+              <li><strong>&ldquo;Interpretable RAG&rdquo;</strong>: a searchable library of individual results, with data and provenance, that AI agents can navigate reliably, instead of chopping papers into arbitrary chunks and guessing.</li>
+              <li><strong>A credit / funding layer</strong> that routes resources to the findings everything else depends on.</li>
+            </ul>
+            <p>The connective tissue is a stack: Joel builds the <em>tools</em> scientists use to capture work (the lab bench), Ronen builds the <em>infrastructure</em> that stores and connects it (the plumbing), Richard works on <em>publishing</em>, how it reaches the world (the front door). Where they connect: a bioRxiv paper can be the human-readable front page of a machine-readable web of findings underneath, so you keep the story <em>and</em> get the database.</p>
+          </div>
+            </div>
+          </details>
+        </article>
+      </section>
+
+      <!-- ============================ PANELISTS ============================ -->
+      <section class="theme" id="panelists">
+        <div class="theme-head">
+          <h2>Panelists &amp; projects</h2>
+          <p class="theme-intro">The people behind the session and the infrastructure they build.</p>
+        </div>
+        <ul class="panelist-list">
+          <li>
+            <span class="name">Sandeep Patel</span>
+            CEO of <strong>Catalyze</strong>, an open-science network and platform connecting researchers, funders, and the science-curious to surface high-impact, underfunded work (biosecurity, life sciences, open and modular science tools). Moderator.
+          </li>
+          <li>
+            <span class="name">Richard Sever</span>
+            Co-founder of <strong>bioRxiv</strong> and <strong>medRxiv</strong>; now leads <strong>openRxiv</strong>, the independent nonprofit running both. Affiliated with Cold Spring Harbor Laboratory.
+          </li>
+          <li>
+            <span class="name">Joel Chan</span>
+            Associate Professor of Human–Computer Interaction at the <strong>University of Maryland</strong> College of Information Studies; leads the <strong>Discourse Graphs</strong> project on structured, modular scientific knowledge.
+          </li>
+          <li>
+            <span class="name">Ronen Tamari</span>
+            Co-founder of <strong>Cosmic</strong> and lead of <strong>MOSAIC</strong> (Modular Open Science, AI and Collective Intelligence), building open-science infrastructure on the <strong>AT Protocol</strong> (the layer beneath Bluesky). PhD in NLP/AI.
+          </li>
+          <li>
+            <span class="name">Matt Akamatsu</span>
+            Collaborator on the Discourse Graphs work (University of Washington), credited from the floor.
+          </li>
+        </ul>
+      </section>
+
+      </main>
+    </div>
+
+    <footer class="page">
+      <p>These are unofficial companion <strong>post-show notes</strong> to the Catalyze &ldquo;Frontiers in Research: Open Science&rdquo; panel of June 18, 2026, compiled afterward by the Discourse Graphs team rather than the organizers. Block quotations are drawn from the session recording and lightly edited for readability (correcting speech-to-text artifacts only). Audience questioners are identified by first name and last initial. Figures labeled &ldquo;project context&rdquo; come from the panelists&rsquo; project records and were not stated verbatim during the session.</p>
+    </footer>
+  </div>
+
+  <script>
+    (function () {
+      "use strict";
+      var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+      /* --- reading-progress hairline --- */
+      var bar = document.getElementById("progress");
+      if (bar && !reduce) {
+        var ticking = false;
+        var update = function () {
+          var doc = document.documentElement;
+          var max = doc.scrollHeight - doc.clientHeight;
+          var pct = max > 0 ? (doc.scrollTop || document.body.scrollTop) / max : 0;
+          bar.style.width = (pct * 100).toFixed(2) + "%";
+          ticking = false;
+        };
+        window.addEventListener("scroll", function () {
+          if (!ticking) { window.requestAnimationFrame(update); ticking = true; }
+        }, { passive: true });
+        update();
+      }
+
+      /* --- TOC active-state via IntersectionObserver (degrades gracefully) --- */
+      var links = Array.prototype.slice.call(document.querySelectorAll('.toc a[href^="#"]'));
+      if (!("IntersectionObserver" in window) || links.length === 0) return;
+
+      var byId = {};
+      links.forEach(function (a) { byId[a.getAttribute("href").slice(1)] = a; });
+      var sections = links
+        .map(function (a) { return document.getElementById(a.getAttribute("href").slice(1)); })
+        .filter(Boolean);
+
+      var current = null;
+      var setCurrent = function (id) {
+        if (current === id) return;
+        links.forEach(function (a) { a.removeAttribute("aria-current"); });
+        if (byId[id]) { byId[id].setAttribute("aria-current", "true"); current = id; }
+      };
+
+      var visible = {};
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting) { visible[e.target.id] = e.intersectionRatio; }
+          else { delete visible[e.target.id]; }
+        });
+        /* choose the topmost visible section in document order */
+        for (var i = 0; i < sections.length; i++) {
+          if (visible[sections[i].id] != null) { setCurrent(sections[i].id); return; }
+        }
+      }, { rootMargin: "-15% 0px -70% 0px", threshold: [0, 0.2, 1] });
+
+      sections.forEach(function (s) { observer.observe(s); });
+    })();
+  </script>
+  <script>
+    (function () {
+      "use strict";
+      var details = Array.prototype.slice.call(document.querySelectorAll(".qa-d"));
+      if (!details.length) return;
+      var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+      /* --- expand / collapse all --- */
+      var btn = document.getElementById("toggleAll");
+      var label = btn && btn.querySelector(".toggle-all-label");
+      function refresh() {
+        if (!btn) return;
+        var allOpen = details.every(function (d) { return d.open; });
+        btn.setAttribute("aria-expanded", allOpen ? "true" : "false");
+        if (label) label.textContent = allOpen ? "Collapse all" : "Expand all";
+      }
+      if (btn) {
+        btn.addEventListener("click", function () {
+          var allOpen = details.every(function (d) { return d.open; });
+          details.forEach(function (d) { d.open = !allOpen; });
+          refresh();
+        });
+        details.forEach(function (d) { d.addEventListener("toggle", refresh); });
+        refresh();
+      }
+
+      /* --- deep links: open the targeted question (or its container) --- */
+      function openForHash() {
+        var hash = location.hash;
+        if (!hash || hash.length < 2) return;
+        var target;
+        try { target = document.querySelector(hash); } catch (e) { return; }
+        if (!target) return;
+        var d = (target.classList && target.classList.contains("qa-d"))
+          ? target
+          : (target.closest ? target.closest(".qa-d") : null);
+        if (d && !d.open) { d.open = true; refresh(); }
+        requestAnimationFrame(function () {
+          (d || target).scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+        });
+      }
+      window.addEventListener("hashchange", openForHash);
+      openForHash();
+
+      /* --- print: reveal everything, then restore prior state --- */
+      var snapshot = null;
+      function openAllForPrint() { snapshot = details.map(function (d) { return d.open; }); details.forEach(function (d) { d.open = true; }); }
+      function restoreAfterPrint() { if (!snapshot) return; details.forEach(function (d, i) { d.open = snapshot[i]; }); snapshot = null; refresh(); }
+      window.addEventListener("beforeprint", openAllForPrint);
+      window.addEventListener("afterprint", restoreAfterPrint);
+      if (window.matchMedia) {
+        var mq = window.matchMedia("print");
+        var onChange = function (e) { e.matches ? openAllForPrint() : restoreAfterPrint(); };
+        if (mq.addEventListener) mq.addEventListener("change", onChange);
+        else if (mq.addListener) mq.addListener(onChange);
+      }
+    })();
+  </script>
+</body>
+</html>
