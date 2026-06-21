@@ -260,13 +260,15 @@
   .insts span:not(:last-child)::after{content:"·";margin-left:26px;color:var(--faint)}
 
   /* tools as cards */
-  .tools{display:grid;grid-template-columns:repeat(auto-fit,minmax(228px,1fr));gap:16px;margin-top:18px}
+  .tools{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:18px}
   .tool-card{display:flex;flex-direction:column;background:var(--card-bg);border:1px solid var(--line);border-radius:14px;padding:22px 22px 24px;transition:border-color .2s,box-shadow .2s,transform .2s}
   .tool-card:hover{border-color:var(--accent);box-shadow:0 14px 32px -20px rgba(22,63,48,.45);transform:translateY(-2px)}
   .tool-logo{width:42px;height:42px;border-radius:10px;background:var(--tool-logo-bg);color:var(--tool-logo-fg);font-family:var(--mono);font-size:13px;font-weight:500;display:flex;align-items:center;justify-content:center;margin-bottom:16px}
   .tool-card .nm{font-size:16.5px;font-weight:600;letter-spacing:-.01em;margin-bottom:8px}
   .tool-card .ds{font-size:14.5px;line-height:1.5;color:var(--muted)}
   .tool-card .more{margin-top:auto;padding-top:16px;font-family:var(--mono);font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--accent)}
+  @media(max-width:780px){.tools{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  @media(max-width:560px){.tools{grid-template-columns:1fr}}
 
   /* get involved — high-contrast CTA band */
   .involved{background:var(--cta-bg);color:var(--cta-text);border-bottom:0}
@@ -460,6 +462,12 @@
           <div class="tool-logo" aria-hidden="true">OX</div>
           <div class="nm">OXA (CSF)</div>
           <div class="ds">Structured scientific-document exchange across MyST, Curvenote, JATS, Quarto, and Stencila.</div>
+          <div class="more">Learn more →</div>
+        </a>
+        <a class="tool-card" href="https://workshop.scios.tech/" target="_blank" rel="noopener noreferrer" aria-label="SciOS Graph — learn more">
+          <div class="tool-logo" aria-hidden="true">SG</div>
+          <div class="nm">SciOS Graph</div>
+          <div class="ds">A collaborative tool for building shared understanding. Join and add questions, claims, and evidence to a shared graph that grows live on screen. Includes a simplified mode for newcomers to the MIRA medium.</div>
           <div class="more">Learn more →</div>
         </a>
       </div>
