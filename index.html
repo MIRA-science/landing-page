@@ -215,6 +215,12 @@
   .foot .brand .logo{height:22px}
   .foot .tg{font-size:14px;color:var(--footer-muted);max-width:32ch}
   .fine{font-family:var(--mono);font-size:12px;color:var(--footer-muted);margin-top:38px}
+  .foot-end{text-align:right}
+  .ack{font-size:13px;color:var(--footer-muted);max-width:34ch;margin-left:auto}
+  .ack a{color:var(--footer-text);text-decoration:underline;text-underline-offset:2px;transition:color .2s}
+  .ack a:hover{color:var(--accent)}
+  .foot-end .fine{margin-top:10px}
+  @media(max-width:560px){.foot-end{text-align:left}.ack{margin-left:0}}
 
   .reveal{opacity:0;transform:translateY(18px);transition:opacity .8s cubic-bezier(.2,.7,.2,1),transform .8s cubic-bezier(.2,.7,.2,1)}
   .reveal.in{opacity:1;transform:none}
@@ -502,7 +508,10 @@
       </div>
       <p class="tg">Modular Interoperable Research Attribution. An open architecture for collaborative research communication.</p>
     </div>
-    <p class="fine">© 2026 MIRA</p>
+    <div class="foot-end">
+      <p class="ack">With thanks to <a href="https://elifepathways.org" target="_blank" rel="noopener">eLife Pathways</a> for their review</p>
+      <p class="fine">© 2026 MIRA</p>
+    </div>
   </div>
 </footer>
 
