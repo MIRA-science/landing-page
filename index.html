@@ -241,6 +241,9 @@
   .signup.done .signup-fields{display:none}
   .signup.done .signup-hint{display:none}
   .signup.done .signup-done{display:block}
+  .signup-error{display:none;font-size:13.5px;color:#d9544f;font-weight:500}
+  .signup.has-error .signup-error{display:block}
+  .signup-hp{position:absolute !important;left:-9999px;width:1px;height:1px;opacity:0;pointer-events:none}
   /* signup on the hero band */
   .hero .signup-label{color:var(--hero-text)}
   .hero .signup-hint{color:var(--hero-muted)}
@@ -321,7 +324,8 @@
     <span class="eyebrow">Modular Interoperable Research Attribution</span>
     <h1>A new medium for research.</h1>
     <p class="lede">Research today is shipped as a sealed document. MIRA turns it into a graph of signed, citable records: the questions a field is asking, the claims that answer them, and the evidence behind each one.</p>
-    <form class="signup" novalidate>
+    <form class="signup" novalidate data-source="hero">
+      <input type="text" name="company" class="signup-hp" tabindex="-1" autocomplete="off" aria-hidden="true" />
       <label class="signup-label" for="hero-email">Get updates on MIRA</label>
       <div class="signup-fields">
         <input id="hero-email" name="email" type="email" placeholder="you@lab.edu" aria-describedby="hero-email-hint" required />
@@ -329,6 +333,7 @@
       </div>
       <p id="hero-email-hint" class="signup-hint">Occasional updates on MIRA's progress and how to get involved. No spam, unsubscribe anytime.</p>
       <p class="signup-done" role="status">Thanks. We will keep you posted.</p>
+      <p class="signup-error" role="alert"></p>
     </form>
   </div>
 </header>
@@ -483,7 +488,8 @@
       <span class="eyebrow">Get involved</span>
       <h2>Help establish the shared record for science.</h2>
     </div>
-    <form class="signup" novalidate>
+    <form class="signup" novalidate data-source="get-involved">
+      <input type="text" name="company" class="signup-hp" tabindex="-1" autocomplete="off" aria-hidden="true" />
       <label class="signup-label" for="involved-email">Get updates on MIRA</label>
       <div class="signup-fields">
         <input id="involved-email" name="email" type="email" placeholder="you@lab.edu" aria-describedby="involved-email-hint" required />
@@ -491,6 +497,7 @@
       </div>
       <p id="involved-email-hint" class="signup-hint">Occasional updates on MIRA's progress and how to get involved. No spam, unsubscribe anytime.</p>
       <p class="signup-done" role="status">Thanks. We will keep you posted.</p>
+      <p class="signup-error" role="alert"></p>
     </form>
   </div>
 </section>
@@ -531,11 +538,34 @@
   document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
 
   document.querySelectorAll('form.signup').forEach(f=>{
-    f.addEventListener('submit',e=>{
+    const errEl=f.querySelector('.signup-error');
+    const setErr=msg=>{if(errEl)errEl.textContent=msg;f.classList.add('has-error');};
+    f.addEventListener('submit',async e=>{
       e.preventDefault();
       const input=f.querySelector('input[type=email]');
-      if(input && !input.value.trim()){input.focus();return;}
-      f.classList.add('done');
+      const email=input?input.value.trim():'';
+      if(!email){f.classList.remove('has-error');if(input)input.focus();return;}
+      const hp=f.querySelector('input[name=company]');
+      const btn=f.querySelector('button[type=submit]');
+      f.classList.remove('has-error');
+      if(btn)btn.disabled=true;
+      try{
+        const res=await fetch('/api/subscribe',{
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({email:email,source:f.dataset.source||null,company:hp?hp.value:''})
+        });
+        if(res.ok){
+          f.classList.add('done');
+        }else{
+          const data=await res.json().catch(()=>({}));
+          setErr((data&&data.error)||'Something went wrong. Please try again.');
+          if(btn)btn.disabled=false;
+        }
+      }catch(_){
+        setErr('Network error. Please try again.');
+        if(btn)btn.disabled=false;
+      }
     });
   });
 
