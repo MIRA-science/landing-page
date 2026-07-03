@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/subscribe",
+      "destination": "https://mrna-nine.vercel.app/api/subscribe"
+    }
+  ]
+}
