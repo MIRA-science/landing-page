@@ -1,4 +1,6 @@
 {
+  "buildCommand": "make",
+  "outputDirectory": "public",
   "rewrites": [
     {
       "source": "/api/subscribe",
