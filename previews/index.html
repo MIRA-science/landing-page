@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>MIRA · Schema visual previews</title>
+<meta name="description" content="Three candidate treatments for putting the MIRA schema graph on the landing page. View each and tell us which one to ship." />
+<meta name="robots" content="noindex" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:ital,wght@0,400..700;1,400&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#ffffff;--ink:#16181b;--muted:#5b616a;--line:#e9eaec;--card:#ffffff;
+    --accent:#1d5440;--accent-deep:#163f30;--tint:#f6f8f7;
+    --sans:"Schibsted Grotesk",-apple-system,BlinkMacSystemFont,sans-serif;
+    --mono:"Geist Mono",ui-monospace,SFMono-Regular,monospace;
+  }
+  @media(prefers-color-scheme:dark){
+    :root{--bg:#0c1411;--ink:#e9efeb;--muted:#93a39b;--line:#1f2b26;--card:#16241d;
+      --accent:#7fd3a8;--accent-deep:#9ce3c1;--tint:#0f1814;}
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:17px;line-height:1.6;
+    -webkit-font-smoothing:antialiased;padding:0 24px}
+  .wrap{max-width:760px;margin:0 auto;padding:72px 0 96px}
+  .eyebrow{font-family:var(--mono);font-size:12px;font-weight:500;letter-spacing:.06em;
+    text-transform:uppercase;color:var(--accent);display:block;margin-bottom:18px}
+  h1{font-size:clamp(30px,5vw,44px);line-height:1.08;font-weight:500;letter-spacing:-.03em;margin-bottom:22px;max-width:20ch}
+  .lede{font-size:18px;color:var(--muted);max-width:58ch;margin-bottom:14px}
+  .lede b{color:var(--ink);font-weight:500}
+  .note{font-size:14.5px;color:var(--muted);margin-bottom:44px}
+  .note code{font-family:var(--mono);font-size:12.5px;background:var(--tint);border:1px solid var(--line);
+    border-radius:6px;padding:2px 7px;color:var(--ink)}
+  .cards{display:flex;flex-direction:column;gap:14px;margin-bottom:52px}
+  .card{display:block;background:var(--card);border:1px solid var(--line);border-radius:14px;
+    padding:22px 24px;text-decoration:none;color:inherit;transition:border-color .2s,box-shadow .2s,transform .2s}
+  .card:hover{border-color:var(--accent);box-shadow:0 14px 32px -20px rgba(22,63,48,.45);transform:translateY(-2px)}
+  .card .k{font-family:var(--mono);font-size:12px;font-weight:500;letter-spacing:.06em;
+    text-transform:uppercase;color:var(--accent);display:block;margin-bottom:6px}
+  .card .t{font-size:20px;font-weight:600;letter-spacing:-.015em;margin-bottom:6px}
+  .card .d{font-size:15.5px;color:var(--muted);max-width:60ch}
+  .card .go{display:inline-block;margin-top:12px;font-family:var(--mono);font-size:12px;
+    letter-spacing:.04em;text-transform:uppercase;color:var(--accent)}
+  .fb{background:var(--tint);border:1px solid var(--line);border-radius:14px;padding:24px 26px}
+  .fb .t{font-size:19px;font-weight:600;letter-spacing:-.015em;margin-bottom:8px}
+  .fb p{font-size:15.5px;color:var(--muted);max-width:58ch;margin-bottom:14px}
+  .btn{display:inline-block;font-size:14.5px;font-weight:500;background:var(--accent);color:var(--bg);
+    padding:11px 20px;border-radius:8px;text-decoration:none;transition:background .2s}
+  .btn:hover{background:var(--accent-deep)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <span class="eyebrow">MIRA · landing page previews</span>
+  <h1>How should the schema live on the landing page?</h1>
+  <p class="lede">We're choosing how the MIRA schema graph — questions, claims, evidence, studies, protocols, requests — should appear on the landing page. Below are <b>three candidates</b>. Each one is the full landing page with a different treatment applied.</p>
+  <p class="note">Tip: every preview has a switcher in the bottom-left corner — flip between versions without coming back here.</p>
+
+  <div class="cards">
+    <a class="card" href="preview-1-ambient-hover.html">
+      <span class="k">Preview 1</span>
+      <div class="t">Hero animation</div>
+      <div class="d">The graph builds itself in the hero on a slow loop, one record at a time, with a caption naming each piece. Hover any node to pause the loop and focus it.</div>
+      <span class="go">View preview →</span>
+    </a>
+    <a class="card" href="preview-2-static-image.html">
+      <span class="k">Preview 2</span>
+      <div class="t">Hero image</div>
+      <div class="d">The full graph sits beside the headline as a still illustration. No motion, no interaction — just the schema as the hero's visual.</div>
+      <span class="go">View preview →</span>
+    </a>
+    <a class="card" href="preview-3-scroll-story.html">
+      <span class="k">Preview 3</span>
+      <div class="t">Scroll story</div>
+      <div class="d">The hero stays as it is today. A new section below it walks through the schema one record at a time as you scroll, lighting up the graph step by step.</div>
+      <span class="go">View preview →</span>
+    </a>
+  </div>
+
+  <div class="fb">
+    <div class="t">Which one should we ship?</div>
+    <p>Tell us your pick — and anything you'd change about it. Combinations are fair game too (for example, the hero image <i>plus</i> the scroll story).</p>
+    <a class="btn" href="https://github.com/MIRA-science/landing-page/issues/new?title=Schema%20visual%20preview%20feedback&body=%2A%2AMy%20pick%3A%2A%2A%20Preview%201%20%2F%202%20%2F%203%0A%0A%2A%2AWhy%3A%2A%2A%20">Leave feedback on GitHub →</a>
+  </div>
+</div>
+</body>
+</html>
