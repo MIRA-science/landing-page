@@ -30,7 +30,7 @@
   .lede{font-size:18px;color:var(--muted);max-width:58ch;margin-bottom:14px}
   .lede b{color:var(--ink);font-weight:500}
   .note{font-size:14.5px;color:var(--muted);margin-bottom:44px}
-  .note code{font-family:var(--mono);font-size:12.5px;background:var(--tint);border:1px solid var(--line);
+  .note code,.lede code{font-family:var(--mono);font-size:12.5px;background:var(--tint);border:1px solid var(--line);
     border-radius:6px;padding:2px 7px;color:var(--ink)}
   .cards{display:flex;flex-direction:column;gap:14px;margin-bottom:52px}
   .card{display:block;background:var(--card);border:1px solid var(--line);border-radius:14px;
@@ -42,6 +42,7 @@
   .card .d{font-size:15.5px;color:var(--muted);max-width:60ch}
   .card .go{display:inline-block;margin-top:12px;font-family:var(--mono);font-size:12px;
     letter-spacing:.04em;text-transform:uppercase;color:var(--accent)}
+  .card-new{border-color:var(--accent);background:var(--tint)}
   .fb{background:var(--tint);border:1px solid var(--line);border-radius:14px;padding:24px 26px}
   .fb .t{font-size:19px;font-weight:600;letter-spacing:-.015em;margin-bottom:8px}
   .fb p{font-size:15.5px;color:var(--muted);max-width:58ch;margin-bottom:14px}
@@ -54,7 +55,8 @@
 <div class="wrap">
   <span class="eyebrow">MIRA · landing page previews</span>
   <h1>How should the schema live on the landing page?</h1>
-  <p class="lede">We're choosing how the MIRA schema graph — questions, claims, evidence, studies, protocols, requests — should appear on the landing page. Below are <b>three candidates</b>. Each one is the full landing page with a different treatment applied.</p>
+  <p class="lede">We're choosing how the MIRA schema graph — questions, claims, evidence, studies, protocols, requests — should appear on the landing page. Below are <b>four candidates</b>. Each one is the full landing page with a different treatment applied.</p>
+  <p class="lede"><b>Preview 4 is new</b>, built from the first round of feedback: the schema above the fold (Mathïs), kept simple on the homepage with the story linked out (Paul), and the story promoted to its own page (Matt). The hover interaction is gone, so is the <code>refuted</code> tag on the Claim, and the scroll story's mobile anchoring is fixed.</p>
   <p class="note">Tip: every preview has a switcher in the bottom-left corner — flip between versions without coming back here.</p>
 
   <div class="cards">
@@ -74,6 +76,12 @@
       <span class="k">Preview 3</span>
       <div class="t">Scroll story</div>
       <div class="d">The hero stays as it is today. A new section below it walks through the schema one record at a time as you scroll, lighting up the graph step by step.</div>
+      <span class="go">View preview →</span>
+    </a>
+    <a class="card card-new" href="preview-4-hero-plus-page.html">
+      <span class="k">Preview 4 · new, from your feedback</span>
+      <div class="t">Hero graph + its own schema page</div>
+      <div class="d">The graph is the first thing you see, and it draws itself once on load, then rests — no loop, no hover, nothing to miss. Underneath it, a link out to the full scroll story, now living on its own <i>How the schema works</i> page.</div>
       <span class="go">View preview →</span>
     </a>
   </div>

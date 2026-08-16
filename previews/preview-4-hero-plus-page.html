@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>MIRA · Preview 1 — ambient cycle + hover</title>
+<title>MIRA · Preview 4 — hero graph + schema page</title>
 <meta name="description" content="Modular Interoperable Research Attribution. An open architecture that publishes research as a graph of questions, claims, evidence, and sources, with provenance and attribution on every record." />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -16,6 +16,16 @@
       var sys=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches;
       document.documentElement.setAttribute('data-theme', stored || (sys?'dark':'light'));
     }catch(e){document.documentElement.setAttribute('data-theme','light');}
+  })();
+  /* Arm the hero build-in before first paint, for the same reason as the theme
+     above: do it later and the finished graph flashes on screen first. Absent
+     under reduced motion and with JS off, in which case the graph just shows. */
+  (function(){
+    try{
+      if(!(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches)){
+        document.documentElement.classList.add('mira-draw');
+      }
+    }catch(e){}
   })();
 </script>
 <style>
@@ -178,12 +188,44 @@
 
   /* HERO GRAPH (preview) */
   .hero-grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:56px;align-items:center}
-  .hero-fig{display:flex;flex-direction:column;align-items:center;gap:16px}
+  .hero-fig{display:flex;flex-direction:column;align-items:center;gap:18px}
   .hero-fig svg{width:min(100%,350px);height:auto;overflow:visible}
-  .hero-cap{min-height:66px;text-align:center;font-size:14.5px;line-height:1.45;color:var(--hero-muted);max-width:36ch;transition:opacity .35s ease}
-  .hero-cap b{display:block;font-family:var(--mono);font-size:11.5px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--capc,var(--hero-eyebrow));margin-bottom:4px}
-  .hero-cap.fade{opacity:0}
+  .hero-schema-link{display:inline-flex;align-items:center;gap:8px;font-size:14.5px;font-weight:500;
+    color:var(--hero-eyebrow);border-bottom:1px solid color-mix(in srgb,var(--hero-eyebrow) 40%,transparent);
+    padding-bottom:2px;transition:color .2s,border-color .2s}
+  .hero-schema-link:hover{color:var(--hero-btn-hover);border-color:var(--hero-btn-hover)}
+  .hero-schema-link .arr{transition:transform .22s}
+  .hero-schema-link:hover .arr{transform:translateX(3px)}
   @media(max-width:860px){.hero-grid{grid-template-columns:1fr;gap:0}.hero-fig{margin-top:48px}}
+
+  /* One-time build-in: the graph draws itself once on load, then rests.
+     Nodes settle in place; links are stroked on with dashoffset so the lines
+     actually draw rather than blink into existence. No scaling — scaling a long
+     path about its own centre is what made an earlier version look chunky.
+
+     Everything here hangs off html.mira-draw, which is set by a script in <head>
+     BEFORE the body is parsed. Hiding from a script at the bottom of the body is
+     too late: the finished graph gets painted first, so it flashes on and then
+     blinks out again. With the class on <html>, the graph is never painted
+     visible. No JS (or reduced motion) means no class, so the graph is simply
+     there — nothing can leave it stuck invisible. */
+  html.mira-draw .hero-fig .g-node{
+    opacity:0;transform:translate(0,7px);transform-box:fill-box;transform-origin:center;
+    transition:opacity .5s ease,transform .62s cubic-bezier(.22,.61,.36,1)}
+  html.mira-draw .hero-fig .g-node.is-drawn{opacity:1;transform:none}
+
+  /* 2000 is longer than any path here, so every link starts fully dashed off —
+     hidden before the script has had a chance to measure real path lengths. */
+  html.mira-draw .hero-fig .g-link{
+    stroke-dasharray:2000;stroke-dashoffset:2000;
+    transition:stroke-dashoffset .66s cubic-bezier(.35,.85,.4,1)}
+  html.mira-draw .hero-fig .g-edge:not(.is-tipped) .g-link{marker-end:none}
+  html.mira-draw .hero-fig .g-elabel{opacity:0;transition:opacity .5s ease}
+  html.mira-draw .hero-fig .g-edge.is-drawn .g-elabel{opacity:1;transition-delay:.22s}
+
+  /* Swapping the placeholder dash for each path's real length must not animate,
+     or every line plays a reverse draw before the build starts. */
+  html.mira-draw .hero-fig.is-priming .g-link{transition:none}
 
   .g-node rect{fill:rgba(255,255,255,.05);stroke:rgba(255,255,255,.35);stroke-width:1.6;transition:fill .5s ease,stroke .5s ease}
   .g-node text{font-family:var(--sans);font-size:13.5px;font-weight:600;fill:rgba(255,255,255,.78);text-anchor:middle;dominant-baseline:middle;transition:fill .5s ease}
@@ -196,10 +238,6 @@
   .g-edge.is-on .g-link{stroke:var(--ec)}
   .g-elabel{font-family:var(--mono);font-size:9.5px;letter-spacing:.02em;fill:rgba(234,250,242,.45);transition:fill .5s ease}
   .g-edge.is-on .g-elabel{fill:var(--el)}
-  .g-anno{opacity:0;transition:opacity .5s ease}
-  .g-anno.is-on{opacity:1}
-  .g-anno rect{fill:#E6827A}
-  .g-anno text{font-family:var(--sans);font-size:9px;font-weight:700;fill:#fff;text-anchor:middle;dominant-baseline:middle}
   .gn-question{--nc:#E6B158;--nf:#FBF4E8;--nk:#8A5A12}
   .gn-claim{--nc:#5BA756;--nf:#E7F4E8;--nk:#2C6A29}
   .gn-evidence{--nc:#E6827A;--nf:#FBE7E5;--nk:#A2362E}
@@ -344,6 +382,7 @@
     <div class="nav-right">
       <div class="nav-links">
         <a href="#what">What it is</a>
+        <a href="preview-4-schema-page.html">The schema</a>
         <a href="#why">Why it matters</a>
         <a href="#who">Who's using it</a>
       </div>
@@ -372,32 +411,104 @@
         <input id="hero-email" name="email" type="email" placeholder="you@lab.edu" aria-describedby="hero-email-hint" required />
         <button type="submit" class="btn btn-primary">Keep me posted</button>
       </div>
-      <p id="hero-email-hint" class="signup-hint">Occasional updates on MIRA's progress and how to get involved. No spam, unsubscribe anytime.</p>
+      <p id="hero-email-hint" class="signup-hint">Occasional updates on MIRA's progress and how to get involved.</p>
       <p class="signup-done" role="status">Thanks. We will keep you posted.</p>
       <p class="signup-error" role="alert"></p>
     </form>
     </div>
     <div class="hero-fig" id="hero-fig">
-      <svg viewBox="0 0 340 372" role="img" aria-label="The six MIRA record types and their links">
-        <defs><marker id="harrow" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="rgba(234,250,242,.45)"/></marker></defs>
-        <g class="g-edge ge-addresses" data-appear="2"><path class="g-link" d="M170,95 L170,56" marker-end="url(#harrow)"/><text class="g-elabel" x="176" y="78">addresses</text></g>
-        <g class="g-edge ge-so" data-appear="3"><path class="g-link" d="M134,176 L156,130" marker-end="url(#harrow)"/><text class="g-elabel" x="70" y="150">supports /</text><text class="g-elabel" x="70" y="160">opposes</text></g>
-        <g class="g-edge ge-grounds" data-appear="4"><path class="g-link" d="M98,264 L114,212" marker-end="url(#harrow)"/><text class="g-elabel" x="56" y="240">grounds</text></g>
-        <g class="g-edge ge-follows" data-appear="5"><path class="g-link" d="M88,298 L88,330" marker-end="url(#harrow)"/><text class="g-elabel" x="94" y="318">follows</text></g>
-        <g class="g-edge ge-rf" data-appear="6"><path class="g-link" d="M219,283 L139,283" marker-end="url(#harrow)"/><text class="g-elabel" x="178" y="276" text-anchor="middle">request_for</text></g>
-        <g class="g-edge ge-rt" data-appear="6"><path class="g-link" d="M260,264 C250,200 244,150 221,123" marker-end="url(#harrow)"/><text class="g-elabel" x="252" y="205">request_target</text></g>
-        <g class="g-node gn-question" data-appear="1"><rect x="122" y="19" width="96" height="34" rx="9"/><text x="170" y="37">Question</text></g>
-        <g class="g-node gn-claim" data-appear="2"><rect x="122" y="95" width="96" height="34" rx="9"/><text x="170" y="113">Claim</text></g>
-        <g class="g-node gn-evidence" data-appear="3"><rect x="78" y="175" width="96" height="34" rx="9"/><text x="126" y="193">Evidence</text></g>
-        <g class="g-node gn-study" data-appear="4"><rect x="40" y="263" width="96" height="34" rx="9"/><text x="88" y="281">Study</text></g>
-        <g class="g-node gn-protocol" data-appear="5"><rect x="40" y="329" width="96" height="34" rx="9"/><text x="88" y="347">Protocol</text></g>
-        <g class="g-node gn-request" data-appear="6"><rect x="218" y="263" width="96" height="34" rx="9"/><text x="266" y="281">Request</text></g>
-        <g class="g-anno"><rect x="196" y="86" width="52" height="14" rx="7"/><text x="222" y="93.5">✕ refuted</text></g>
+      <svg viewBox="0 0 340 372" role="img" aria-label="The six MIRA record types and how they link. A Question sits at the top. A Claim addresses it. Evidence supports or opposes the Claim. A Study grounds the Evidence, and follows a Protocol. A Request points at work nobody has done yet.">
+        <defs>
+          <!-- One head per edge colour: a single shared marker cannot inherit the
+               line's stroke, which is why the heads read as grey on coloured lines.
+               markerUnits="userSpaceOnUse" keeps them from scaling with stroke-width. -->
+          <marker id="ah-green" viewBox="0 0 10 10" refX="9.4" refY="5" markerWidth="7.5" markerHeight="7.5" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0.6,1.4 L9.4,5 L0.6,8.6 z" fill="#5BA756"/></marker>
+          <marker id="ah-red" viewBox="0 0 10 10" refX="9.4" refY="5" markerWidth="7.5" markerHeight="7.5" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0.6,1.4 L9.4,5 L0.6,8.6 z" fill="#E6827A"/></marker>
+          <marker id="ah-blue" viewBox="0 0 10 10" refX="9.4" refY="5" markerWidth="7.5" markerHeight="7.5" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0.6,1.4 L9.4,5 L0.6,8.6 z" fill="#5E9EED"/></marker>
+          <marker id="ah-purple" viewBox="0 0 10 10" refX="9.4" refY="5" markerWidth="7.5" markerHeight="7.5" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0.6,1.4 L9.4,5 L0.6,8.6 z" fill="#C77FE0"/></marker>
+          <marker id="ah-indigo" viewBox="0 0 10 10" refX="9.4" refY="5" markerWidth="7.5" markerHeight="7.5" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0.6,1.4 L9.4,5 L0.6,8.6 z" fill="#7B8AF0"/></marker>
+        </defs>
+        <g class="g-edge is-on ge-addresses" data-appear="2"><path class="g-link" d="M170,95 L170,56" marker-end="url(#ah-green)"/><text class="g-elabel" x="176" y="78">addresses</text></g>
+        <g class="g-edge is-on ge-so" data-appear="3"><path class="g-link" d="M134,176 L154.4,133.2" marker-end="url(#ah-red)"/><text class="g-elabel" x="70" y="150">supports /</text><text class="g-elabel" x="70" y="160">opposes</text></g>
+        <g class="g-edge is-on ge-grounds" data-appear="4"><path class="g-link" d="M98,264 L114,212" marker-end="url(#ah-blue)"/><text class="g-elabel" x="56" y="240">grounds</text></g>
+        <g class="g-edge is-on ge-follows" data-appear="5"><path class="g-link" d="M88,298 L88,325.5" marker-end="url(#ah-purple)"/><text class="g-elabel" x="94" y="318">follows</text></g>
+        <g class="g-edge is-on ge-rf" data-appear="6"><path class="g-link" d="M219,283 L139,283" marker-end="url(#ah-indigo)"/><text class="g-elabel" x="178" y="276" text-anchor="middle">request_for</text></g>
+        <g class="g-edge is-on ge-rt" data-appear="6"><path class="g-link" d="M260,264 C250,200 244,150 221,123" marker-end="url(#ah-indigo)"/><text class="g-elabel" x="252" y="205">request_target</text></g>
+        <g class="g-node is-on gn-question" data-appear="1"><rect x="122" y="19" width="96" height="34" rx="9"/><text x="170" y="37">Question</text></g>
+        <g class="g-node is-on gn-claim" data-appear="2"><rect x="122" y="95" width="96" height="34" rx="9"/><text x="170" y="113">Claim</text></g>
+        <g class="g-node is-on gn-evidence" data-appear="3"><rect x="78" y="175" width="96" height="34" rx="9"/><text x="126" y="193">Evidence</text></g>
+        <g class="g-node is-on gn-study" data-appear="4"><rect x="40" y="263" width="96" height="34" rx="9"/><text x="88" y="281">Study</text></g>
+        <g class="g-node is-on gn-protocol" data-appear="5"><rect x="40" y="329" width="96" height="34" rx="9"/><text x="88" y="347">Protocol</text></g>
+        <g class="g-node is-on gn-request" data-appear="6"><rect x="218" y="263" width="96" height="34" rx="9"/><text x="266" y="281">Request</text></g>
       </svg>
-      <p class="hero-cap" id="hero-cap"><b id="hero-cap-k">Question</b><span id="hero-cap-t">A scientific unknown, pinned down where every claim can find it.</span></p>
+      <a class="hero-schema-link" href="preview-4-schema-page.html">How the schema works <span class="arr" aria-hidden="true">→</span></a>
     </div>
   </div>
 </header>
+<script>
+  /* One-time build-in for the hero graph. The graph is already hidden by CSS at
+     this point — html.mira-draw was set in <head>, before the body was parsed —
+     so this script only sequences the reveal. It never hides anything itself.
+     Plays once and never repeats: no loop, no hover, no controls. The resting
+     state is the complete static graph. */
+  (function(){
+    var root=document.documentElement;
+    if(!root.classList.contains('mira-draw')) return;   /* reduced motion, or no JS in <head> */
+    var fig=document.getElementById('hero-fig');
+    /* Anything unexpected and we drop the class, which reveals the whole graph
+       instantly. Failing to a visible graph beats failing to an invisible one. */
+    if(!fig){root.classList.remove('mira-draw');return;}
+
+    try{
+      /* Narrative order — each record, then the link back to what it answers.
+         Stepping element by element rather than in six grouped beats is what
+         turns this from six pops into one continuous build. */
+      var ORDER=['gn-question','gn-claim','ge-addresses','gn-evidence','ge-so',
+                 'gn-study','ge-grounds','gn-protocol','ge-follows',
+                 'gn-request','ge-rf','ge-rt'];
+      var STEP=125, LEAD=220, DRAW=660;
+
+      var seq=ORDER.map(function(c){return fig.querySelector('.'+c);}).filter(Boolean);
+      if(!seq.length){root.classList.remove('mira-draw');return;}
+
+      /* Swap the CSS placeholder dash for each path's real length. Transitions are
+         suppressed across this (.is-priming) and flushed with a forced reflow, or
+         the offset change animates and every line plays a reverse draw first. */
+      fig.classList.add('is-priming');
+      seq.forEach(function(el){
+        var p=el.querySelector('.g-link');
+        if(!p||!p.getTotalLength) return;
+        var len=p.getTotalLength();
+        if(!len) return;
+        p.style.strokeDasharray=len+' '+len;
+        p.style.strokeDashoffset=len;
+      });
+      void fig.getBoundingClientRect();
+      fig.classList.remove('is-priming');
+    }catch(e){root.classList.remove('mira-draw');return;}
+
+    function land(el){
+      el.classList.add('is-drawn');
+      var p=el.querySelector('.g-link');
+      if(p) p.style.strokeDashoffset='0';
+      /* The head lands only once the line reaches it — markers ignore dashing,
+         so an arrowhead left visible would sit at the far end from the start. */
+      if(el.classList.contains('g-edge')) setTimeout(function(){el.classList.add('is-tipped');},DRAW-90);
+    }
+
+    function draw(){
+      seq.forEach(function(el,i){setTimeout(function(){land(el);},LEAD+i*STEP);});
+      /* the hero graph must never be left half-drawn */
+      setTimeout(function(){
+        seq.forEach(function(el){
+          el.classList.add('is-drawn','is-tipped');
+          var p=el.querySelector('.g-link'); if(p) p.style.strokeDashoffset='0';
+        });
+      },LEAD+seq.length*STEP+DRAW+1200);
+    }
+    if(document.readyState==='loading'){addEventListener('DOMContentLoaded',draw,{once:true});}else{draw();}
+  })();
+</script>
 
 <!-- WHAT IT IS -->
 <section id="what">
@@ -413,7 +524,7 @@
         <p>Any tool can be extended to create, query, and write to a graph. MIRA itself hosts nothing.</p>
       </div>
       <div class="block">
-        <h3>Maintained by its users</h3>
+        <h3>Stewarded by its users</h3>
         <p>MIRA is maintained in the open by the teams that build tools around it and the researchers who use it.</p>
       </div>
     </div>
@@ -556,7 +667,7 @@
         <input id="involved-email" name="email" type="email" placeholder="you@lab.edu" aria-describedby="involved-email-hint" required />
         <button type="submit" class="btn btn-primary">Keep me posted</button>
       </div>
-      <p id="involved-email-hint" class="signup-hint">Occasional updates on MIRA's progress and how to get involved. No spam, unsubscribe anytime.</p>
+      <p id="involved-email-hint" class="signup-hint">Occasional updates on MIRA's progress and how to get involved.</p>
       <p class="signup-done" role="status">Thanks. We will keep you posted.</p>
       <p class="signup-error" role="alert"></p>
     </form>
@@ -658,56 +769,6 @@
 .pv-switch a:hover{color:#eafaf2}
 .pv-switch a.pv-cur{background:#7fd3a8;color:#0f2c21;font-weight:500}
 </style>
-<div class="pv-switch" role="navigation" aria-label="Preview versions"><span class="pv-t">MIRA previews</span><a href="index.html">About</a><a class="pv-cur" href="preview-1-ambient-hover.html">1 · Hero animation</a><a href="preview-2-static-image.html">2 · Hero image</a><a href="preview-3-scroll-story.html">3 · Scroll story</a><a href="preview-4-hero-plus-page.html">4 · Hero + schema page</a></div>
-<script>
-(function(){
-  var INTERACTIVE=true;
-  var fig=document.getElementById('hero-fig'); if(!fig) return;
-  var nodes=[].slice.call(fig.querySelectorAll('.g-node'));
-  var edges=[].slice.call(fig.querySelectorAll('.g-edge'));
-  var anno=fig.querySelector('.g-anno');
-  var cap=document.getElementById('hero-cap'),capK=document.getElementById('hero-cap-k'),capT=document.getElementById('hero-cap-t');
-  var BEATS={
-    1:{n:'Question',c:'#E6B158',t:'A scientific unknown, pinned down where every claim can find it.'},
-    2:{n:'Claim',c:'#7CC777',t:'Proposes an answer. It can be wrong \u2014 being contested is data, not deletion.'},
-    3:{n:'Evidence',c:'#E6827A',t:'One observation, taking a side: it supports or opposes a claim.'},
-    4:{n:'Study',c:'#5E9EED',t:'The experiment or analysis that produced the evidence.'},
-    5:{n:'Protocol',c:'#C77FE0',t:'The reusable method a study follows \u2014 written once, run many times.'},
-    6:{n:'Request',c:'#7B8AF0',t:'Work not yet done: an open ask, waiting for a lab to pick it up.'},
-    7:{n:'The graph',c:'#8ed8b3',t:'Six record types, signed and linked \u2014 a field you can query.'}
-  };
-  function paint(b){
-    var all=(b===7);
-    nodes.concat(edges).forEach(function(el){
-      var a=+el.dataset.appear;
-      el.classList.toggle('is-on',all||a<=b);
-      el.classList.toggle('is-ghost',!all&&a>b);
-      el.classList.toggle('is-active',!all&&a===b);
-    });
-    anno.classList.toggle('is-on',all);
-    cap.classList.add('fade');
-    setTimeout(function(){
-      var s=BEATS[b];
-      capK.textContent=s.n; capT.textContent=s.t;
-      cap.style.setProperty('--capc',s.c);
-      cap.classList.remove('fade');
-    },240);
-  }
-  var REDUCE=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var beat=0,timer=null,resume=null;
-  function next(){beat=beat%7+1;paint(beat);timer=setTimeout(next,beat===7?4600:2600);}
-  if(REDUCE){beat=7;paint(7);}else{next();}
-  if(!INTERACTIVE) return;
-  function stop(){clearTimeout(timer);clearTimeout(resume);}
-  function focusBeat(a){stop();beat=a;paint(a);
-    resume=setTimeout(function(){if(!REDUCE)timer=setTimeout(next,1200);},3800);}
-  nodes.forEach(function(n){
-    n.style.cursor='pointer';
-    n.addEventListener('pointerenter',function(e){if(e.pointerType==='mouse')focusBeat(+n.dataset.appear);});
-    n.addEventListener('pointerleave',function(e){if(e.pointerType==='mouse'){stop();if(!REDUCE)timer=setTimeout(next,1500);}});
-    n.addEventListener('click',function(){focusBeat(+n.dataset.appear);});
-  });
-})();
-</script>
+<div class="pv-switch" role="navigation" aria-label="Preview versions"><span class="pv-t">MIRA previews</span><a href="index.html">About</a><a href="preview-1-ambient-hover.html">1 · Hero animation</a><a href="preview-2-static-image.html">2 · Hero image</a><a href="preview-3-scroll-story.html">3 · Scroll story</a><a class="pv-cur" href="preview-4-hero-plus-page.html">4 · Hero + schema page</a></div>
 </body>
 </html>

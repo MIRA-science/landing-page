@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>MIRA · Preview 1 — ambient cycle + hover</title>
-<meta name="description" content="Modular Interoperable Research Attribution. An open architecture that publishes research as a graph of questions, claims, evidence, and sources, with provenance and attribution on every record." />
+<title>MIRA · How the schema works</title>
+<meta name="description" content="How a finding is written in MIRA: six kinds of signed, separately citable record — question, claim, evidence, study, protocol, request — linked into a graph a whole field can query." />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:ital,wght@0,400..700;1,400&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
@@ -176,47 +176,74 @@
   .involved .btn-primary{background:var(--cta-btn);color:var(--cta-btn-text);box-shadow:0 1px 2px rgba(0,0,0,.25)}
   .involved .btn-primary:hover{background:var(--cta-btn-hover);transform:translateY(-1px);box-shadow:0 10px 26px -12px rgba(0,0,0,.4)}
 
-  /* HERO GRAPH (preview) */
-  .hero-grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:56px;align-items:center}
-  .hero-fig{display:flex;flex-direction:column;align-items:center;gap:16px}
-  .hero-fig svg{width:min(100%,350px);height:auto;overflow:visible}
-  .hero-cap{min-height:66px;text-align:center;font-size:14.5px;line-height:1.45;color:var(--hero-muted);max-width:36ch;transition:opacity .35s ease}
-  .hero-cap b{display:block;font-family:var(--mono);font-size:11.5px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--capc,var(--hero-eyebrow));margin-bottom:4px}
-  .hero-cap.fade{opacity:0}
-  @media(max-width:860px){.hero-grid{grid-template-columns:1fr;gap:0}.hero-fig{margin-top:48px}}
+  /* PAGE HEADER (standalone schema page) */
+  .page-head{background:var(--hero-bg);color:var(--hero-text);padding:64px 0 76px}
+  .page-head .eyebrow{display:block;margin-bottom:20px;color:var(--hero-eyebrow)}
+  .page-head h1{font-size:clamp(34px,5vw,58px);line-height:1.04;font-weight:500;letter-spacing:-.032em;max-width:16ch;margin-bottom:24px}
+  .page-head .lede{font-size:19.5px;line-height:1.55;color:var(--hero-muted);max-width:58ch}
+  .page-head .back{display:inline-flex;align-items:center;gap:8px;font-size:14.5px;color:var(--hero-muted);
+    margin-bottom:34px;transition:color .2s}
+  .page-head .back:hover{color:var(--hero-text)}
+  .page-head .back .arr{transition:transform .22s}
+  .page-head .back:hover .arr{transform:translateX(-3px)}
+  @media(max-width:560px){.page-head{padding:44px 0 56px}}
 
-  .g-node rect{fill:rgba(255,255,255,.05);stroke:rgba(255,255,255,.35);stroke-width:1.6;transition:fill .5s ease,stroke .5s ease}
-  .g-node text{font-family:var(--sans);font-size:13.5px;font-weight:600;fill:rgba(255,255,255,.78);text-anchor:middle;dominant-baseline:middle;transition:fill .5s ease}
-  .g-node,.g-edge{transition:opacity .55s cubic-bezier(.22,.61,.36,1)}
-  .g-node.is-ghost,.g-edge.is-ghost{opacity:.22}
-  .g-node.is-on rect{fill:var(--nf);stroke:var(--nc);stroke-width:2}
-  .g-node.is-on text{fill:var(--nk)}
-  .g-node.is-active rect{stroke-width:2.6;filter:drop-shadow(0 0 12px color-mix(in srgb,var(--nc) 55%,transparent))}
-  .g-link{fill:none;stroke:rgba(234,250,242,.30);stroke-width:1.7;transition:stroke .5s ease}
-  .g-edge.is-on .g-link{stroke:var(--ec)}
-  .g-elabel{font-family:var(--mono);font-size:9.5px;letter-spacing:.02em;fill:rgba(234,250,242,.45);transition:fill .5s ease}
-  .g-edge.is-on .g-elabel{fill:var(--el)}
-  .g-anno{opacity:0;transition:opacity .5s ease}
-  .g-anno.is-on{opacity:1}
-  .g-anno rect{fill:#E6827A}
-  .g-anno text{font-family:var(--sans);font-size:9px;font-weight:700;fill:#fff;text-anchor:middle;dominant-baseline:middle}
-  .gn-question{--nc:#E6B158;--nf:#FBF4E8;--nk:#8A5A12}
-  .gn-claim{--nc:#5BA756;--nf:#E7F4E8;--nk:#2C6A29}
-  .gn-evidence{--nc:#E6827A;--nf:#FBE7E5;--nk:#A2362E}
-  .gn-study{--nc:#5E9EED;--nf:#E7F1FD;--nk:#1F5596}
-  .gn-protocol{--nc:#C77FE0;--nf:#F6ECFB;--nk:#793795}
-  .gn-request{--nc:#7B8AF0;--nf:#E6E9FB;--nk:#26309A}
-  .ge-addresses{--ec:#5BA756;--el:#cfe9cd}
-  .ge-so{--ec:#E6827A;--el:#f5d0cc}
-  .ge-grounds{--ec:#5E9EED;--el:#cadffa}
-  .ge-follows{--ec:#C77FE0;--el:#ead3f5}
-  .ge-rf,.ge-rt{--ec:#7B8AF0;--el:#d3d9fb}
+  /* SCHEMA SCROLL SECTION */
+  .schema{background:var(--bg);padding-top:88px}
+  .schema-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,420px);gap:56px;align-items:start}
+  .schema-fig{position:sticky;top:96px}
+  .schema-fig svg{width:100%;max-width:400px;height:auto;overflow:visible;display:block;margin:0 auto}
+  .s-step{min-height:52vh;display:flex;flex-direction:column;justify-content:center;opacity:.3;transition:opacity .5s ease}
+  .s-step.is-in{opacity:1}
+  .s-step h3{font-size:22px;font-weight:600;letter-spacing:-.02em;margin-bottom:10px}
+  .s-step p{font-size:16.5px;color:var(--muted);max-width:46ch}
+  .schema .sec-head{margin-bottom:8px}
+  /* Snap only where the figure sits beside the text. On mobile the figure is
+     pinned across the top, so snapping a step to the centre of the viewport
+     parks half of it behind the figure. */
+  @media(min-width:861px){
+    html{scroll-snap-type:y proximity}
+    .s-step{scroll-snap-align:center}
+  }
+  .s-step .nlab{font-family:var(--mono);font-size:12px;font-weight:500;letter-spacing:.07em;text-transform:uppercase;color:var(--sc,var(--accent));margin-bottom:12px}
+  .st-question{--sc:#8A5A12}.st-claim{--sc:#2C6A29}.st-evidence{--sc:#A2362E}
+  .st-study{--sc:#1F5596}.st-protocol{--sc:#793795}.st-request{--sc:#26309A}.st-graph{--sc:var(--accent)}
+  [data-theme="dark"] .st-question{--sc:#E6B158}
+  [data-theme="dark"] .st-claim{--sc:#7CC777}
+  [data-theme="dark"] .st-evidence{--sc:#E6827A}
+  [data-theme="dark"] .st-study{--sc:#5E9EED}
+  [data-theme="dark"] .st-protocol{--sc:#C77FE0}
+  [data-theme="dark"] .st-request{--sc:#7B8AF0}
+  @media(max-width:860px){
+    .schema-grid{grid-template-columns:1fr;gap:0}
+    .schema-fig{position:sticky;top:66px;order:-1;background:var(--bg);padding:10px 0 6px;z-index:5}
+    .schema-fig svg{max-width:240px}
+    .s-step{min-height:46vh}
+  }
+  .s-node rect{fill:var(--card-bg);stroke:var(--nc);stroke-width:2;transition:fill .45s ease}
+  .s-node text{font-family:var(--sans);font-size:13px;font-weight:600;fill:var(--ink);text-anchor:middle;dominant-baseline:middle}
+  .s-node,.s-edge{transition:opacity .5s ease}
+  .s-node.is-ghost,.s-edge.is-ghost{opacity:.14}
+  .s-node.is-on rect{fill:color-mix(in srgb,var(--nc) 14%, var(--card-bg))}
+  .s-node.is-active rect{stroke-width:3;filter:drop-shadow(0 4px 12px color-mix(in srgb,var(--nc) 50%,transparent))}
+  .s-link{fill:none;stroke:var(--faint);stroke-width:1.8;opacity:.7}
+  .s-edge.is-on .s-link{stroke:var(--nc);opacity:1}
+  .s-elabel{font-family:var(--mono);font-size:9.5px;fill:var(--muted);paint-order:stroke;stroke:var(--bg);stroke-width:3px;stroke-linejoin:round}
+  .s-edge.is-on .s-elabel{fill:var(--ink-2)}
+  .s-arrowhead{fill:var(--faint)}
+  .sn-question{--nc:#E6B158}.sn-claim{--nc:#5BA756}.sn-evidence{--nc:#E6827A}
+  .sn-study{--nc:#5E9EED}.sn-protocol{--nc:#C77FE0}.sn-request{--nc:#5566E4}
+  .se-addresses{--nc:#5BA756}.se-so{--nc:#E6827A}.se-grounds{--nc:#5E9EED}
+  .se-follows{--nc:#C77FE0}.se-rf,.se-rt{--nc:#5566E4}
+  [data-theme="dark"] .sn-request,[data-theme="dark"] .se-rf,[data-theme="dark"] .se-rt{--nc:#7B8AF0}
 
   /* SECTION */
   section{padding:104px 0;border-bottom:0;transition:background-color .3s ease}
   #what{background:var(--bg)}
   #why{background:var(--tint-1)}
   #who{background:var(--tint-2)}
+  #fits{background:var(--tint-1)}
+  .back-home{margin-top:46px}
   .sec-head{max-width:660px;margin-bottom:52px}
   .sec-head .eyebrow{display:block;margin-bottom:18px}
   .sec-head h2{font-size:clamp(28px,3.6vw,40px);line-height:1.12;font-weight:500;letter-spacing:-.028em}
@@ -325,7 +352,7 @@
 <!-- NAV -->
 <nav id="nav">
   <div class="wrap nav-in">
-    <a href="#top" class="brand" aria-label="MIRA — home">
+    <a href="preview-4-hero-plus-page.html" class="brand" aria-label="MIRA — home">
       <svg class="logo" viewBox="0 0 96 24" role="img" aria-label="MIRA" xmlns="http://www.w3.org/2000/svg">
         <title>MIRA</title>
         <g stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
@@ -343,9 +370,9 @@
     </a>
     <div class="nav-right">
       <div class="nav-links">
-        <a href="#what">What it is</a>
-        <a href="#why">Why it matters</a>
-        <a href="#who">Who's using it</a>
+        <a href="preview-4-hero-plus-page.html#what">What it is</a>
+        <a href="preview-4-hero-plus-page.html#why">Why it matters</a>
+        <a href="preview-4-hero-plus-page.html#who">Who's using it</a>
       </div>
       <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Switch to dark theme" aria-pressed="false" title="Toggle light / dark">
         <svg class="ico-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg>
@@ -358,190 +385,97 @@
 
 <div id="top"></div>
 
-<!-- HERO -->
-<header class="hero">
-  <div class="wrap hero-grid">
-    <div class="hero-copy">
-    <span class="eyebrow">Modular Interoperable Research Attribution</span>
-    <h1>A new medium for research.</h1>
-    <p class="lede">Research today is shipped as a sealed document. MIRA turns it into a graph of signed, citable records: the questions a field is asking, the claims that answer them, and the evidence behind each one.</p>
-    <form class="signup" novalidate data-source="hero">
-      <input type="text" name="company" class="signup-hp" tabindex="-1" autocomplete="off" aria-hidden="true" />
-      <label class="signup-label" for="hero-email">Get updates on MIRA</label>
-      <div class="signup-fields">
-        <input id="hero-email" name="email" type="email" placeholder="you@lab.edu" aria-describedby="hero-email-hint" required />
-        <button type="submit" class="btn btn-primary">Keep me posted</button>
-      </div>
-      <p id="hero-email-hint" class="signup-hint">Occasional updates on MIRA's progress and how to get involved. No spam, unsubscribe anytime.</p>
-      <p class="signup-done" role="status">Thanks. We will keep you posted.</p>
-      <p class="signup-error" role="alert"></p>
-    </form>
-    </div>
-    <div class="hero-fig" id="hero-fig">
-      <svg viewBox="0 0 340 372" role="img" aria-label="The six MIRA record types and their links">
-        <defs><marker id="harrow" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="rgba(234,250,242,.45)"/></marker></defs>
-        <g class="g-edge ge-addresses" data-appear="2"><path class="g-link" d="M170,95 L170,56" marker-end="url(#harrow)"/><text class="g-elabel" x="176" y="78">addresses</text></g>
-        <g class="g-edge ge-so" data-appear="3"><path class="g-link" d="M134,176 L156,130" marker-end="url(#harrow)"/><text class="g-elabel" x="70" y="150">supports /</text><text class="g-elabel" x="70" y="160">opposes</text></g>
-        <g class="g-edge ge-grounds" data-appear="4"><path class="g-link" d="M98,264 L114,212" marker-end="url(#harrow)"/><text class="g-elabel" x="56" y="240">grounds</text></g>
-        <g class="g-edge ge-follows" data-appear="5"><path class="g-link" d="M88,298 L88,330" marker-end="url(#harrow)"/><text class="g-elabel" x="94" y="318">follows</text></g>
-        <g class="g-edge ge-rf" data-appear="6"><path class="g-link" d="M219,283 L139,283" marker-end="url(#harrow)"/><text class="g-elabel" x="178" y="276" text-anchor="middle">request_for</text></g>
-        <g class="g-edge ge-rt" data-appear="6"><path class="g-link" d="M260,264 C250,200 244,150 221,123" marker-end="url(#harrow)"/><text class="g-elabel" x="252" y="205">request_target</text></g>
-        <g class="g-node gn-question" data-appear="1"><rect x="122" y="19" width="96" height="34" rx="9"/><text x="170" y="37">Question</text></g>
-        <g class="g-node gn-claim" data-appear="2"><rect x="122" y="95" width="96" height="34" rx="9"/><text x="170" y="113">Claim</text></g>
-        <g class="g-node gn-evidence" data-appear="3"><rect x="78" y="175" width="96" height="34" rx="9"/><text x="126" y="193">Evidence</text></g>
-        <g class="g-node gn-study" data-appear="4"><rect x="40" y="263" width="96" height="34" rx="9"/><text x="88" y="281">Study</text></g>
-        <g class="g-node gn-protocol" data-appear="5"><rect x="40" y="329" width="96" height="34" rx="9"/><text x="88" y="347">Protocol</text></g>
-        <g class="g-node gn-request" data-appear="6"><rect x="218" y="263" width="96" height="34" rx="9"/><text x="266" y="281">Request</text></g>
-        <g class="g-anno"><rect x="196" y="86" width="52" height="14" rx="7"/><text x="222" y="93.5">✕ refuted</text></g>
-      </svg>
-      <p class="hero-cap" id="hero-cap"><b id="hero-cap-k">Question</b><span id="hero-cap-t">A scientific unknown, pinned down where every claim can find it.</span></p>
-    </div>
+<!-- PAGE HEADER -->
+<header class="page-head">
+  <div class="wrap">
+    <a class="back" href="preview-4-hero-plus-page.html"><span class="arr" aria-hidden="true">←</span> Back to MIRA</a>
+    <span class="eyebrow">The medium</span>
+    <h1>How the schema works.</h1>
+    <p class="lede">A finding in MIRA is not one document. It is six kinds of record, each signed and separately citable, linked into a graph a whole field can query. Scroll to build one up, one record at a time.</p>
   </div>
 </header>
 
-<!-- WHAT IT IS -->
-<section id="what">
+<!-- THE SCHEMA -->
+<section id="schema" class="schema">
+  <div class="wrap schema-grid">
+    <div class="schema-steps">
+      <div class="s-step st-question" data-b="1" data-p="0">
+        <p class="nlab">01 · Question</p>
+        <h3>It starts with an unknown.</h3>
+        <p>A scientific unknown, pinned down as its own citable record - a durable target every claim in the field can aim at.</p>
+      </div>
+      <div class="s-step st-claim" data-b="2" data-p="1">
+        <p class="nlab">02 · Claim</p>
+        <h3>A claim proposes an answer.</h3>
+        <p>Atomic, and allowed to be wrong. A claim addresses its question and stays in the record even when the field turns against it - being contested is data, not deletion.</p>
+      </div>
+      <div class="s-step st-evidence" data-b="3" data-p="2">
+        <p class="nlab">03 · Evidence</p>
+        <h3>Evidence takes a side.</h3>
+        <p>One empirical observation that supports or opposes a claim, pointing back at the figure, the dataset, the paper it came from. A claim can be traced down to the literal pixels.</p>
+      </div>
+      <div class="s-step st-study" data-b="4" data-p="3">
+        <p class="nlab">04 · Study</p>
+        <h3>The study is the event.</h3>
+        <p>Who did what, when, with which data and software. The experiment grounds its evidence, so the same method run in two labs can be compared side by side.</p>
+      </div>
+      <div class="s-step st-protocol" data-b="5" data-p="4">
+        <p class="nlab">05 · Protocol</p>
+        <h3>The protocol is the recipe.</h3>
+        <p>Written once, followed many times. Keep the method separate from the run, and a flawed result stops looking like a flawed method.</p>
+      </div>
+      <div class="s-step st-request" data-b="6" data-p="5">
+        <p class="nlab">06 · Request</p>
+        <h3>Missing work gets a record too.</h3>
+        <p>A request marks the experiment nobody has run yet, or the claim that needs settling - open asks sit in the graph until someone picks them up.</p>
+      </div>
+      <div class="s-step st-graph" data-b="7" data-p="6">
+        <p class="nlab">The graph</p>
+        <h3>Six records. One queryable field.</h3>
+        <p>Every record signed, dated, and linked. A funder - or an AI agent - can ask a live field which claims hold, which are contested, and which questions are still open.</p>
+      </div>
+    </div>
+    <div class="schema-fig" id="schema-fig" aria-hidden="true">
+      <svg viewBox="0 0 340 372" role="img" aria-label="The six MIRA record types and their links">
+        <defs><marker id="sarrow" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="s-arrowhead" d="M0,0 L10,5 L0,10 z"/></marker></defs>
+        <g class="s-edge se-addresses" data-appear="2"><path class="s-link" d="M170,95 L170,56" marker-end="url(#sarrow)"/><text class="s-elabel" x="176" y="78">addresses</text></g>
+        <g class="s-edge se-so" data-appear="3"><path class="s-link" d="M134,176 L156,130" marker-end="url(#sarrow)"/><text class="s-elabel" x="70" y="150">supports /</text><text class="s-elabel" x="70" y="160">opposes</text></g>
+        <g class="s-edge se-grounds" data-appear="4"><path class="s-link" d="M98,264 L114,212" marker-end="url(#sarrow)"/><text class="s-elabel" x="56" y="240">grounds</text></g>
+        <g class="s-edge se-follows" data-appear="5"><path class="s-link" d="M88,298 L88,330" marker-end="url(#sarrow)"/><text class="s-elabel" x="94" y="318">follows</text></g>
+        <g class="s-edge se-rf" data-appear="6"><path class="s-link" d="M219,283 L139,283" marker-end="url(#sarrow)"/><text class="s-elabel" x="178" y="276" text-anchor="middle">request_for</text></g>
+        <g class="s-edge se-rt" data-appear="6"><path class="s-link" d="M260,264 C250,200 244,150 221,123" marker-end="url(#sarrow)"/><text class="s-elabel" x="252" y="205">request_target</text></g>
+        <g class="s-node sn-question" data-appear="1"><rect x="122" y="19" width="96" height="34" rx="9"/><text x="170" y="37">Question</text></g>
+        <g class="s-node sn-claim" data-appear="2"><rect x="122" y="95" width="96" height="34" rx="9"/><text x="170" y="113">Claim</text></g>
+        <g class="s-node sn-evidence" data-appear="3"><rect x="78" y="175" width="96" height="34" rx="9"/><text x="126" y="193">Evidence</text></g>
+        <g class="s-node sn-study" data-appear="4"><rect x="40" y="263" width="96" height="34" rx="9"/><text x="88" y="281">Study</text></g>
+        <g class="s-node sn-protocol" data-appear="5"><rect x="40" y="329" width="96" height="34" rx="9"/><text x="88" y="347">Protocol</text></g>
+        <g class="s-node sn-request" data-appear="6"><rect x="218" y="263" width="96" height="34" rx="9"/><text x="266" y="281">Request</text></g>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- WHERE THIS FITS -->
+<section id="fits">
   <div class="wrap">
     <div class="sec-head reveal">
-      <span class="eyebrow">What it is</span>
-      <h2>A shared structure for research in progress.</h2>
-      <p class="sub">MIRA is an open architecture, still in early development, that defines a shared schema for research records and the relations that connect them. Notebook plugins, authoring tools, and publishing platforms all speak this format, so researchers using different tools collaborate on a shared graph. It is early work, built in the open with the labs and toolmakers already using it.</p>
+      <span class="eyebrow">Where this fits</span>
+      <h2>Six records, written by the tools researchers already use.</h2>
+      <p class="sub">Nobody sits down to fill in a form with six boxes. Notebook plugins, authoring tools, and publishing platforms emit these records as a normal part of writing up work &mdash; MIRA is the shared format they agree on, not a place you go. It is early work, built in the open with the labs and toolmakers already using it.</p>
     </div>
     <div class="duo reveal">
       <div class="block">
-        <h3>An interface between tools</h3>
-        <p>Any tool can be extended to create, query, and write to a graph. MIRA itself hosts nothing.</p>
+        <h3>Every record is separately citable</h3>
+        <p>A claim, a piece of evidence, a protocol &mdash; each carries its own identifier, signature, and author. Credit attaches to the record, not only to the paper it ended up in.</p>
       </div>
       <div class="block">
-        <h3>Maintained by its users</h3>
-        <p>MIRA is maintained in the open by the teams that build tools around it and the researchers who use it.</p>
+        <h3>Nothing is settled by the format</h3>
+        <p>Claims stay in the record whether the field ends up agreeing with them or not. What changes is the evidence pointing at them, and who has said what about it. There is no verdict field, and no oracle to write one.</p>
       </div>
     </div>
+    <p class="back-home reveal"><a class="btn btn-primary" href="preview-4-hero-plus-page.html">Back to MIRA <span class="arr" aria-hidden="true">&rarr;</span></a></p>
   </div>
 </section>
-
-<!-- WHY IT MATTERS -->
-<section id="why">
-  <div class="wrap">
-    <div class="sec-head reveal">
-      <span class="eyebrow">Why it matters</span>
-      <h2>Higher fidelity on the research you care about.</h2>
-      <p class="sub">The benefits below are what we expect a shared, connected record of research to make possible. Most are early predictions from the architecture, and we are testing them now with the labs already using MIRA.</p>
-    </div>
-
-    <div class="aud reveal">
-      <div class="group">
-        <h3 class="role">For funders</h3>
-        <div class="item">
-          <div class="t">See the whole field</div>
-          <div class="d">Query the live graph of a field you fund and see which claims are well supported, which are contested, and which questions still have no answer. See more than what's in the spotlight.</div>
-        </div>
-        <div class="item">
-          <div class="t">Catch dropped lines of insight</div>
-          <div class="d">When a line of work stalls, the graph shows where it stopped: the question that never got an answer, the proposed experiment still waiting for a lab.</div>
-        </div>
-        <div class="item">
-          <div class="t">Spot bottlenecks and emerging trends</div>
-          <div class="d">The shape of the record shows where a field is stuck and where momentum is building, years before citation counts catch up.</div>
-        </div>
-        <div class="item">
-          <div class="t">Recognize the full breadth of contributions</div>
-          <div class="d">Credit attaches to each claim, question, and piece of evidence a researcher adds. Work that would once have vanished into a co-author line can be recognized and rewarded.</div>
-        </div>
-        <div class="item">
-          <div class="t">Forecast where a field is going</div>
-          <div class="d">A provenanced record is one you can compute on. When people or agents draw new conclusions from it, every inference traces back to vetted evidence.</div>
-        </div>
-      </div>
-
-      <div class="group">
-        <h3 class="role">For labs</h3>
-        <div class="item">
-          <div class="t">A shared map across labs</div>
-          <div class="d">Collaborating labs work from a shared graph of claims, evidence, and requests. That shared map gives them the precision to take on questions too big for any single lab.</div>
-        </div>
-        <div class="item">
-          <div class="t">Surface your unknown unknowns</div>
-          <div class="d">Structuring work as claims, evidence, and requests reveals what's already latent in your research: the insights you haven't named and the questions you didn't know you were asking.</div>
-        </div>
-        <div class="item">
-          <div class="t">Assisted peer review</div>
-          <div class="d">Most of peer review is untangling what a paper claims and what its evidence shows. In the graph that structure is explicit, so AI can carry a real share of the work.</div>
-        </div>
-        <div class="item">
-          <div class="t">Granular attribution</div>
-          <div class="d">Every record is signed by the person who made it. However many labs share a project, each researcher can point to the exact contributions that are theirs.</div>
-        </div>
-        <div class="item">
-          <div class="t">AI as a trusted collaborator</div>
-          <div class="d">A graph of claims and evidence is the rules of science in machine-readable form, and agents run far better on it than on cluttered PDFs. They can navigate and add to the record while human contributions stay plainly in evidence.</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- WHO'S USING IT -->
-<section id="who">
-  <div class="wrap">
-    <div class="sec-head reveal">
-      <span class="eyebrow">Who's using it</span>
-      <h2>Deployed in real labs.</h2>
-    </div>
-    <div class="reveal">
-      <div class="stats">
-        <div class="stat"><div class="n">100+</div><div class="l">researchers writing in it weekly, in their own notebooks</div></div>
-        <div class="stat"><div class="n">6,000+</div><div class="l">signed research records authored</div></div>
-        <div class="stat"><div class="n">10+</div><div class="l">life-science labs deployed</div></div>
-      </div>
-      <div class="deployed">
-        <div class="lab">Deployed with researchers at</div>
-        <div class="insts">
-          <span>McGill</span>
-          <span>University of Washington</span>
-          <span>NYU</span>
-          <span>Quantum Biology Institute</span>
-        </div>
-      </div>
-      <div class="tools-label">Tools that integrate MIRA already</div>
-      <!-- cards are <a> wrappers linking to each tool. When logos are available,
-           swap the .tool-logo monogram for <img src="..." alt="… logo" />. -->
-      <div class="tools">
-        <a class="tool-card" href="https://discoursegraphs.com/" target="_blank" rel="noopener noreferrer" aria-label="Discourse Graphs — learn more">
-          <div class="tool-logo" aria-hidden="true">DG</div>
-          <div class="nm">Discourse Graphs</div>
-          <div class="ds">Typed claim, evidence, and relation authoring inside Roam and Obsidian. A multi-year deployment across more than ten life-science labs.</div>
-          <div class="more">Learn more →</div>
-        </a>
-        <a class="tool-card" href="https://semble.so/" target="_blank" rel="noopener noreferrer" aria-label="Semble (Cosmik) — learn more">
-          <div class="tool-logo" aria-hidden="true">Se</div>
-          <div class="nm">Semble (Cosmik)</div>
-          <div class="ds">New AT-Protocol app for social curation of research objects, with hundreds of active users.</div>
-          <div class="more">Learn more →</div>
-        </a>
-        <a class="tool-card" href="https://elifepathways.org/" target="_blank" rel="noopener noreferrer" aria-label="eLife Pathways — learn more">
-          <div class="tool-logo" aria-hidden="true">eL</div>
-          <div class="nm">eLife Pathways</div>
-          <div class="ds">Open manuscript submission, peer review, and publication with broad reach in the life sciences.</div>
-          <div class="more">Learn more →</div>
-        </a>
-        <a class="tool-card" href="https://oxa.dev/" target="_blank" rel="noopener noreferrer" aria-label="OXA (CSF) — learn more">
-          <div class="tool-logo" aria-hidden="true">OX</div>
-          <div class="nm">OXA (CSF)</div>
-          <div class="ds">Structured scientific-document exchange across MyST, Curvenote, JATS, Quarto, and Stencila.</div>
-          <div class="more">Learn more →</div>
-        </a>
-        <a class="tool-card" href="https://workshop.scios.tech/" target="_blank" rel="noopener noreferrer" aria-label="SciOS Graph — learn more">
-          <div class="tool-logo" aria-hidden="true">SG</div>
-          <div class="nm">SciOS Graph</div>
-          <div class="ds">A collaborative tool for building shared understanding. Join and add questions, claims, and evidence to a shared graph that grows live on screen. Includes a simplified mode for newcomers to the MIRA medium.</div>
-          <div class="more">Learn more →</div>
-        </a>
-      </div>
-    </div>
-  </div>
-</section>
-
 <!-- GET INVOLVED -->
 <section class="involved" id="involved">
   <div class="wrap reveal">
@@ -556,7 +490,7 @@
         <input id="involved-email" name="email" type="email" placeholder="you@lab.edu" aria-describedby="involved-email-hint" required />
         <button type="submit" class="btn btn-primary">Keep me posted</button>
       </div>
-      <p id="involved-email-hint" class="signup-hint">Occasional updates on MIRA's progress and how to get involved. No spam, unsubscribe anytime.</p>
+      <p id="involved-email-hint" class="signup-hint">Occasional updates on MIRA's progress and how to get involved.</p>
       <p class="signup-done" role="status">Thanks. We will keep you posted.</p>
       <p class="signup-error" role="alert"></p>
     </form>
@@ -658,55 +592,54 @@
 .pv-switch a:hover{color:#eafaf2}
 .pv-switch a.pv-cur{background:#7fd3a8;color:#0f2c21;font-weight:500}
 </style>
-<div class="pv-switch" role="navigation" aria-label="Preview versions"><span class="pv-t">MIRA previews</span><a href="index.html">About</a><a class="pv-cur" href="preview-1-ambient-hover.html">1 · Hero animation</a><a href="preview-2-static-image.html">2 · Hero image</a><a href="preview-3-scroll-story.html">3 · Scroll story</a><a href="preview-4-hero-plus-page.html">4 · Hero + schema page</a></div>
+<div class="pv-switch" role="navigation" aria-label="Preview versions"><span class="pv-t">MIRA previews</span><a href="index.html">About</a><a href="preview-1-ambient-hover.html">1 · Hero animation</a><a href="preview-2-static-image.html">2 · Hero image</a><a href="preview-3-scroll-story.html">3 · Scroll story</a><a class="pv-cur" href="preview-4-hero-plus-page.html">4 · Hero + schema page</a></div>
 <script>
 (function(){
-  var INTERACTIVE=true;
-  var fig=document.getElementById('hero-fig'); if(!fig) return;
-  var nodes=[].slice.call(fig.querySelectorAll('.g-node'));
-  var edges=[].slice.call(fig.querySelectorAll('.g-edge'));
-  var anno=fig.querySelector('.g-anno');
-  var cap=document.getElementById('hero-cap'),capK=document.getElementById('hero-cap-k'),capT=document.getElementById('hero-cap-t');
-  var BEATS={
-    1:{n:'Question',c:'#E6B158',t:'A scientific unknown, pinned down where every claim can find it.'},
-    2:{n:'Claim',c:'#7CC777',t:'Proposes an answer. It can be wrong \u2014 being contested is data, not deletion.'},
-    3:{n:'Evidence',c:'#E6827A',t:'One observation, taking a side: it supports or opposes a claim.'},
-    4:{n:'Study',c:'#5E9EED',t:'The experiment or analysis that produced the evidence.'},
-    5:{n:'Protocol',c:'#C77FE0',t:'The reusable method a study follows \u2014 written once, run many times.'},
-    6:{n:'Request',c:'#7B8AF0',t:'Work not yet done: an open ask, waiting for a lab to pick it up.'},
-    7:{n:'The graph',c:'#8ed8b3',t:'Six record types, signed and linked \u2014 a field you can query.'}
-  };
-  function paint(b){
+  var fig=document.getElementById('schema-fig'); if(!fig) return;
+  var nodes=[].slice.call(fig.querySelectorAll('.s-node'));
+  var edges=[].slice.call(fig.querySelectorAll('.s-edge'));
+  var steps=[].slice.call(document.querySelectorAll('.s-step'));
+  function setB(b,p){
     var all=(b===7);
     nodes.concat(edges).forEach(function(el){
       var a=+el.dataset.appear;
       el.classList.toggle('is-on',all||a<=b);
       el.classList.toggle('is-ghost',!all&&a>b);
-      el.classList.toggle('is-active',!all&&a===b);
+      el.classList.toggle('is-active',a>p&&a<=b);
     });
-    anno.classList.toggle('is-on',all);
-    cap.classList.add('fade');
-    setTimeout(function(){
-      var s=BEATS[b];
-      capK.textContent=s.n; capT.textContent=s.t;
-      cap.style.setProperty('--capc',s.c);
-      cap.classList.remove('fade');
-    },240);
   }
-  var REDUCE=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var beat=0,timer=null,resume=null;
-  function next(){beat=beat%7+1;paint(beat);timer=setTimeout(next,beat===7?4600:2600);}
-  if(REDUCE){beat=7;paint(7);}else{next();}
-  if(!INTERACTIVE) return;
-  function stop(){clearTimeout(timer);clearTimeout(resume);}
-  function focusBeat(a){stop();beat=a;paint(a);
-    resume=setTimeout(function(){if(!REDUCE)timer=setTimeout(next,1200);},3800);}
-  nodes.forEach(function(n){
-    n.style.cursor='pointer';
-    n.addEventListener('pointerenter',function(e){if(e.pointerType==='mouse')focusBeat(+n.dataset.appear);});
-    n.addEventListener('pointerleave',function(e){if(e.pointerType==='mouse'){stop();if(!REDUCE)timer=setTimeout(next,1500);}});
-    n.addEventListener('click',function(){focusBeat(+n.dataset.appear);});
-  });
+  setB(1,0);
+  steps[0].classList.add('is-in');
+
+  /* The activation band has to sit BELOW the sticky figure, or the step that
+     lights up is the one hidden behind it. On desktop the figure is in its own
+     column and a fixed band is fine; on mobile it pins to the top of the
+     viewport, so measure it and start the band underneath. */
+  function bandMargin(){
+    if(!window.matchMedia||!matchMedia('(max-width:860px)').matches) return '-42% 0px -30% 0px';
+    var vh=window.innerHeight||1;
+    var figBottom=fig.getBoundingClientRect().height+66; /* sticky nav is 66px */
+    var top=Math.min(Math.round((figBottom/vh)*100)+6,64);
+    return '-'+top+'% 0px -18% 0px';
+  }
+
+  var obs=null;
+  function observe(){
+    if(obs)obs.disconnect();
+    obs=new IntersectionObserver(function(es){
+      var best=null;
+      es.forEach(function(e){if(e.isIntersecting&&(!best||e.intersectionRatio>best.intersectionRatio))best=e;});
+      if(!best)return;
+      steps.forEach(function(s){s.classList.toggle('is-in',s===best.target);});
+      setB(+best.target.dataset.b,+best.target.dataset.p);
+    },{threshold:[.15,.4,.7],rootMargin:bandMargin()});
+    steps.forEach(function(s){obs.observe(s);});
+  }
+  observe();
+
+  var rt=null;
+  addEventListener('resize',function(){clearTimeout(rt);rt=setTimeout(observe,180);},{passive:true});
+  addEventListener('orientationchange',function(){clearTimeout(rt);rt=setTimeout(observe,180);});
 })();
 </script>
 </body>
