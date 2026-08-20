@@ -17,6 +17,16 @@
       document.documentElement.setAttribute('data-theme', stored || (sys?'dark':'light'));
     }catch(e){document.documentElement.setAttribute('data-theme','light');}
   })();
+  /* Arm the hero build-in before first paint, for the same reason as the theme
+     above: do it later and the finished graph flashes on screen first. Absent
+     under reduced motion and with JS off, in which case the graph just shows. */
+  (function(){
+    try{
+      if(!(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches)){
+        document.documentElement.classList.add('mira-draw');
+      }
+    }catch(e){}
+  })();
 </script>
 <style>
   :root{
@@ -176,6 +186,64 @@
   .involved .btn-primary{background:var(--cta-btn);color:var(--cta-btn-text);box-shadow:0 1px 2px rgba(0,0,0,.25)}
   .involved .btn-primary:hover{background:var(--cta-btn-hover);transform:translateY(-1px);box-shadow:0 10px 26px -12px rgba(0,0,0,.4)}
 
+  /* HERO GRAPH (preview) */
+  .hero-grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:56px;align-items:center}
+  .hero-fig{display:flex;flex-direction:column;align-items:center;gap:18px}
+  .hero-fig svg{width:min(100%,350px);height:auto;overflow:visible}
+  @media(max-width:860px){.hero-grid{grid-template-columns:1fr;gap:0}.hero-fig{margin-top:48px}}
+
+  /* One-time build-in: the graph draws itself once on load, then rests.
+     Nodes settle in place; links are stroked on with dashoffset so the lines
+     actually draw rather than blink into existence. No scaling — scaling a long
+     path about its own centre is what made an earlier version look chunky.
+
+     Everything here hangs off html.mira-draw, which is set by a script in <head>
+     BEFORE the body is parsed. Hiding from a script at the bottom of the body is
+     too late: the finished graph gets painted first, so it flashes on and then
+     blinks out again. With the class on <html>, the graph is never painted
+     visible. No JS (or reduced motion) means no class, so the graph is simply
+     there — nothing can leave it stuck invisible. */
+  html.mira-draw .hero-fig .g-node{
+    opacity:0;transform:translate(0,7px);transform-box:fill-box;transform-origin:center;
+    transition:opacity .5s ease,transform .62s cubic-bezier(.22,.61,.36,1)}
+  html.mira-draw .hero-fig .g-node.is-drawn{opacity:1;transform:none}
+
+  /* 2000 is longer than any path here, so every link starts fully dashed off —
+     hidden before the script has had a chance to measure real path lengths. */
+  html.mira-draw .hero-fig .g-link{
+    stroke-dasharray:2000;stroke-dashoffset:2000;
+    transition:stroke-dashoffset .66s cubic-bezier(.35,.85,.4,1)}
+  html.mira-draw .hero-fig .g-edge:not(.is-tipped) .g-link{marker-end:none}
+  html.mira-draw .hero-fig .g-elabel{opacity:0;transition:opacity .5s ease}
+  html.mira-draw .hero-fig .g-edge.is-drawn .g-elabel{opacity:1;transition-delay:.22s}
+
+  /* Swapping the placeholder dash for each path's real length must not animate,
+     or every line plays a reverse draw before the build starts. */
+  html.mira-draw .hero-fig.is-priming .g-link{transition:none}
+
+  .g-node rect{fill:rgba(255,255,255,.05);stroke:rgba(255,255,255,.35);stroke-width:1.6;transition:fill .5s ease,stroke .5s ease}
+  .g-node text{font-family:var(--sans);font-size:13.5px;font-weight:600;fill:rgba(255,255,255,.78);text-anchor:middle;dominant-baseline:middle;transition:fill .5s ease}
+  .g-node,.g-edge{transition:opacity .55s cubic-bezier(.22,.61,.36,1)}
+  .g-node.is-ghost,.g-edge.is-ghost{opacity:.22}
+  .g-node.is-on rect{fill:var(--nf);stroke:var(--nc);stroke-width:2}
+  .g-node.is-on text{fill:var(--nk)}
+  .g-node.is-active rect{stroke-width:2.6;filter:drop-shadow(0 0 12px color-mix(in srgb,var(--nc) 55%,transparent))}
+  .g-link{fill:none;stroke:rgba(234,250,242,.30);stroke-width:1.7;transition:stroke .5s ease}
+  .g-edge.is-on .g-link{stroke:var(--ec)}
+  .g-elabel{font-family:var(--mono);font-size:9.5px;letter-spacing:.02em;fill:rgba(234,250,242,.45);transition:fill .5s ease}
+  .g-edge.is-on .g-elabel{fill:var(--el)}
+  .gn-question{--nc:#E6B158;--nf:#FBF4E8;--nk:#8A5A12}
+  .gn-claim{--nc:#5BA756;--nf:#E7F4E8;--nk:#2C6A29}
+  .gn-evidence{--nc:#E6827A;--nf:#FBE7E5;--nk:#A2362E}
+  .gn-study{--nc:#5E9EED;--nf:#E7F1FD;--nk:#1F5596}
+  .gn-protocol{--nc:#C77FE0;--nf:#F6ECFB;--nk:#793795}
+  .gn-request{--nc:#7B8AF0;--nf:#E6E9FB;--nk:#26309A}
+  .ge-addresses{--ec:#5BA756;--el:#cfe9cd}
+  .ge-so{--ec:#E6827A;--el:#f5d0cc}
+  .ge-grounds{--ec:#5E9EED;--el:#cadffa}
+  .ge-follows{--ec:#C77FE0;--el:#ead3f5}
+  .ge-rf,.ge-rt{--ec:#7B8AF0;--el:#d3d9fb}
+
   /* SECTION */
   section{padding:104px 0;border-bottom:0;transition:background-color .3s ease}
   #what{background:var(--bg)}
@@ -324,7 +392,8 @@
 
 <!-- HERO -->
 <header class="hero">
-  <div class="wrap">
+  <div class="wrap hero-grid">
+    <div class="hero-copy">
     <span class="eyebrow">Modular Interoperable Research Attribution</span>
     <h1>A new medium for research.</h1>
     <p class="lede">Research today is shipped as a sealed document. MIRA turns it into a graph of signed, citable records: the questions a field is asking, the claims that answer them, and the evidence behind each one.</p>
@@ -335,12 +404,103 @@
         <input id="hero-email" name="email" type="email" placeholder="you@lab.edu" aria-describedby="hero-email-hint" required />
         <button type="submit" class="btn btn-primary">Keep me posted</button>
       </div>
-      <p id="hero-email-hint" class="signup-hint">Occasional updates on MIRA's progress and how to get involved. No spam, unsubscribe anytime.</p>
+      <p id="hero-email-hint" class="signup-hint">Occasional updates on MIRA's progress and how to get involved.</p>
       <p class="signup-done" role="status">Thanks. We will keep you posted.</p>
       <p class="signup-error" role="alert"></p>
     </form>
+    </div>
+    <div class="hero-fig" id="hero-fig">
+      <svg viewBox="0 0 340 372" role="img" aria-label="The six MIRA record types and how they link. A Question sits at the top. A Claim addresses it. Evidence supports or opposes the Claim. A Study grounds the Evidence, and follows a Protocol. A Request points at work nobody has done yet.">
+        <defs>
+          <!-- One head per edge colour: a single shared marker cannot inherit the
+               line's stroke, which is why the heads read as grey on coloured lines.
+               markerUnits="userSpaceOnUse" keeps them from scaling with stroke-width. -->
+          <marker id="ah-green" viewBox="0 0 10 10" refX="9.4" refY="5" markerWidth="7.5" markerHeight="7.5" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0.6,1.4 L9.4,5 L0.6,8.6 z" fill="#5BA756"/></marker>
+          <marker id="ah-red" viewBox="0 0 10 10" refX="9.4" refY="5" markerWidth="7.5" markerHeight="7.5" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0.6,1.4 L9.4,5 L0.6,8.6 z" fill="#E6827A"/></marker>
+          <marker id="ah-blue" viewBox="0 0 10 10" refX="9.4" refY="5" markerWidth="7.5" markerHeight="7.5" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0.6,1.4 L9.4,5 L0.6,8.6 z" fill="#5E9EED"/></marker>
+          <marker id="ah-purple" viewBox="0 0 10 10" refX="9.4" refY="5" markerWidth="7.5" markerHeight="7.5" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0.6,1.4 L9.4,5 L0.6,8.6 z" fill="#C77FE0"/></marker>
+          <marker id="ah-indigo" viewBox="0 0 10 10" refX="9.4" refY="5" markerWidth="7.5" markerHeight="7.5" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M0.6,1.4 L9.4,5 L0.6,8.6 z" fill="#7B8AF0"/></marker>
+        </defs>
+        <g class="g-edge is-on ge-addresses" data-appear="2"><path class="g-link" d="M170,95 L170,56" marker-end="url(#ah-green)"/><text class="g-elabel" x="176" y="78">addresses</text></g>
+        <g class="g-edge is-on ge-so" data-appear="3"><path class="g-link" d="M134,176 L154.4,133.2" marker-end="url(#ah-red)"/><text class="g-elabel" x="70" y="150">supports /</text><text class="g-elabel" x="70" y="160">opposes</text></g>
+        <g class="g-edge is-on ge-grounds" data-appear="4"><path class="g-link" d="M98,264 L114,212" marker-end="url(#ah-blue)"/><text class="g-elabel" x="56" y="240">grounds</text></g>
+        <g class="g-edge is-on ge-follows" data-appear="5"><path class="g-link" d="M88,298 L88,325.5" marker-end="url(#ah-purple)"/><text class="g-elabel" x="94" y="318">follows</text></g>
+        <g class="g-edge is-on ge-rf" data-appear="6"><path class="g-link" d="M219,283 L139,283" marker-end="url(#ah-indigo)"/><text class="g-elabel" x="178" y="276" text-anchor="middle">request_for</text></g>
+        <g class="g-edge is-on ge-rt" data-appear="6"><path class="g-link" d="M260,264 C250,200 244,150 221,123" marker-end="url(#ah-indigo)"/><text class="g-elabel" x="252" y="205">request_target</text></g>
+        <g class="g-node is-on gn-question" data-appear="1"><rect x="122" y="19" width="96" height="34" rx="9"/><text x="170" y="37">Question</text></g>
+        <g class="g-node is-on gn-claim" data-appear="2"><rect x="122" y="95" width="96" height="34" rx="9"/><text x="170" y="113">Claim</text></g>
+        <g class="g-node is-on gn-evidence" data-appear="3"><rect x="78" y="175" width="96" height="34" rx="9"/><text x="126" y="193">Evidence</text></g>
+        <g class="g-node is-on gn-study" data-appear="4"><rect x="40" y="263" width="96" height="34" rx="9"/><text x="88" y="281">Study</text></g>
+        <g class="g-node is-on gn-protocol" data-appear="5"><rect x="40" y="329" width="96" height="34" rx="9"/><text x="88" y="347">Protocol</text></g>
+        <g class="g-node is-on gn-request" data-appear="6"><rect x="218" y="263" width="96" height="34" rx="9"/><text x="266" y="281">Request</text></g>
+      </svg>
+    </div>
   </div>
 </header>
+<script>
+  /* One-time build-in for the hero graph. The graph is already hidden by CSS at
+     this point — html.mira-draw was set in <head>, before the body was parsed —
+     so this script only sequences the reveal. It never hides anything itself.
+     Plays once and never repeats: no loop, no hover, no controls. The resting
+     state is the complete static graph. */
+  (function(){
+    var root=document.documentElement;
+    if(!root.classList.contains('mira-draw')) return;   /* reduced motion, or no JS in <head> */
+    var fig=document.getElementById('hero-fig');
+    /* Anything unexpected and we drop the class, which reveals the whole graph
+       instantly. Failing to a visible graph beats failing to an invisible one. */
+    if(!fig){root.classList.remove('mira-draw');return;}
+
+    try{
+      /* Narrative order — each record, then the link back to what it answers.
+         Stepping element by element rather than in six grouped beats is what
+         turns this from six pops into one continuous build. */
+      var ORDER=['gn-question','gn-claim','ge-addresses','gn-evidence','ge-so',
+                 'gn-study','ge-grounds','gn-protocol','ge-follows',
+                 'gn-request','ge-rf','ge-rt'];
+      var STEP=125, LEAD=220, DRAW=660;
+
+      var seq=ORDER.map(function(c){return fig.querySelector('.'+c);}).filter(Boolean);
+      if(!seq.length){root.classList.remove('mira-draw');return;}
+
+      /* Swap the CSS placeholder dash for each path's real length. Transitions are
+         suppressed across this (.is-priming) and flushed with a forced reflow, or
+         the offset change animates and every line plays a reverse draw first. */
+      fig.classList.add('is-priming');
+      seq.forEach(function(el){
+        var p=el.querySelector('.g-link');
+        if(!p||!p.getTotalLength) return;
+        var len=p.getTotalLength();
+        if(!len) return;
+        p.style.strokeDasharray=len+' '+len;
+        p.style.strokeDashoffset=len;
+      });
+      void fig.getBoundingClientRect();
+      fig.classList.remove('is-priming');
+    }catch(e){root.classList.remove('mira-draw');return;}
+
+    function land(el){
+      el.classList.add('is-drawn');
+      var p=el.querySelector('.g-link');
+      if(p) p.style.strokeDashoffset='0';
+      /* The head lands only once the line reaches it — markers ignore dashing,
+         so an arrowhead left visible would sit at the far end from the start. */
+      if(el.classList.contains('g-edge')) setTimeout(function(){el.classList.add('is-tipped');},DRAW-90);
+    }
+
+    function draw(){
+      seq.forEach(function(el,i){setTimeout(function(){land(el);},LEAD+i*STEP);});
+      /* the hero graph must never be left half-drawn */
+      setTimeout(function(){
+        seq.forEach(function(el){
+          el.classList.add('is-drawn','is-tipped');
+          var p=el.querySelector('.g-link'); if(p) p.style.strokeDashoffset='0';
+        });
+      },LEAD+seq.length*STEP+DRAW+1200);
+    }
+    if(document.readyState==='loading'){addEventListener('DOMContentLoaded',draw,{once:true});}else{draw();}
+  })();
+</script>
 
 <!-- WHAT IT IS -->
 <section id="what">
@@ -356,7 +516,7 @@
         <p>Any tool can be extended to create, query, and write to a graph. MIRA itself hosts nothing.</p>
       </div>
       <div class="block">
-        <h3>Maintained by its users</h3>
+        <h3>Stewarded by its users</h3>
         <p>MIRA is maintained in the open by the teams that build tools around it and the researchers who use it.</p>
       </div>
     </div>
@@ -499,7 +659,7 @@
         <input id="involved-email" name="email" type="email" placeholder="you@lab.edu" aria-describedby="involved-email-hint" required />
         <button type="submit" class="btn btn-primary">Keep me posted</button>
       </div>
-      <p id="involved-email-hint" class="signup-hint">Occasional updates on MIRA's progress and how to get involved. No spam, unsubscribe anytime.</p>
+      <p id="involved-email-hint" class="signup-hint">Occasional updates on MIRA's progress and how to get involved.</p>
       <p class="signup-done" role="status">Thanks. We will keep you posted.</p>
       <p class="signup-error" role="alert"></p>
     </form>
