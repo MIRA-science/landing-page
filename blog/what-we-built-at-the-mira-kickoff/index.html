@@ -4,12 +4,12 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>MIRA · What we built at the MIRA Kickoff</title>
-<meta name="description" content="Twenty-five researchers, tool builders, and open-science advocates spent four days in Ireland discussing, scoping, and building the early pieces of a modular research ecosystem. Five working prototypes, a tested schema, and the demos to show for it." />
+<meta name="description" content="Twenty-five researchers, tool builders, and open-science advocates spent four days in Ireland discussing, scoping, and building the early pieces of a modular research ecosystem. Six working prototypes, a tested schema, and the demos to show for it." />
 <link rel="canonical" href="https://mira.science/blog/what-we-built-at-the-mira-kickoff/" />
 <meta property="og:type" content="article" />
 <meta property="og:site_name" content="MIRA" />
 <meta property="og:title" content="What we built at the MIRA Kickoff" />
-<meta property="og:description" content="Four days in Ireland. Three user stories. Five working prototypes, a tested schema, and the demos to show for it." />
+<meta property="og:description" content="Four days in Ireland. Three user stories. Six working prototypes, a tested schema, and the demos to show for it." />
 <meta property="og:url" content="https://mira.science/blog/what-we-built-at-the-mira-kickoff/" />
 <meta property="og:image" content="https://mira.science/blog/what-we-built-at-the-mira-kickoff/media/kickoff-group-1200.jpg" />
 <meta name="twitter:card" content="summary_large_image" />
@@ -221,7 +221,7 @@
   .demo figcaption b{color:var(--ink-2);font-weight:500}
   @media(max-width:560px){.demo figcaption{flex-direction:column;gap:6px}}
 
-  /* the five prototypes */
+  /* the prototypes */
   .post .protos{list-style:none;padding:0;margin:4px 0 36px}
   .post .protos li{display:grid;grid-template-columns:150px 1fr;gap:20px;padding:18px 0;margin:0;border-top:1px solid var(--line)}
   .post .protos li:last-child{border-bottom:1px solid var(--line)}
@@ -349,7 +349,7 @@
     width="1800" height="1200"
     alt="The MIRA Kickoff participants standing and kneeling on a lawn in front of tall trees, smiling at the camera."
   />
-  <figcaption><b>Our grinning MIRAfication experts after 4 days of carving science at its joints.</b> Our participants: Saif Haobsh, Morgan Sosa, Luke Miller, Mathis Federico, Rodrigo Migueles Ramirez, Ellie DeSota, Paul Reginato, Paul Shannon, Monica Granados, Marc-Antoine Parent, Martin, Nokome Bentley, Joel Chan, Ellie Rennie, Ronen Tamari, Sean Moore, Sekhar Ramakrishnan, Matt Akamatsu, Frida Arrey Takubetang, Ann Campbell, Kate Lee, Jon Starr, and (not pictured) Anton Molina.</figcaption>
+  <figcaption><b>Our grinning MIRAfication experts after 4 days of carving science at its joints.</b> Our participants: Saif Haobsh, Morgan Sosa, Luke Miller, Mathis Federico, Rodrigo Migueles Ramirez, Ellie DeSota, Paul Reginato, Paul Shannon, Monica Granados, Marc-Antoine Parent, Martin, Nokome Bentley, Joel Chan, Ellie Rennie, Ronen Tamari, Sean Moore, Sekhar Ramakrishnan, Matt Akamatsu, Frida Arrey Takubetang, Ann Campbell, Kate Lee, Jonathan Starr, and (not pictured) Anton Molina.</figcaption>
 </figure>
 
 <!-- THE POST -->
@@ -411,23 +411,24 @@
         <figcaption><span class="k">Demo · 2:18</span><span><b>Deltabay.</b> Mathis Federico opens a scientific debate where every claim is backed by evidence and every endorsement is scored.</span></figcaption>
       </figure>
 
-      <p>Additionally we defined how to connect organizational vision to a clear RFP and proposal, where all of those elements are broken down into MIRA graphs, enriched with endorsements and other human signals, and utilized to assist in grant screening and selection. We built <a href="https://mira-extraction.vercel.app/" target="_blank" rel="noopener noreferrer">a MIRA graph extractor</a> which is the first step to prototyping this pathway. This extractor reads a PDF using a free LLM, and generates the MIRA graph ready for human review and endorsements. It is one piece of <a href="https://graph.scios.tech/" target="_blank" rel="noopener noreferrer">RRGI</a>, a public graph of MIRA records on AT Protocol and IPFS where those human signals live: signed-in researchers extend the graph with questions and evidence, endorse a claim as believed, verified, or qualified, browse it by field of science, and get an AI reader's suggestions of related methods in distant fields. Every record is signed by its author and pinned to IPFS, so the graph stays provable with the original server switched off.</p>
+      <p>Additionally we defined how to connect organizational vision to a clear RFP and proposal, where all of those elements are broken down into MIRA graphs, enriched with endorsements and other human signals, and utilized to assist in grant screening and selection. We built <a href="https://mira-extraction.vercel.app/" target="_blank" rel="noopener noreferrer">a MIRA graph extractor</a> which is the first step to prototyping this pathway. This extractor reads a PDF using a free LLM, and generates the MIRA graph ready for human review and endorsements. It is one piece of <a href="https://graph.scios.tech/" target="_blank" rel="noopener noreferrer">RRGI</a>, a public graph of MIRA records on AT Protocol and IPFS where those human signals live: signed-in researchers extend the graph with questions and evidence, endorse a claim as believed, verified, or qualified, browse it by field of science, and get an AI reader's suggestions of related methods in distant fields. Every record is signed by its author and pinned to IPFS, so the graph does not depend on any single server, journal, or DOI registry.</p>
 
       <figure class="demo reveal">
         <video controls preload="none" playsinline poster="/blog/what-we-built-at-the-mira-kickoff/media/mira-graph-extractor.jpg" width="1072" height="514">
           <source src="/blog/what-we-built-at-the-mira-kickoff/media/mira-graph-extractor.mp4" type="video/mp4" />
           Your browser can't play this video. <a href="/blog/what-we-built-at-the-mira-kickoff/media/mira-graph-extractor.mp4">Download it instead.</a>
         </video>
-        <figcaption><span class="k">Demo · 5:09</span><span><b>RRGI, the resilient research graph.</b> Jon Starr tours the public MIRA graph on AT Protocol and IPFS: papers as bundles of signed records, questions and evidence added by researchers, endorsements that give each claim its standing, browsing by field of science, an AI reader that flags related methods across distant fields, and the PDF extractor that turns a paper into MIRA records.</span></figcaption>
+        <figcaption><span class="k">Demo · 5:09</span><span><b>RRGI, the resilient research graph.</b> Jonathan Starr tours the public MIRA graph on AT Protocol and IPFS: papers as bundles of signed records, questions and evidence added by researchers, endorsements that give each claim its standing, browsing by field of science, an AI reader that flags related methods across distant fields, and the PDF extractor that turns a paper into MIRA records.</span></figcaption>
       </figure>
 
       <h2>Four days later, we had</h2>
-      <p><b>Five working prototypes.</b></p>
+      <p><b>Six working prototypes.</b></p>
       <ul class="protos">
         <li><span class="n"><a href="https://mira-extraction.vercel.app/" target="_blank" rel="noopener noreferrer">MIRA-fier</a></span><span class="d">The modular-evidence transformer.</span></li>
         <li><span class="n"><a href="https://mira-dashboard.conversence.com/" target="_blank" rel="noopener noreferrer">MIRA-viewer</a></span><span class="d">The private-by-default cross-lab dashboard. Powered by a schema-aware transport pipeline, sending private MIRA data from discourse-graphs to the MIRA-viewer and Semble through KOI.</span></li>
         <li><span class="n"><a href="https://github.com/MIRA-science/myst-plus-mira" target="_blank" rel="noopener noreferrer">MIRyST</a></span><span class="d">A way to extend MyST to contain data for MIRA elements.</span></li>
         <li><span class="n"><a href="https://deltabay.bycelium.com/" target="_blank" rel="noopener noreferrer">Deltabay</a></span><span class="d">A view on contribution strengths of a scientific discourse to measure the impact of evidence on the answers' credibility of important questions within a scientific topic.</span></li>
+        <li><span class="n"><a href="https://graph.scios.tech/" target="_blank" rel="noopener noreferrer">RRGI</a></span><span class="d">Resilient Research Graph Infrastructure: a public graph of MIRA records on AT Protocol and IPFS, with the PDF extractor, endorsements, and discovery views built in.</span></li>
         <li><span class="n"><a href="https://stencila.io/docs/formats/mira/" target="_blank" rel="noopener noreferrer">MIROXA</a></span><span class="d">A way to integrate MIRA into the preexisting OXA standard within Stencila, an open source publishing platform for dynamic documents.</span></li>
       </ul>
       <ul>
