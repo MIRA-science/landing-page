@@ -237,6 +237,8 @@
   .term dd{font-size:17.5px;line-height:1.55;color:var(--ink-2)}
 
   .post .btn-row{margin:34px 0 0}
+  /* the post's link colour must not override the button's own text colour */
+  .post .btn-primary,.post .btn-primary:hover{color:var(--bg);text-decoration:none}
 
   /* get involved — high-contrast CTA band */
   .involved{background:var(--cta-bg);color:var(--cta-text);padding:104px 0;transition:background-color .3s ease}
@@ -448,7 +450,7 @@
 
       <h2>And then we do it again!</h2>
       <p>Modular science is just emerging as an ecosystem that needs new ways to distribute funding, make research visible as it happens, localize and distribute data, and track and reward specialization properly. We can only do so much in four days…</p>
-      <p>Join us at IOSP, where we'll launch the vision publicly and invite more people in.</p>
+      <p>Join us at IOSP, where we'll build on the vision and invite you to join!</p>
       <p class="btn-row"><a class="btn btn-primary" href="https://www.iosp.science/" target="_blank" rel="noopener noreferrer">Join us in Leiden, October 12–15 <span class="arr" aria-hidden="true">&rarr;</span></a></p>
 
     </div>
