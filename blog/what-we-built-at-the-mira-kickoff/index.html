@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>MIRA · What we built at the MIRA Kickoff</title>
+<meta name="description" content="Twenty-five researchers, tool builders, and open-science advocates spent four days in Ireland discussing, scoping, and building the early pieces of a modular research ecosystem. Six working prototypes, a tested schema, and the demos to show for it." />
+<link rel="canonical" href="https://mira.science/blog/what-we-built-at-the-mira-kickoff/" />
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="MIRA" />
+<meta property="og:title" content="What we built at the MIRA Kickoff" />
+<meta property="og:description" content="Four days in Ireland. Three user stories. Six working prototypes, a tested schema, and the demos to show for it." />
+<meta property="og:url" content="https://mira.science/blog/what-we-built-at-the-mira-kickoff/" />
+<meta property="og:image" content="https://mira.science/blog/what-we-built-at-the-mira-kickoff/media/kickoff-group-1200.jpg" />
+<meta name="twitter:card" content="summary_large_image" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:ital,wght@0,400..700;1,400&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<script>
+  /* set theme before first paint to avoid a flash */
+  (function(){
+    try{
+      var stored=localStorage.getItem('mira-theme');
+      var sys=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches;
+      document.documentElement.setAttribute('data-theme', stored || (sys?'dark':'light'));
+    }catch(e){document.documentElement.setAttribute('data-theme','light');}
+  })();
+</script>
+<style>
+  :root{
+    color-scheme:light;
+    --bg:#ffffff;
+    --ink:#16181b;
+    --ink-2:#33373c;
+    --muted:#5b616a;
+    --faint:#6b717a;
+    --line:#e9eaec;
+    --line-soft:#f3f4f5;
+    --accent:#1d5440;
+    --accent-deep:#163f30;
+
+    /* section contrast scheme */
+    --tint-1:#f6f8f7;
+    --tint-2:#eef2f0;
+    --card-bg:#ffffff;
+
+    /* form fields */
+    --input-bg:#ffffff;
+    --input-border:#e9eaec;
+    --input-text:#16181b;
+
+    /* HERO band */
+    --hero-bg:radial-gradient(125% 120% at 82% -15%, #235e46 0%, #163f30 48%, #102e22 100%);
+    --hero-text:#ffffff;
+    --hero-muted:#b6cdc1;
+    --hero-eyebrow:#8ed8b3;
+    --hero-btn:#7fd3a8;
+    --hero-btn-hover:#9ce3c1;
+    --hero-btn-text:#0f2c21;
+
+    /* CTA band */
+    --cta-bg:radial-gradient(125% 130% at 50% -25%, #235e46 0%, #163f30 55%, #102e22 100%);
+    --cta-text:#ffffff;
+    --cta-muted:#b6cdc1;
+    --cta-eyebrow:#8ed8b3;
+    --cta-btn:#7fd3a8;
+    --cta-btn-hover:#9ce3c1;
+    --cta-btn-text:#0f2c21;
+
+    /* footer */
+    --footer-bg:#0f2c21;
+    --footer-text:#ffffff;
+    --footer-muted:#b6cdc1;
+
+    --sans:"Schibsted Grotesk",-apple-system,BlinkMacSystemFont,sans-serif;
+    --mono:"Geist Mono",ui-monospace,SFMono-Regular,monospace;
+    --maxw:1080px;
+  }
+
+  /* DARK MODE — inverted scheme: very dark green sections resolving to a
+     vibrant/pastel-green CTA, per the eLife brand suggestion. */
+  [data-theme="dark"]{
+    color-scheme:dark;
+    --bg:#0c1411;
+    --ink:#e9efeb;
+    --ink-2:#cad6d0;
+    --muted:#93a39b;
+    --faint:#7f8f87;
+    --line:#1f2b26;
+    --line-soft:#172019;
+    --accent:#7fd3a8;
+    --accent-deep:#9ce3c1;
+
+    --tint-1:#0f1814;
+    --tint-2:#121d18;
+    --card-bg:#16241d;
+
+    --input-bg:#0f1b16;
+    --input-border:#27332c;
+    --input-text:#e9efeb;
+
+    --hero-bg:radial-gradient(125% 120% at 82% -15%, #15392a 0%, #0e271d 50%, #081711 100%);
+    --hero-text:#eafaf2;
+    --hero-muted:#9fb4aa;
+    --hero-eyebrow:#7fd3a8;
+    --hero-btn:#7fd3a8;
+    --hero-btn-hover:#9ce3c1;
+    --hero-btn-text:#08251a;
+
+    --cta-bg:radial-gradient(125% 130% at 50% -25%, #c2f5da 0%, #8fdcb4 55%, #6cc79b 100%);
+    --cta-text:#0a2419;
+    --cta-muted:#1d4636;
+    --cta-eyebrow:#0e3a28;
+    --cta-btn:#0f2c21;
+    --cta-btn-hover:#163f30;
+    --cta-btn-text:#eafff4;
+
+    --footer-bg:#0a1d15;
+    --footer-text:#e9efeb;
+    --footer-muted:#8ba197;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+  body{
+    background:var(--bg);color:var(--ink);font-family:var(--sans);
+    font-size:17px;line-height:1.6;font-weight:400;letter-spacing:-.005em;
+    -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+    transition:background-color .3s ease,color .3s ease;
+  }
+  a{color:inherit;text-decoration:none}
+  ::selection{background:var(--accent);color:var(--bg)}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 32px}
+
+  .eyebrow{
+    font-family:var(--mono);font-size:12px;font-weight:500;letter-spacing:.06em;
+    text-transform:uppercase;color:var(--accent);
+  }
+
+  /* NAV */
+  nav{position:sticky;top:0;z-index:60;background:var(--bg);border-bottom:1px solid transparent;transition:border-color .3s,background-color .3s}
+  nav.scrolled{border-color:var(--line)}
+  .nav-in{display:flex;align-items:center;justify-content:space-between;height:66px}
+  .brand{display:inline-flex;align-items:center}
+  .logo{height:21px;width:auto;display:block;color:inherit}
+  .logo text{font-family:var(--sans)}
+  .nav-right{display:flex;align-items:center;gap:24px}
+  .nav-links{display:flex;gap:28px}
+  .nav-links a{font-size:14.5px;color:var(--muted);transition:color .2s}
+  .nav-links a:hover{color:var(--ink)}
+  .theme-toggle{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:8px;border:1px solid var(--line);background:transparent;color:var(--muted);cursor:pointer;transition:color .2s,border-color .2s}
+  .theme-toggle:hover{color:var(--ink);border-color:var(--ink-2)}
+  .theme-toggle svg{width:18px;height:18px}
+  .theme-toggle .ico-sun{display:none}
+  [data-theme="dark"] .theme-toggle .ico-moon{display:none}
+  [data-theme="dark"] .theme-toggle .ico-sun{display:block}
+  .nav-cta{font-size:14px;font-weight:500;background:var(--accent);color:var(--bg);padding:9px 17px;border-radius:7px;transition:background .2s,transform .2s}
+  .nav-cta:hover{background:var(--accent-deep);transform:translateY(-1px)}
+  @media(max-width:760px){.nav-links{display:none}}
+
+  /* buttons */
+  .btn{font-size:15px;font-weight:500;padding:13px 24px;border-radius:8px;display:inline-flex;align-items:center;gap:9px;transition:all .22s ease;cursor:pointer}
+  .btn-primary{background:var(--accent);color:var(--bg);box-shadow:0 1px 2px rgba(22,63,48,.18)}
+  .btn-primary:hover{background:var(--accent-deep);transform:translateY(-1px);box-shadow:0 8px 22px -10px rgba(22,63,48,.5)}
+  .btn-primary .arr{transition:transform .22s}
+  .btn-primary:hover .arr{transform:translateX(3px)}
+  .involved .btn-primary{background:var(--cta-btn);color:var(--cta-btn-text);box-shadow:0 1px 2px rgba(0,0,0,.25)}
+  .involved .btn-primary:hover{background:var(--cta-btn-hover);transform:translateY(-1px);box-shadow:0 10px 26px -12px rgba(0,0,0,.4)}
+
+  /* PAGE HEADER (post) */
+  .page-head{background:var(--hero-bg);color:var(--hero-text);padding:64px 0 136px}
+  .page-head .eyebrow{display:block;margin-bottom:20px;color:var(--hero-eyebrow)}
+  .page-head h1{font-size:clamp(34px,5vw,60px);line-height:1.04;font-weight:500;letter-spacing:-.032em;max-width:18ch;margin-bottom:22px}
+  .page-head .meta{display:flex;flex-wrap:wrap;gap:8px 22px;font-family:var(--mono);font-size:12.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--hero-muted);margin-bottom:36px}
+  .page-head .back{display:inline-flex;align-items:center;gap:8px;font-size:14.5px;color:var(--hero-muted);
+    margin-bottom:34px;transition:color .2s}
+  .page-head .back:hover{color:var(--hero-text)}
+  .page-head .back .arr{transition:transform .22s}
+  .page-head .back:hover .arr{transform:translateX(-3px)}
+  .ingredients{max-width:60ch;border-left:2px solid var(--hero-eyebrow);padding:4px 0 4px 20px;font-size:17.5px;line-height:1.55;color:var(--hero-muted)}
+  .ingredients b{display:block;font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--hero-eyebrow);font-weight:500;margin-bottom:6px}
+  @media(max-width:560px){.page-head{padding:44px 0 104px}}
+
+  /* LEAD PHOTO — overlaps the bottom edge of the header band */
+  .lead{position:relative;z-index:2;margin-top:-88px}
+  .lead img{width:100%;height:auto;display:block;border-radius:14px;border:1px solid var(--line);box-shadow:0 30px 60px -30px rgba(0,0,0,.55);background:var(--tint-2)}
+  .lead figcaption{font-size:14.5px;line-height:1.55;color:var(--muted);margin-top:16px;max-width:86ch}
+  .lead figcaption b{color:var(--ink-2);font-weight:500}
+  @media(max-width:560px){.lead{margin-top:-64px}.lead img{border-radius:10px}}
+
+  /* ARTICLE */
+  .post{padding:64px 0 104px;background:var(--bg)}
+  /* prose measures 720px; demo figures may run out to 880px */
+  .post-col{max-width:880px}
+  .post p,.post h2,.post ul,.post ol,.post dl{max-width:720px}
+  .post p{font-size:18px;line-height:1.65;color:var(--ink-2);margin:0 0 26px}
+  .post p.lead-p{font-size:21px;line-height:1.55;color:var(--ink);margin-bottom:34px}
+  .post h2{font-size:clamp(26px,3.2vw,36px);line-height:1.12;font-weight:500;letter-spacing:-.028em;color:var(--ink);margin:76px 0 24px}
+  .post h2:first-child{margin-top:0}
+  .post b{font-weight:600;color:var(--ink)}
+  .post .lead-in{font-weight:600;color:var(--ink)}
+  .post a{color:var(--accent);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px;text-decoration-color:color-mix(in srgb,var(--accent) 45%,transparent);transition:text-decoration-color .2s}
+  .post a:hover{text-decoration-color:var(--accent)}
+  .post ul{margin:0 0 26px;padding-left:1.15em}
+  .post ul li{font-size:18px;line-height:1.6;color:var(--ink-2);margin-bottom:14px;padding-left:8px}
+  .post ul li::marker{color:var(--accent)}
+
+  /* the three user stories */
+  .stories{list-style:none;padding:0;margin:0 0 30px;counter-reset:s}
+  .stories li{counter-increment:s;display:grid;grid-template-columns:44px 1fr;gap:16px;padding:20px 0;border-top:1px solid var(--line)}
+  .stories li:last-child{border-bottom:1px solid var(--line)}
+  .stories li::before{content:"0" counter(s);font-family:var(--mono);font-size:12.5px;letter-spacing:.06em;color:var(--accent);padding-top:6px}
+  .stories .t{display:block;font-size:18px;font-weight:600;color:var(--ink);margin-bottom:4px}
+  .stories .d{display:block;font-size:17px;line-height:1.55;color:var(--muted)}
+
+  /* demo videos */
+  .demo{margin:4px 0 46px;max-width:880px}
+  .demo video{width:100%;height:auto;display:block;border-radius:12px;border:1px solid var(--line);background:#0b0f0d}
+  .demo figcaption{display:flex;gap:16px;align-items:baseline;font-size:14.5px;line-height:1.5;color:var(--muted);margin-top:12px}
+  .demo .k{flex:none;font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);white-space:nowrap;padding-top:2px}
+  .demo figcaption b{color:var(--ink-2);font-weight:500}
+  @media(max-width:560px){.demo figcaption{flex-direction:column;gap:6px}}
+
+  /* the prototypes */
+  .post .protos{list-style:none;padding:0;margin:4px 0 36px}
+  .post .protos li{display:grid;grid-template-columns:150px 1fr;gap:20px;padding:18px 0;margin:0;border-top:1px solid var(--line)}
+  .post .protos li:last-child{border-bottom:1px solid var(--line)}
+  .protos .n{font-size:17px;font-weight:600;color:var(--ink)}
+  .protos .n a{color:var(--ink);text-decoration-color:color-mix(in srgb,var(--ink) 30%,transparent)}
+  .protos .n a:hover{color:var(--accent);text-decoration-color:var(--accent)}
+  .protos .d{font-size:16.5px;line-height:1.55;color:var(--muted)}
+  @media(max-width:560px){.post .protos li{grid-template-columns:1fr;gap:6px}}
+
+  /* new terms */
+  .term{background:var(--tint-1);border:1px solid var(--line);border-radius:14px;padding:22px 26px;margin:0 0 30px}
+  .term dt{font-family:var(--mono);font-size:13.5px;letter-spacing:.03em;color:var(--accent);margin-bottom:8px}
+  .term dd{font-size:17.5px;line-height:1.55;color:var(--ink-2)}
+
+  .post .btn-row{margin:34px 0 0}
+
+  /* GALLERY */
+  .gallery-sec{background:var(--tint-1);padding:96px 0 104px;transition:background-color .3s ease}
+  .gallery-sec .sec-head{max-width:720px;margin-bottom:36px}
+  .gallery-sec .sec-head .eyebrow{display:block;margin-bottom:16px}
+  .gallery-sec h2{font-size:clamp(26px,3.2vw,36px);line-height:1.12;font-weight:500;letter-spacing:-.028em;color:var(--ink);margin-bottom:16px}
+  .gallery-sec .sub{font-size:18px;line-height:1.6;color:var(--muted)}
+  .gallery-sec .demo{max-width:none;margin:0 0 28px}
+  .gallery{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;grid-auto-flow:dense}
+  .gallery a{display:block;border-radius:10px;overflow:hidden;background:var(--tint-2);border:1px solid var(--line);aspect-ratio:3/2;transition:transform .25s ease,box-shadow .25s ease}
+  .gallery a:hover{transform:translateY(-2px);box-shadow:0 16px 32px -20px rgba(0,0,0,.5)}
+  .gallery a.wide{grid-column:span 2}
+  .gallery a.tall{grid-row:span 2;aspect-ratio:auto}
+  .gallery img{width:100%;height:100%;object-fit:cover;display:block}
+  .gallery-credit{font-family:var(--mono);font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin-top:18px}
+  @media(max-width:760px){.gallery{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}}
+  @media(max-width:560px){.gallery-sec{padding:64px 0 72px}}
+
+  /* lightbox */
+  dialog.lb{border:0;padding:0;margin:0;background:transparent;max-width:none;max-height:none;width:100vw;height:100vh;color:#fff}
+  dialog.lb::backdrop{background:rgba(6,12,9,.94)}
+  .lb-in{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:56px 72px 48px}
+  .lb-in img{max-width:100%;max-height:calc(100vh - 120px);border-radius:8px;box-shadow:0 30px 80px -30px rgba(0,0,0,.8)}
+  .lb-btn{position:absolute;top:50%;transform:translateY(-50%);width:44px;height:44px;border-radius:50%;border:1px solid rgba(255,255,255,.25);background:rgba(0,0,0,.35);color:#fff;font-size:24px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center}
+  .lb-btn:hover,.lb-close:hover{background:rgba(255,255,255,.14)}
+  .lb-prev{left:16px}.lb-next{right:16px}
+  .lb-close{position:absolute;top:14px;right:16px;width:40px;height:40px;border-radius:50%;border:1px solid rgba(255,255,255,.25);background:rgba(0,0,0,.35);color:#fff;font-size:22px;line-height:1;cursor:pointer}
+  .lb-n{position:absolute;top:24px;left:20px;font-family:var(--mono);font-size:12px;letter-spacing:.06em;color:#b6cdc1}
+  @media(max-width:560px){.lb-in{padding:56px 10px 40px}.lb-in img{max-height:calc(100vh - 170px)}.lb-btn{width:38px;height:38px;font-size:20px}.lb-prev{left:6px}.lb-next{right:6px}}
+  /* the post's link colour must not override the button's own text colour */
+  .post .btn-primary,.post .btn-primary:hover{color:var(--bg);text-decoration:none}
+
+  /* get involved — high-contrast CTA band */
+  .involved{background:var(--cta-bg);color:var(--cta-text);padding:104px 0;transition:background-color .3s ease}
+  .involved .eyebrow{color:var(--cta-eyebrow)}
+  .involved .sec-head{max-width:660px;margin-bottom:30px}
+  .involved .sec-head .eyebrow{display:block;margin-bottom:18px}
+  .involved h2{font-size:clamp(28px,3.6vw,40px);line-height:1.12;font-weight:500;letter-spacing:-.028em;color:var(--cta-text)}
+  @media(max-width:560px){.involved{padding:76px 0}}
+
+  /* email capture */
+  .signup{display:flex;flex-direction:column;gap:10px;max-width:440px}
+  .signup-label{font-size:14px;font-weight:500;color:var(--ink-2)}
+  .signup-fields{display:flex;gap:10px;width:100%;flex-wrap:wrap}
+  .signup input[type=email]{flex:1;min-width:220px;font-family:var(--sans);font-size:15px;color:var(--input-text);background:var(--input-bg);border:1px solid var(--input-border);border-radius:8px;padding:13px 15px;transition:border-color .2s,box-shadow .2s}
+  .signup input[type=email]::placeholder{color:var(--muted)}
+  .signup input[type=email]:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(127,211,168,.22)}
+  .signup .btn{border:0;font-family:var(--sans)}
+  .signup-hint{font-size:13.5px;color:var(--muted)}
+  .signup-done{display:none;font-size:15.5px;color:var(--accent);font-weight:500}
+  .signup.done .signup-fields{display:none}
+  .signup.done .signup-hint{display:none}
+  .signup.done .signup-done{display:block}
+  .signup-error{display:none;font-size:13.5px;color:#d9544f;font-weight:500}
+  .signup.has-error .signup-error{display:block}
+  .signup-hp{position:absolute !important;left:-9999px;width:1px;height:1px;opacity:0;pointer-events:none}
+  .involved .signup-label{color:var(--cta-text)}
+  .involved .signup-hint{color:var(--cta-muted)}
+  .involved .signup-done{color:var(--cta-eyebrow)}
+
+  /* footer */
+  footer{background:var(--footer-bg);color:var(--footer-text);border-top:0;padding:56px 0 60px;transition:background-color .3s ease}
+  .foot{display:flex;justify-content:space-between;gap:40px;flex-wrap:wrap}
+  .foot .brand{margin-bottom:12px;color:var(--footer-text)}
+  .foot .brand .logo{height:22px}
+  .foot .tg{font-size:14px;color:var(--footer-muted);max-width:32ch}
+  .fine{font-family:var(--mono);font-size:12px;color:var(--footer-muted);margin-top:38px}
+  .foot-end{text-align:right}
+  .ack{font-size:13px;color:var(--footer-muted);max-width:34ch;margin-left:auto}
+  .ack a{color:var(--footer-text);text-decoration:underline;text-underline-offset:2px;transition:color .2s}
+  .ack a:hover{color:var(--accent)}
+  .foot-end .fine{margin-top:10px}
+  @media(max-width:560px){.foot-end{text-align:left}.ack{margin-left:0}}
+
+  .reveal{opacity:0;transform:translateY(18px);transition:opacity .8s cubic-bezier(.2,.7,.2,1),transform .8s cubic-bezier(.2,.7,.2,1)}
+  .reveal.in{opacity:1;transform:none}
+  @media(prefers-reduced-motion:reduce){.reveal{opacity:1!important;transform:none!important;transition:none!important}}
+
+  @media(max-width:560px){.wrap{padding:0 22px}.post{padding:48px 0 80px}.post p,.post ul li,.stories .t{font-size:17px}.post h2{margin-top:56px}}
+</style>
+<script>
+  window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+</script>
+<script defer src="/_vercel/insights/script.js"></script>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="nav">
+  <div class="wrap nav-in">
+    <a href="/" class="brand" aria-label="MIRA — home">
+      <svg class="logo" viewBox="0 0 96 24" role="img" aria-label="MIRA" xmlns="http://www.w3.org/2000/svg">
+        <title>MIRA</title>
+        <g stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+          <line x1="5" y1="6.5" x2="5" y2="17.5"/>
+          <line x1="5" y1="6.5" x2="17" y2="12"/>
+          <line x1="5" y1="17.5" x2="17" y2="12"/>
+        </g>
+        <g fill="currentColor">
+          <circle cx="5" cy="6.5" r="2.7"/>
+          <circle cx="5" cy="17.5" r="2.7"/>
+          <circle cx="17" cy="12" r="3.4"/>
+        </g>
+        <text x="29" y="17" fill="currentColor" font-size="17" font-weight="600" letter-spacing="0.4">MIRA</text>
+      </svg>
+    </a>
+    <div class="nav-right">
+      <div class="nav-links">
+        <a href="/#what">What it is</a>
+        <a href="/#why">Why it matters</a>
+        <a href="/#who">Who's using it</a>
+      </div>
+      <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Switch to dark theme" aria-pressed="false" title="Toggle light / dark">
+        <svg class="ico-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg>
+        <svg class="ico-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+      </button>
+      <a href="#involved" class="nav-cta">Get involved</a>
+    </div>
+  </div>
+</nav>
+
+<div id="top"></div>
+
+<!-- PAGE HEADER -->
+<header class="page-head">
+  <div class="wrap">
+    <a class="back" href="/"><span class="arr" aria-hidden="true">&larr;</span> Back to MIRA</a>
+    <span class="eyebrow">From the blog</span>
+    <h1>What we built at the MIRA Kickoff</h1>
+    <p class="meta"><time datetime="2026-06">June 2026</time><span>Ireland</span></p>
+    <p class="ingredients"><b>Ingredients</b>Irish air, wonderful people, incredible food, 28 hours of conversation, 3 concrete case studies, a first draft schema, and lots of enthusiasm.</p>
+  </div>
+</header>
+
+<!-- LEAD PHOTO -->
+<figure class="wrap lead">
+  <img
+    src="/blog/what-we-built-at-the-mira-kickoff/media/kickoff-group-1800.jpg"
+    srcset="/blog/what-we-built-at-the-mira-kickoff/media/kickoff-group-1200.jpg 1200w, media/kickoff-group-1800.jpg 1800w, media/kickoff-group-2400.jpg 2400w"
+    sizes="(min-width:1080px) 1016px, calc(100vw - 44px)"
+    width="1800" height="1200"
+    alt="The MIRA Kickoff participants standing and kneeling on a lawn in front of tall trees, smiling at the camera."
+  />
+  <figcaption><b>Our grinning MIRAfication experts after 4 days of carving science at its joints.</b> Our participants: Saif Haobsh, Morgan Sosa, Luke Miller, Mathis Federico, Rodrigo Migueles Ramirez, Ellie DeSota, Paul Reginato, Paul Shannon, Monica Granados, Marc-Antoine Parent, Martin Karlsson, Nokome Bentley, Joel Chan, Ellie Rennie, Ronen Tamari, Sean Moore, Sekhar Ramakrishnan, Matt Akamatsu, Frida Arrey Takubetang, Ann Campbell, Kate Lee, Jonathan Starr, and (not pictured) Anton Molina.</figcaption>
+</figure>
+
+<!-- THE POST -->
+<article class="post">
+  <div class="wrap">
+    <div class="post-col">
+
+      <p class="lead-p">With those ingredients, twenty-five researchers, tool builders, and open-science advocates spent three months building an extensible schema that could serve as the basis for collaborative communication throughout the research process. We then gathered in Ireland to use the schema as a starting point to discuss, scope, and build the early pieces of a modular research ecosystem where research is <b>collaborative by design, transparent by choice, and funded by contribution</b>.</p>
+
+      <h2>Starting from what we need</h2>
+      <p>We anchored everything in three real user stories:</p>
+      <ol class="stories">
+        <li><div><span class="t">b.next</span><span class="d">b.next is working to make it possible to build synthetic cells that solve real-world problems, and believes that's only achievable as a community effort. As maintainer of Nucleus, b.next helps build tools for collaborative synthetic cell building — including DevNotes, a technical communication tool built specifically to help synthetic cell builders work better, together.</span></div></li>
+        <li><div><span class="t">The Vogel and Lee Labs</span><span class="d">A cross-institution collaboration needing to move at the pace of research while maintaining lab separation and privacy.</span></div></li>
+        <li><div><span class="t">A research funder</span><span class="d">Looking for a credible way to evaluate research proposals and outputs.</span></div></li>
+      </ol>
+      <p>We listened to the people who had needs, scoped solutions that might solve their problem, and built the first versions of those solutions.</p>
+      <p>On the first day we defined any work that was not directly related to these use cases and scheduled it into the agenda for the next 4 days. This meant that all four days we were building and talking with users in a tight feedback development loop, and while those conversations were happening anyone not building was discussing the wider needs of the ecosystem. We had sessions on sustainable funding for MIRA, researcher ease of use and onboarding, funder evaluation metrics, building a MIRA homepage, scoping and setting up an ethnography for the event and beyond, and licensing and attribution.</p>
+
+      <h2>Discuss. Scope. Build. Repeat.</h2>
+      <p>The physical gathering was a rapid, repeating cycle: discuss the need, scope the requirement, build the thing. We ran this pattern against all three stories, then ran it again.</p>
+
+      <p><span class="lead-in">For the b.next synthetic cell engineering network:</span> we discussed what each partner actually needed from a shared ecosystem, and scoped <a href="https://github.com/MIRA-science/myst-plus-mira" target="_blank" rel="noopener noreferrer">a dashboard for communication</a>. We built the many components of a pipeline to share data to as many places as data might want to be shared with. The components were annotation for MyST markdown documents with MIRA nodes and relations, an annotator and reviewer agent to MIRAfy existing papers as annotations and push the resultant MIRA nodes to the shared database, an annotation-review Chrome extension for the user to review the agent's initial MIRAfication as feedback to improve the tool's accuracy, and a way to integrate <a href="https://stencila.io/docs/formats/mira/" target="_blank" rel="noopener noreferrer">MIRA with a preexisting OXA standard</a>. Together it created an integrated web where any researcher working on their local database can push original MIRA elements or decomposed elements from pre-existing paper on the web to a network of apps like Semble, Stencila, or Obsidian.</p>
+
+      <figure class="demo reveal">
+        <video controls preload="none" playsinline poster="/blog/what-we-built-at-the-mira-kickoff/media/koi-data-sharing.jpg" width="1280" height="720">
+          <source src="/blog/what-we-built-at-the-mira-kickoff/media/koi-data-sharing.mp4" type="video/mp4" />
+          Your browser can't play this video. <a href="/blog/what-we-built-at-the-mira-kickoff/media/koi-data-sharing.mp4">Download it instead.</a>
+        </video>
+        <figcaption><span class="k">Demo · 3:27</span><span><b>Data sharing at MIRA.</b> Marc-Antoine Parent walks through the KOI pipeline that moves MIRA records between Discourse Graphs, Semble, Obsidian, and the open web.</span></figcaption>
+      </figure>
+
+      <figure class="demo reveal">
+        <video controls preload="none" playsinline poster="/blog/what-we-built-at-the-mira-kickoff/media/miroxa-stencila.jpg" width="1280" height="720">
+          <source src="/blog/what-we-built-at-the-mira-kickoff/media/miroxa-stencila.mp4" type="video/mp4" />
+          Your browser can't play this video. <a href="/blog/what-we-built-at-the-mira-kickoff/media/miroxa-stencila.mp4">Download it instead.</a>
+        </video>
+        <figcaption><span class="k">Demo · 0:55</span><span><b>MIROXA.</b> Nokome Bentley marks up a field study as MIRA questions, claims, evidence, protocols, and requests inside Stencila, then exports it as a MIRA graph.</span></figcaption>
+      </figure>
+
+      <p><span class="lead-in">For the two-lab collaboration:</span> we discussed how a PhD student wants to share research updates with a collaborator straight from their notebook, and how the collaborator would review and give feedback asynchronously. We <a href="https://mira-science.github.io/inter-lab-user-story/07-shared-dashboard.html" target="_blank" rel="noopener noreferrer">mocked up a dashboard</a> where they could share critical pieces of their research and practices that reinforced collaboration without flattening either lab's independence. We built out this <a href="https://mira-dashboard.conversence.com/" target="_blank" rel="noopener noreferrer">dashboard</a> that lets a researcher send new outcomes to the other team seamlessly from their own lab notebook, and for the collaborator to send requests back, while keeping private notes private and local.</p>
+
+      <figure class="demo reveal">
+        <video controls preload="none" playsinline poster="/blog/what-we-built-at-the-mira-kickoff/media/cross-lab-dashboard.jpg" width="1216" height="720">
+          <source src="/blog/what-we-built-at-the-mira-kickoff/media/cross-lab-dashboard.mp4" type="video/mp4" />
+          Your browser can't play this video. <a href="/blog/what-we-built-at-the-mira-kickoff/media/cross-lab-dashboard.mp4">Download it instead.</a>
+        </video>
+        <figcaption><span class="k">Demo · 3:40</span><span><b>The cross-lab dashboard.</b> Matt Akamatsu sends results from an Obsidian lab notebook, through a KOI node, to a shared MIRA dashboard the other lab can read and reply to.</span></figcaption>
+      </figure>
+
+      <p><span class="lead-in">For the funder's evaluation problem:</span> we built two tracks for this funder.</p>
+      <p>First we discussed how to attribute, evaluate, and reward specialization, what metrics were helpful for demonstrating value to funders, and what we would need to build to make it easy to see prospective and retrospective funding impact. We scoped a database and dashboard that can support various funders to implement flexible and much more varied evaluation methodologies. We built <a href="https://deltabay.bycelium.com/" target="_blank" rel="noopener noreferrer">Deltabay</a>, a view on contribution strengths of a scientific discourse to measure the impact of evidence on the answers' credibility of important questions within a scientific topic as one pathway to inform the direction of funds towards impactful research.</p>
+
+      <figure class="demo reveal">
+        <video controls preload="none" playsinline poster="/blog/what-we-built-at-the-mira-kickoff/media/deltabay.jpg" width="1280" height="720">
+          <source src="/blog/what-we-built-at-the-mira-kickoff/media/deltabay.mp4" type="video/mp4" />
+          Your browser can't play this video. <a href="/blog/what-we-built-at-the-mira-kickoff/media/deltabay.mp4">Download it instead.</a>
+        </video>
+        <figcaption><span class="k">Demo · 2:18</span><span><b>Deltabay.</b> Mathis Federico opens a scientific debate where every claim is backed by evidence and every endorsement is scored.</span></figcaption>
+      </figure>
+
+      <p>Additionally we defined how to connect organizational vision to a clear RFP and proposal, where all of those elements are broken down into MIRA graphs, enriched with endorsements and other human signals, and utilized to assist in grant screening and selection. We built <a href="https://mira-extraction.vercel.app/" target="_blank" rel="noopener noreferrer">a MIRA graph extractor</a> which is the first step to prototyping this pathway. This extractor reads a PDF using a free LLM, and generates the MIRA graph ready for human review and endorsements. It is one piece of <a href="https://graph.scios.tech/" target="_blank" rel="noopener noreferrer">RRGI</a>, a public graph of MIRA records on AT Protocol and IPFS where those human signals live: signed-in researchers extend the graph with questions and evidence, endorse a claim as believed, verified, or qualified, browse it by field of science, and get an AI reader's suggestions of related methods in distant fields. Every record is signed by its author and pinned to IPFS, so the graph does not depend on any single server, journal, or registry.</p>
+
+      <figure class="demo reveal">
+        <video controls preload="none" playsinline poster="/blog/what-we-built-at-the-mira-kickoff/media/mira-graph-extractor.jpg" width="1072" height="514">
+          <source src="/blog/what-we-built-at-the-mira-kickoff/media/mira-graph-extractor.mp4" type="video/mp4" />
+          Your browser can't play this video. <a href="/blog/what-we-built-at-the-mira-kickoff/media/mira-graph-extractor.mp4">Download it instead.</a>
+        </video>
+        <figcaption><span class="k">Demo · 5:09</span><span><b>RRGI, the resilient research graph.</b> Jonathan Starr tours the public MIRA graph on AT Protocol and IPFS: papers as bundles of signed records, questions and evidence added by researchers, endorsements that give each claim its standing, browsing by field of science, an AI reader that flags related methods across distant fields, and the PDF extractor that turns a paper into MIRA records.</span></figcaption>
+      </figure>
+
+      <h2>Four days later, we had</h2>
+      <p><b>Six working prototypes.</b></p>
+      <ul class="protos">
+        <li><span class="n"><a href="https://mira-extraction.vercel.app/" target="_blank" rel="noopener noreferrer">MIRA-fier</a></span><span class="d">The modular-evidence transformer.</span></li>
+        <li><span class="n"><a href="https://mira-dashboard.conversence.com/" target="_blank" rel="noopener noreferrer">MIRA-viewer</a></span><span class="d">The private-by-default cross-lab dashboard. Powered by a schema-aware transport pipeline, sending private MIRA data from discourse-graphs to the MIRA-viewer and Semble through KOI.</span></li>
+        <li><span class="n"><a href="https://github.com/MIRA-science/myst-plus-mira" target="_blank" rel="noopener noreferrer">MIRyST</a></span><span class="d">A way to extend MyST to contain data for MIRA elements.</span></li>
+        <li><span class="n"><a href="https://deltabay.bycelium.com/" target="_blank" rel="noopener noreferrer">Deltabay</a></span><span class="d">A view on contribution strengths of a scientific discourse to measure the impact of evidence on the answers' credibility of important questions within a scientific topic.</span></li>
+        <li><span class="n"><a href="https://graph.scios.tech/" target="_blank" rel="noopener noreferrer">RRGI</a></span><span class="d">Resilient Research Graph Infrastructure: a public graph of MIRA records on AT Protocol and IPFS, with the PDF extractor, endorsements, and discovery views built in.</span></li>
+        <li><span class="n"><a href="https://stencila.io/docs/formats/mira/" target="_blank" rel="noopener noreferrer">MIROXA</a></span><span class="d">A way to integrate MIRA into the preexisting OXA standard within Stencila, an open source publishing platform for dynamic documents.</span></li>
+      </ul>
+      <ul>
+        <li>A <b>schema</b> tested against these products, <a href="https://github.com/MIRA-science/schema" target="_blank" rel="noopener noreferrer">available on GitHub</a> with a <a href="https://mira-science.github.io/epistack-competition" target="_blank" rel="noopener noreferrer">plain-language explainer</a>, expressed as LinkML with translations into multiple formats, including <a href="https://purl.archive.org/purl/mira-science/mira" target="_blank" rel="noopener noreferrer">Turtle</a>, <a href="https://purl.archive.org/purl/mira-science/mira.jsonld" target="_blank" rel="noopener noreferrer">JSON-LD</a> and <a href="/mira.shacl">SHACL</a>, and an <a href="https://github.com/MIRA-science/schema/issues/35" target="_blank" rel="noopener noreferrer">initial proof of concept</a> on AT Protocol.</li>
+        <li>A <b>live ethnography</b> running alongside the whole event: a self-reflective system where people could share individual thoughts and patterns pulled from their own local Obsidian graphs with each other in real time. The method is the mission.</li>
+        <li><a href="/">A website</a>.</li>
+        <li>A <b>shared commitment</b> to building this vision together, complete with a shared board of todos with named owners. Fourteen of the twenty-five people in the room became task leads, and twenty-four of twenty-five raised their hand to keep supporting each other's work over the next four months.</li>
+        <li>A <b>next place to gather</b>: we're organizing a workshop at the <a href="https://www.iosp.science/" target="_blank" rel="noopener noreferrer">Institute of Open Science Practices</a> in Leiden, Netherlands on October 12–15th.</li>
+        <li>Surprisingly relaxed shoulders, courtesy of cold plunges and sauna time between sessions :)</li>
+      </ul>
+
+      <h2>Some new terms</h2>
+      <dl class="term">
+        <dt>MIRAfy (MIRAfication)</dt>
+        <dd>To convert a narrative scientific document into a graph of questions, claims, evidence, and requests.</dd>
+      </dl>
+
+      <h2>And then we do it again!</h2>
+      <p>Modular science is just emerging as an ecosystem that needs new ways to distribute funding, make research visible as it happens, localize and distribute data, and track and reward specialization properly. We can only do so much in four days…</p>
+      <p>Join us at IOSP, where we'll build on the vision and invite you to join!</p>
+      <p class="btn-row"><a class="btn btn-primary" href="https://www.iosp.science/" target="_blank" rel="noopener noreferrer">Join us in Leiden, October 12–15 <span class="arr" aria-hidden="true">&rarr;</span></a></p>
+
+    </div>
+  </div>
+</article>
+
+<!-- GALLERY -->
+<section class="gallery-sec" id="gallery">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Gallery</span>
+      <h2>Four days in the round room.</h2>
+      <p class="sub">A walk from the room out to the garden and the shed, then the week in pictures. Sound on for the walk-through.</p>
+    </div>
+    <figure class="demo reveal">
+      <video controls preload="none" playsinline poster="/blog/what-we-built-at-the-mira-kickoff/media/kickoff-walkthrough.jpg" width="1280" height="720">
+        <source src="/blog/what-we-built-at-the-mira-kickoff/media/kickoff-walkthrough.mp4" type="video/mp4" />
+        Your browser can't play this video. <a href="/blog/what-we-built-at-the-mira-kickoff/media/kickoff-walkthrough.mp4">Download it instead.</a>
+      </video>
+      <figcaption><span class="k">Walk-through · 0:49</span><span>From the round room, through the door and down the garden path to the shed, ending at the Glendalough tower.</span></figcaption>
+    </figure>
+    <div class="gallery" id="gallery-grid">
+      <a href="/blog/what-we-built-at-the-mira-kickoff/media/gallery/01-sheep-in-the-meadow.jpg"><img src="/blog/what-we-built-at-the-mira-kickoff/media/gallery/t/01-sheep-in-the-meadow.jpg" width="720" height="480" alt="Two sheep grazing in a green meadow." loading="lazy" /></a>
+      <a href="/blog/what-we-built-at-the-mira-kickoff/media/gallery/02-living-roof.jpg"><img src="/blog/what-we-built-at-the-mira-kickoff/media/gallery/t/02-living-roof.jpg" width="720" height="480" alt="A roof planted with sedum and grasses against a line of trees." loading="lazy" /></a>
+      <a href="/blog/what-we-built-at-the-mira-kickoff/media/gallery/29-meadow-at-dusk.jpg"><img src="/blog/what-we-built-at-the-mira-kickoff/media/gallery/t/29-meadow-at-dusk.jpg" width="720" height="540" alt="The meadow at dusk, sheep grazing under a dramatic evening sky." loading="lazy" /></a>
+      <a href="/blog/what-we-built-at-the-mira-kickoff/media/gallery/03-path-to-the-shed.jpg"><img src="/blog/what-we-built-at-the-mira-kickoff/media/gallery/t/03-path-to-the-shed.jpg" width="720" height="480" alt="A gravel path curving through a garden towards a dark wooden shed." loading="lazy" /></a>
+      <a href="/blog/what-we-built-at-the-mira-kickoff/media/gallery/04-round-room-session.jpg"><img src="/blog/what-we-built-at-the-mira-kickoff/media/gallery/t/04-round-room-session.jpg" width="720" height="480" alt="A bright round room with tall windows, people seated in a loose circle and one person standing to speak." loading="lazy" /></a>
+      <a class="wide" href="/blog/what-we-built-at-the-mira-kickoff/media/gallery/05-whole-room-demo.jpg"><img src="/blog/what-we-built-at-the-mira-kickoff/media/gallery/t/05-whole-room-demo.jpg" width="720" height="480" alt="The full group seated in the round room, all facing a screen on a stand." loading="lazy" /></a>
+      <a href="/blog/what-we-built-at-the-mira-kickoff/media/gallery/30-schema-on-the-wall.jpg"><img src="/blog/what-we-built-at-the-mira-kickoff/media/gallery/t/30-schema-on-the-wall.jpg" width="720" height="540" alt="Paper cards pinned across the curved wall of the round room, laying out claims, questions, and requests." loading="lazy" /></a>
+      <a href="/blog/what-we-built-at-the-mira-kickoff/media/gallery/06-flip-charts.jpg"><img src="/blog/what-we-built-at-the-mira-kickoff/media/gallery/t/06-flip-charts.jpg" width="720" height="480" alt="People seated near flip charts in the round room while one person speaks." loading="lazy" /></a>
+      <a href="/blog/what-we-built-at-the-mira-kickoff/media/gallery/07-paper-table.jpg"><img src="/blog/what-we-built-at-the-mira-kickoff/media/gallery/t/07-paper-table.jpg" width="720" height="480" alt="A round table covered in paper, densely written over with notes and diagrams." loading="lazy" /></a>
+      <a class="tall" href="/blog/what-we-built-at-the-mira-kickoff/media/gallery/31-worth-funding.jpg"><img src="/blog/what-we-built-at-the-mira-kickoff/media/gallery/t/31-worth-funding.jpg" width="540" height="720" alt="A hand-drawn flip chart asking what we can indicate to inform what is or was worth funding, covered in linked notes." loading="lazy" /></a>
+      <a href="/blog/what-we-built-at-the-mira-kickoff/media/gallery/08-presenting-from-a-notebook.jpg"><img src="/blog/what-we-built-at-the-mira-kickoff/media/gallery/t/08-presenting-from-a-notebook.jpg" width="720" height="480" alt="A person standing and speaking from an open notebook, others listening." loading="lazy" /></a>
+      <a href="/blog/what-we-built-at-the-mira-kickoff/media/gallery/09-whiteboard-huddle.jpg"><img src="/blog/what-we-built-at-the-mira-kickoff/media/gallery/t/09-whiteboard-huddle.jpg" width="720" height="480" alt="A small group gathered close around a whiteboard, one person pointing at it." loading="lazy" /></a>
+      <a href="/blog/what-we-built-at-the-mira-kickoff/media/gallery/10-working-group.jpg"><img src="/blog/what-we-built-at-the-mira-kickoff/media/gallery/t/10-working-group.jpg" width="720" height="480" alt="People working together around a table with laptops open." loading="lazy" /></a>
+      <a href="/blog/what-we-built-at-the-mira-kickoff/media/gallery/11-standing-over-the-table.jpg"><img src="/blog/what-we-built-at-the-mira-kickoff/media/gallery/t/11-standing-over-the-table.jpg" width="720" height="480" alt="One person standing over a table of seated collaborators, making a point." loading="lazy" /></a>
+      <a href="/blog/what-we-built-at-the-mira-kickoff/media/gallery/12-looking-up-from-the-laptop.jpg"><img src="/blog/what-we-built-at-the-mira-kickoff/media/gallery/t/12-looking-up-from-the-laptop.jpg" width="720" height="480" alt="A person at a laptop glancing up towards the camera." loading="lazy" /></a>
+      <a href="/blog/what-we-built-at-the-mira-kickoff/media/gallery/13-drawing-in-the-shed.jpg"><img src="/blog/what-we-built-at-the-mira-kickoff/media/gallery/t/13-drawing-in-the-shed.jpg" width="720" height="480" alt="A person leaning in to draw on a flip chart inside a corrugated-iron shed." loading="lazy" /></a>
+      <a href="/blog/what-we-built-at-the-mira-kickoff/media/gallery/14-around-the-fire.jpg"><img src="/blog/what-we-built-at-the-mira-kickoff/media/gallery/t/14-around-the-fire.jpg" width="720" height="480" alt="A group seated around a wood stove in the shed, mugs in hand." loading="lazy" /></a>
+      <a href="/blog/what-we-built-at-the-mira-kickoff/media/gallery/15-two-presenters-in-the-shed.jpg"><img src="/blog/what-we-built-at-the-mira-kickoff/media/gallery/t/15-two-presenters-in-the-shed.jpg" width="720" height="480" alt="Two people presenting side by side in front of the shed's bar." loading="lazy" /></a>
+      <a href="/blog/what-we-built-at-the-mira-kickoff/media/gallery/16-making-a-point.jpg"><img src="/blog/what-we-built-at-the-mira-kickoff/media/gallery/t/16-making-a-point.jpg" width="720" height="480" alt="A seated person gesturing while speaking, holding a mug." loading="lazy" /></a>
+      <a href="/blog/what-we-built-at-the-mira-kickoff/media/gallery/17-hands-together.jpg"><img src="/blog/what-we-built-at-the-mira-kickoff/media/gallery/t/17-hands-together.jpg" width="720" height="480" alt="A person presenting in front of a flip chart with their hands pressed together." loading="lazy" /></a>
+      <a href="/blog/what-we-built-at-the-mira-kickoff/media/gallery/18-presenting-from-a-laptop.jpg"><img src="/blog/what-we-built-at-the-mira-kickoff/media/gallery/t/18-presenting-from-a-laptop.jpg" width="720" height="480" alt="A seated person presenting with a laptop on their knees." loading="lazy" /></a>
+      <a href="/blog/what-we-built-at-the-mira-kickoff/media/gallery/19-explaining-with-hands.jpg"><img src="/blog/what-we-built-at-the-mira-kickoff/media/gallery/t/19-explaining-with-hands.jpg" width="720" height="480" alt="A person explaining something with both hands raised." loading="lazy" /></a>
+      <a href="/blog/what-we-built-at-the-mira-kickoff/media/gallery/20-hands-up.jpg"><img src="/blog/what-we-built-at-the-mira-kickoff/media/gallery/t/20-hands-up.jpg" width="720" height="480" alt="A person with both hands thrown up, mid-story, a laptop on their lap." loading="lazy" /></a>
+      <a href="/blog/what-we-built-at-the-mira-kickoff/media/gallery/21-smiling-in-red.jpg"><img src="/blog/what-we-built-at-the-mira-kickoff/media/gallery/t/21-smiling-in-red.jpg" width="720" height="480" alt="A person in a red shirt smiling, green garden behind them." loading="lazy" /></a>
+      <a href="/blog/what-we-built-at-the-mira-kickoff/media/gallery/22-three-laughing.jpg"><img src="/blog/what-we-built-at-the-mira-kickoff/media/gallery/t/22-three-laughing.jpg" width="720" height="480" alt="Three people seated in a row, laughing together." loading="lazy" /></a>
+      <a href="/blog/what-we-built-at-the-mira-kickoff/media/gallery/23-two-laughing.jpg"><img src="/blog/what-we-built-at-the-mira-kickoff/media/gallery/t/23-two-laughing.jpg" width="720" height="480" alt="Two people laughing together." loading="lazy" /></a>
+      <a href="/blog/what-we-built-at-the-mira-kickoff/media/gallery/24-laughing-again.jpg"><img src="/blog/what-we-built-at-the-mira-kickoff/media/gallery/t/24-laughing-again.jpg" width="720" height="480" alt="Three people seated together, laughing." loading="lazy" /></a>
+      <a href="/blog/what-we-built-at-the-mira-kickoff/media/gallery/25-laughing-at-the-table.jpg"><img src="/blog/what-we-built-at-the-mira-kickoff/media/gallery/t/25-laughing-at-the-table.jpg" width="720" height="480" alt="Two people at a table laughing, laptops in front of them." loading="lazy" /></a>
+      <a class="wide" href="/blog/what-we-built-at-the-mira-kickoff/media/gallery/32-dinner.jpg"><img src="/blog/what-we-built-at-the-mira-kickoff/media/gallery/t/32-dinner.jpg" width="720" height="540" alt="The whole group around one long candlelit dinner table, smiling at the camera." loading="lazy" /></a>
+      <a href="/blog/what-we-built-at-the-mira-kickoff/media/gallery/26-the-parrot.jpg"><img src="/blog/what-we-built-at-the-mira-kickoff/media/gallery/t/26-the-parrot.jpg" width="720" height="480" alt="A toy parrot perched on a table in the round room." loading="lazy" /></a>
+      <a href="/blog/what-we-built-at-the-mira-kickoff/media/gallery/33-ducklings.jpg"><img src="/blog/what-we-built-at-the-mira-kickoff/media/gallery/t/33-ducklings.jpg" width="720" height="540" alt="A duck leading her ducklings across a dark river below a mossy bank." loading="lazy" /></a>
+      <a href="/blog/what-we-built-at-the-mira-kickoff/media/gallery/34-ducklings-closer.jpg"><img src="/blog/what-we-built-at-the-mira-kickoff/media/gallery/t/34-ducklings-closer.jpg" width="720" height="540" alt="A closer view of the duck and ducklings on the water." loading="lazy" /></a>
+      <a href="/blog/what-we-built-at-the-mira-kickoff/media/gallery/35-sheep-on-the-hillside.jpg"><img src="/blog/what-we-built-at-the-mira-kickoff/media/gallery/t/35-sheep-on-the-hillside.jpg" width="720" height="540" alt="Sheep grazing on a bracken-covered hillside." loading="lazy" /></a>
+      <a href="/blog/what-we-built-at-the-mira-kickoff/media/gallery/27-immediate-next-steps.jpg"><img src="/blog/what-we-built-at-the-mira-kickoff/media/gallery/t/27-immediate-next-steps.jpg" width="720" height="480" alt="A person beside a flip chart headed Immediate Next Steps." loading="lazy" /></a>
+      <a class="wide" href="/blog/what-we-built-at-the-mira-kickoff/media/gallery/28-thinking-at-the-chart.jpg"><img src="/blog/what-we-built-at-the-mira-kickoff/media/gallery/t/28-thinking-at-the-chart.jpg" width="720" height="480" alt="A person in orange standing thoughtfully beside a flip chart of next steps." loading="lazy" /></a>
+    </div>
+    <p class="gallery-credit">Photographs by Rodrigo Migueles Ramirez and the MIRA participants</p>
+  </div>
+</section>
+
+<dialog class="lb" id="lb" aria-label="Photo viewer">
+  <div class="lb-in">
+    <span class="lb-n" id="lb-n"></span>
+    <button class="lb-close" type="button" aria-label="Close">&times;</button>
+    <button class="lb-btn lb-prev" type="button" aria-label="Previous photo">&lsaquo;</button>
+    <img id="lb-img" src="" alt="" />
+    <button class="lb-btn lb-next" type="button" aria-label="Next photo">&rsaquo;</button>
+  </div>
+</dialog>
+
+<!-- GET INVOLVED -->
+<section class="involved" id="involved">
+  <div class="wrap reveal">
+    <div class="sec-head">
+      <span class="eyebrow">Get involved</span>
+      <h2>Help establish the shared record for science.</h2>
+    </div>
+    <form class="signup" novalidate data-source="blog-kickoff">
+      <input type="text" name="company" class="signup-hp" tabindex="-1" autocomplete="off" aria-hidden="true" />
+      <label class="signup-label" for="involved-email">Get updates on MIRA</label>
+      <div class="signup-fields">
+        <input id="involved-email" name="email" type="email" placeholder="you@lab.edu" aria-describedby="involved-email-hint" required />
+        <button type="submit" class="btn btn-primary">Keep me posted</button>
+      </div>
+      <p id="involved-email-hint" class="signup-hint">Occasional updates on MIRA's progress and how to get involved.</p>
+      <p class="signup-done" role="status">Thanks. We will keep you posted.</p>
+      <p class="signup-error" role="alert"></p>
+    </form>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap foot">
+    <div>
+      <div class="brand">
+        <svg class="logo" viewBox="0 0 96 24" role="img" aria-label="MIRA" xmlns="http://www.w3.org/2000/svg">
+          <title>MIRA</title>
+          <g stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+            <line x1="5" y1="6.5" x2="5" y2="17.5"/>
+            <line x1="5" y1="6.5" x2="17" y2="12"/>
+            <line x1="5" y1="17.5" x2="17" y2="12"/>
+          </g>
+          <g fill="currentColor">
+            <circle cx="5" cy="6.5" r="2.7"/>
+            <circle cx="5" cy="17.5" r="2.7"/>
+            <circle cx="17" cy="12" r="3.4"/>
+          </g>
+          <text x="29" y="17" fill="currentColor" font-size="17" font-weight="600" letter-spacing="0.4">MIRA</text>
+        </svg>
+      </div>
+      <p class="tg">Modular Interoperable Research Attribution. An open architecture for collaborative research communication.</p>
+    </div>
+    <div class="foot-end">
+      <p class="ack">With thanks to <a href="https://elifepathways.org" target="_blank" rel="noopener">eLife Pathways</a> for their review</p>
+      <p class="fine">© 2026 MIRA</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const nav=document.getElementById('nav');
+  addEventListener('scroll',()=>nav.classList.toggle('scrolled',scrollY>8),{passive:true});
+  const io=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}})},{threshold:.14});
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+  /* only one demo plays at a time */
+  const vids=document.querySelectorAll('.demo video');
+  vids.forEach(v=>v.addEventListener('play',()=>{vids.forEach(o=>{if(o!==v)o.pause();});}));
+
+  /* photo lightbox */
+  (function(){
+    const dlg=document.getElementById('lb'); if(!dlg||typeof dlg.showModal!=='function') return;
+    const links=[].slice.call(document.querySelectorAll('#gallery-grid a'));
+    const img=document.getElementById('lb-img'), num=document.getElementById('lb-n');
+    let i=0;
+    function show(k){
+      i=(k+links.length)%links.length;
+      const a=links[i];
+      img.src=a.href; img.alt=a.querySelector('img').alt;
+      num.textContent=(i+1)+' / '+links.length;
+      const nxt=links[(i+1)%links.length]; const pre=new Image(); pre.src=nxt.href;
+    }
+    links.forEach((a,k)=>a.addEventListener('click',e=>{e.preventDefault();show(k);dlg.showModal();}));
+    dlg.querySelector('.lb-prev').addEventListener('click',()=>show(i-1));
+    dlg.querySelector('.lb-next').addEventListener('click',()=>show(i+1));
+    dlg.querySelector('.lb-close').addEventListener('click',()=>dlg.close());
+    dlg.addEventListener('click',e=>{if(e.target===dlg||e.target.classList.contains('lb-in'))dlg.close();});
+    dlg.addEventListener('keydown',e=>{if(e.key==='ArrowRight')show(i+1);else if(e.key==='ArrowLeft')show(i-1);});
+    dlg.addEventListener('close',()=>{img.removeAttribute('src');});
+  })();
+
+  document.querySelectorAll('form.signup').forEach(f=>{
+    const errEl=f.querySelector('.signup-error');
+    const setErr=msg=>{if(errEl)errEl.textContent=msg;f.classList.add('has-error');};
+    f.addEventListener('submit',async e=>{
+      e.preventDefault();
+      const input=f.querySelector('input[type=email]');
+      const email=input?input.value.trim():'';
+      if(!email){f.classList.remove('has-error');if(input)input.focus();return;}
+      const hp=f.querySelector('input[name=company]');
+      const btn=f.querySelector('button[type=submit]');
+      f.classList.remove('has-error');
+      if(btn)btn.disabled=true;
+      try{
+        const res=await fetch('/api/subscribe',{
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({email:email,source:f.dataset.source||null,company:hp?hp.value:''})
+        });
+        if(res.ok){
+          f.classList.add('done');
+        }else{
+          const data=await res.json().catch(()=>({}));
+          setErr((data&&data.error)||'Something went wrong. Please try again.');
+          if(btn)btn.disabled=false;
+        }
+      }catch(_){
+        setErr('Network error. Please try again.');
+        if(btn)btn.disabled=false;
+      }
+    });
+  });
+
+  /* theme toggle */
+  (function(){
+    const root=document.documentElement;
+    const btn=document.getElementById('theme-toggle');
+    function sync(){
+      const dark=root.getAttribute('data-theme')==='dark';
+      btn.setAttribute('aria-pressed',String(dark));
+      btn.setAttribute('aria-label',dark?'Switch to light theme':'Switch to dark theme');
+    }
+    sync();
+    btn.addEventListener('click',()=>{
+      const next=root.getAttribute('data-theme')==='dark'?'light':'dark';
+      root.setAttribute('data-theme',next);
+      try{localStorage.setItem('mira-theme',next);}catch(e){}
+      sync();
+    });
+  })();
+</script>
+</body>
+</html>
