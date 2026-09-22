@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>MIRA · Blog</title>
+<meta name="description" content="Notes from the people building MIRA: what we built, what we learned, and where the shared record for science goes next." />
+<link rel="canonical" href="https://mira.science/blog/" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:ital,wght@0,400..700;1,400&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<script>
+  /* set theme before first paint to avoid a flash */
+  (function(){
+    try{
+      var stored=localStorage.getItem('mira-theme');
+      var sys=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches;
+      document.documentElement.setAttribute('data-theme', stored || (sys?'dark':'light'));
+    }catch(e){document.documentElement.setAttribute('data-theme','light');}
+  })();
+</script>
+<style>
+  :root{
+    color-scheme:light;
+    --bg:#ffffff;--ink:#16181b;--ink-2:#33373c;--muted:#5b616a;--faint:#6b717a;
+    --line:#e9eaec;--line-soft:#f3f4f5;--accent:#1d5440;--accent-deep:#163f30;
+    --tint-1:#f6f8f7;--tint-2:#eef2f0;--card-bg:#ffffff;
+    --hero-bg:radial-gradient(125% 120% at 82% -15%, #235e46 0%, #163f30 48%, #102e22 100%);
+    --hero-text:#ffffff;--hero-muted:#b6cdc1;--hero-eyebrow:#8ed8b3;
+    --footer-bg:#0f2c21;--footer-text:#ffffff;--footer-muted:#b6cdc1;
+    --sans:"Schibsted Grotesk",-apple-system,BlinkMacSystemFont,sans-serif;
+    --mono:"Geist Mono",ui-monospace,SFMono-Regular,monospace;
+    --maxw:1080px;
+  }
+  [data-theme="dark"]{
+    color-scheme:dark;
+    --bg:#0c1411;--ink:#e9efeb;--ink-2:#cad6d0;--muted:#93a39b;--faint:#7f8f87;
+    --line:#1f2b26;--line-soft:#172019;--accent:#7fd3a8;--accent-deep:#9ce3c1;
+    --tint-1:#0f1814;--tint-2:#121d18;--card-bg:#16241d;
+    --hero-bg:radial-gradient(125% 120% at 82% -15%, #15392a 0%, #0e271d 50%, #081711 100%);
+    --hero-text:#eafaf2;--hero-muted:#9fb4aa;--hero-eyebrow:#7fd3a8;
+    --footer-bg:#0a1d15;--footer-text:#e9efeb;--footer-muted:#8ba197;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+  body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:17px;line-height:1.6;font-weight:400;letter-spacing:-.005em;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;transition:background-color .3s ease,color .3s ease}
+  a{color:inherit;text-decoration:none}
+  ::selection{background:var(--accent);color:var(--bg)}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 32px}
+  .eyebrow{font-family:var(--mono);font-size:12px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
+
+  /* NAV */
+  nav{position:sticky;top:0;z-index:60;background:var(--bg);border-bottom:1px solid transparent;transition:border-color .3s,background-color .3s}
+  nav.scrolled{border-color:var(--line)}
+  .nav-in{display:flex;align-items:center;justify-content:space-between;height:66px}
+  .brand{display:inline-flex;align-items:center}
+  .logo{height:21px;width:auto;display:block;color:inherit}
+  .logo text{font-family:var(--sans)}
+  .nav-right{display:flex;align-items:center;gap:24px}
+  .nav-links{display:flex;gap:28px}
+  .nav-links a{font-size:14.5px;color:var(--muted);transition:color .2s}
+  .nav-links a:hover{color:var(--ink)}
+  .theme-toggle{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:8px;border:1px solid var(--line);background:transparent;color:var(--muted);cursor:pointer;transition:color .2s,border-color .2s}
+  .theme-toggle:hover{color:var(--ink);border-color:var(--ink-2)}
+  .theme-toggle svg{width:18px;height:18px}
+  .theme-toggle .ico-sun{display:none}
+  [data-theme="dark"] .theme-toggle .ico-moon{display:none}
+  [data-theme="dark"] .theme-toggle .ico-sun{display:block}
+  .nav-cta{font-size:14px;font-weight:500;background:var(--accent);color:var(--bg);padding:9px 17px;border-radius:7px;transition:background .2s,transform .2s}
+  .nav-cta:hover{background:var(--accent-deep);transform:translateY(-1px)}
+  @media(max-width:760px){.nav-links{display:none}}
+
+  /* PAGE HEADER */
+  .page-head{background:var(--hero-bg);color:var(--hero-text);padding:64px 0 76px}
+  .page-head .eyebrow{display:block;margin-bottom:20px;color:var(--hero-eyebrow)}
+  .page-head h1{font-size:clamp(34px,5vw,58px);line-height:1.04;font-weight:500;letter-spacing:-.032em;max-width:16ch;margin-bottom:24px}
+  .page-head .lede{font-size:19.5px;line-height:1.55;color:var(--hero-muted);max-width:58ch}
+  .page-head .back{display:inline-flex;align-items:center;gap:8px;font-size:14.5px;color:var(--hero-muted);margin-bottom:34px;transition:color .2s}
+  .page-head .back:hover{color:var(--hero-text)}
+  .page-head .back .arr{transition:transform .22s}
+  .page-head .back:hover .arr{transform:translateX(-3px)}
+  @media(max-width:560px){.page-head{padding:44px 0 56px}}
+
+  /* POST LIST */
+  .posts{padding:72px 0 112px}
+  .entry{display:grid;grid-template-columns:minmax(0,380px) 1fr;gap:40px;align-items:center;padding:36px 0;border-top:1px solid var(--line)}
+  .entry:last-child{border-bottom:1px solid var(--line)}
+  .entry img{width:100%;height:auto;display:block;border-radius:12px;border:1px solid var(--line);background:var(--tint-2);transition:transform .3s ease}
+  .entry:hover img{transform:translateY(-2px)}
+  .entry .date{font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:12px}
+  .entry h2{font-size:clamp(24px,3vw,32px);line-height:1.15;font-weight:500;letter-spacing:-.025em;margin-bottom:12px;transition:color .2s}
+  .entry:hover h2{color:var(--accent)}
+  .entry p{font-size:17px;line-height:1.55;color:var(--muted);max-width:52ch}
+  .entry .more{display:inline-block;margin-top:18px;font-size:14.5px;font-weight:500;color:var(--accent)}
+  .entry .more .arr{display:inline-block;transition:transform .22s}
+  .entry:hover .more .arr{transform:translateX(3px)}
+  @media(max-width:720px){.entry{grid-template-columns:1fr;gap:20px;padding:28px 0}}
+
+  /* footer */
+  footer{background:var(--footer-bg);color:var(--footer-text);border-top:0;padding:56px 0 60px;transition:background-color .3s ease}
+  .foot{display:flex;justify-content:space-between;gap:40px;flex-wrap:wrap}
+  .foot .brand{margin-bottom:12px;color:var(--footer-text)}
+  .foot .brand .logo{height:22px}
+  .foot .tg{font-size:14px;color:var(--footer-muted);max-width:32ch}
+  .fine{font-family:var(--mono);font-size:12px;color:var(--footer-muted);margin-top:38px}
+  .foot-end{text-align:right}
+  .ack{font-size:13px;color:var(--footer-muted);max-width:34ch;margin-left:auto}
+  .ack a{color:var(--footer-text);text-decoration:underline;text-underline-offset:2px;transition:color .2s}
+  .ack a:hover{color:var(--accent)}
+  .foot-end .fine{margin-top:10px}
+  @media(max-width:560px){.foot-end{text-align:left}.ack{margin-left:0}.wrap{padding:0 22px}.posts{padding:48px 0 80px}}
+</style>
+<script>
+  window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+</script>
+<script defer src="/_vercel/insights/script.js"></script>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="nav">
+  <div class="wrap nav-in">
+    <a href="/" class="brand" aria-label="MIRA — home">
+      <svg class="logo" viewBox="0 0 96 24" role="img" aria-label="MIRA" xmlns="http://www.w3.org/2000/svg">
+        <title>MIRA</title>
+        <g stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+          <line x1="5" y1="6.5" x2="5" y2="17.5"/>
+          <line x1="5" y1="6.5" x2="17" y2="12"/>
+          <line x1="5" y1="17.5" x2="17" y2="12"/>
+        </g>
+        <g fill="currentColor">
+          <circle cx="5" cy="6.5" r="2.7"/>
+          <circle cx="5" cy="17.5" r="2.7"/>
+          <circle cx="17" cy="12" r="3.4"/>
+        </g>
+        <text x="29" y="17" fill="currentColor" font-size="17" font-weight="600" letter-spacing="0.4">MIRA</text>
+      </svg>
+    </a>
+    <div class="nav-right">
+      <div class="nav-links">
+        <a href="/#what">What it is</a>
+        <a href="/#why">Why it matters</a>
+        <a href="/#who">Who's using it</a>
+        <a href="/blog/" aria-current="page">Blog</a>
+      </div>
+      <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Switch to dark theme" aria-pressed="false" title="Toggle light / dark">
+        <svg class="ico-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg>
+        <svg class="ico-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+      </button>
+      <a href="/#involved" class="nav-cta">Get involved</a>
+    </div>
+  </div>
+</nav>
+
+<div id="top"></div>
+
+<!-- PAGE HEADER -->
+<header class="page-head">
+  <div class="wrap">
+    <a class="back" href="/"><span class="arr" aria-hidden="true">&larr;</span> Back to MIRA</a>
+    <span class="eyebrow">Blog</span>
+    <h1>Notes from building MIRA.</h1>
+    <p class="lede">Write-ups from the people building the shared record for science: what we built, what we learned, and where it goes next.</p>
+  </div>
+</header>
+
+<!-- POSTS -->
+<main class="posts">
+  <div class="wrap">
+    <a class="entry" href="/blog/what-we-built-at-the-mira-kickoff/">
+      <img src="/blog/what-we-built-at-the-mira-kickoff/media/kickoff-group-1200.jpg" width="1200" height="800" alt="The MIRA Kickoff participants on a lawn in front of tall trees." loading="lazy" />
+      <div>
+        <span class="date">June 2026</span>
+        <h2>What we built at the MIRA Kickoff</h2>
+        <p>Four days in Ireland, three real user stories, six working prototypes, a schema tested against all of them, and the demo videos to show for it.</p>
+        <span class="more">Read the post <span class="arr" aria-hidden="true">&rarr;</span></span>
+      </div>
+    </a>
+  </div>
+</main>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap foot">
+    <div>
+      <div class="brand">
+        <svg class="logo" viewBox="0 0 96 24" role="img" aria-label="MIRA" xmlns="http://www.w3.org/2000/svg">
+          <title>MIRA</title>
+          <g stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+            <line x1="5" y1="6.5" x2="5" y2="17.5"/>
+            <line x1="5" y1="6.5" x2="17" y2="12"/>
+            <line x1="5" y1="17.5" x2="17" y2="12"/>
+          </g>
+          <g fill="currentColor">
+            <circle cx="5" cy="6.5" r="2.7"/>
+            <circle cx="5" cy="17.5" r="2.7"/>
+            <circle cx="17" cy="12" r="3.4"/>
+          </g>
+          <text x="29" y="17" fill="currentColor" font-size="17" font-weight="600" letter-spacing="0.4">MIRA</text>
+        </svg>
+      </div>
+      <p class="tg">Modular Interoperable Research Attribution. An open architecture for collaborative research communication.</p>
+    </div>
+    <div class="foot-end">
+      <p class="ack">With thanks to <a href="https://elifepathways.org" target="_blank" rel="noopener">eLife Pathways</a> for their review</p>
+      <p class="fine">© 2026 MIRA</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const nav=document.getElementById('nav');
+  addEventListener('scroll',()=>nav.classList.toggle('scrolled',scrollY>8),{passive:true});
+
+  /* theme toggle */
+  (function(){
+    const root=document.documentElement;
+    const btn=document.getElementById('theme-toggle');
+    function sync(){
+      const dark=root.getAttribute('data-theme')==='dark';
+      btn.setAttribute('aria-pressed',String(dark));
+      btn.setAttribute('aria-label',dark?'Switch to light theme':'Switch to dark theme');
+    }
+    sync();
+    btn.addEventListener('click',()=>{
+      const next=root.getAttribute('data-theme')==='dark'?'light':'dark';
+      root.setAttribute('data-theme',next);
+      try{localStorage.setItem('mira-theme',next);}catch(e){}
+      sync();
+    });
+  })();
+</script>
+</body>
+</html>
