@@ -360,7 +360,27 @@
   .involved{background:var(--cta-bg);color:var(--cta-text);border-bottom:0}
   .involved .eyebrow{color:var(--cta-eyebrow)}
   .involved h2{color:var(--cta-text)}
-  .involved .sec-head{margin-bottom:30px}
+  .involved .sec-head{margin-bottom:48px}
+  /* what's next: the kickoff report, coming dates and the signup */
+  .next-grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:64px;align-items:start}
+  .post-card{display:block;border-radius:14px;overflow:hidden;color:var(--cta-text);background:color-mix(in srgb,var(--cta-text) 7%,transparent);border:1px solid color-mix(in srgb,var(--cta-text) 16%,transparent);transition:transform .22s ease,border-color .22s ease}
+  .post-card:hover{transform:translateY(-2px);border-color:color-mix(in srgb,var(--cta-text) 34%,transparent)}
+  .post-card img{display:block;width:100%;height:auto;aspect-ratio:3/2;object-fit:cover}
+  .pc-body{padding:22px 24px 24px}
+  .pc-kicker,.next-label{font-family:var(--mono);font-size:11.5px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--cta-eyebrow)}
+  .post-card h3{font-size:23px;line-height:1.22;font-weight:500;letter-spacing:-.018em;margin:10px 0 8px}
+  .post-card p{font-size:15.5px;line-height:1.55;color:var(--cta-muted)}
+  .pc-more{display:inline-block;margin-top:16px;font-size:15.5px;font-weight:500}
+  .pc-more .arr{display:inline-block;transition:transform .22s}
+  .post-card:hover .pc-more .arr{transform:translateX(3px)}
+  .next-steps{list-style:none;margin:14px 0 40px}
+  .next-steps li{display:grid;grid-template-columns:128px minmax(0,1fr);gap:18px;padding:16px 0;border-top:1px solid color-mix(in srgb,var(--cta-text) 18%,transparent)}
+  .next-steps li:last-child{border-bottom:1px solid color-mix(in srgb,var(--cta-text) 18%,transparent)}
+  .next-steps .when{font-size:15.5px;font-weight:500;color:var(--cta-text)}
+  .next-steps .what{font-size:15.5px;line-height:1.5;color:var(--cta-muted)}
+  .next-steps a{color:var(--cta-text);text-decoration:underline;text-underline-offset:2px}
+  @media(max-width:860px){.next-grid{grid-template-columns:minmax(0,1fr);gap:48px}}
+  @media(max-width:560px){.next-steps li{grid-template-columns:minmax(0,1fr);gap:4px}}
 </style>
 <script>
   window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
@@ -669,20 +689,37 @@
 <section class="involved" id="involved">
   <div class="wrap reveal">
     <div class="sec-head">
-      <span class="eyebrow">Get involved</span>
+      <span class="eyebrow">What's next</span>
       <h2>Help establish the shared record for science.</h2>
     </div>
-    <form class="signup" novalidate data-source="get-involved">
-      <input type="text" name="company" class="signup-hp" tabindex="-1" autocomplete="off" aria-hidden="true" />
-      <label class="signup-label" for="involved-email">Get updates on MIRA</label>
-      <div class="signup-fields">
-        <input id="involved-email" name="email" type="email" placeholder="you@lab.edu" aria-describedby="involved-email-hint" required />
-        <button type="submit" class="btn btn-primary">Keep me posted</button>
+    <div class="next-grid">
+      <a class="post-card" href="/blog/what-we-built-at-the-mira-kickoff/">
+        <img src="/blog/what-we-built-at-the-mira-kickoff/media/kickoff-group-1200.jpg" width="1200" height="800" loading="lazy" alt="The MIRA Kickoff participants standing and kneeling on a lawn in front of tall trees, smiling at the camera." />
+        <div class="pc-body">
+          <span class="pc-kicker">From the blog</span>
+          <h3>What we built at the MIRA Kickoff</h3>
+          <p>Four days in Ireland, three real user stories, six working prototypes, a schema tested against all of them, and the demo videos to show for it.</p>
+          <span class="pc-more">Read the report <span class="arr" aria-hidden="true">→</span></span>
+        </div>
+      </a>
+      <div class="next-side">
+        <div class="next-label">Coming up</div>
+        <ol class="next-steps">
+          <li><span class="when">October 12–15</span><span class="what">A workshop at the <a href="https://www.iosp.science/" target="_blank" rel="noopener noreferrer">Institute of Open Science Practices</a> in Leiden, the Netherlands.</span></li>
+        </ol>
+        <form class="signup" novalidate data-source="get-involved">
+          <input type="text" name="company" class="signup-hp" tabindex="-1" autocomplete="off" aria-hidden="true" />
+          <label class="signup-label" for="involved-email">Get updates on MIRA</label>
+          <div class="signup-fields">
+            <input id="involved-email" name="email" type="email" placeholder="you@lab.edu" aria-describedby="involved-email-hint" required />
+            <button type="submit" class="btn btn-primary">Keep me posted</button>
+          </div>
+          <p id="involved-email-hint" class="signup-hint">Occasional updates on MIRA's progress and how to get involved.</p>
+          <p class="signup-done" role="status">Thanks. We will keep you posted.</p>
+          <p class="signup-error" role="alert"></p>
+        </form>
       </div>
-      <p id="involved-email-hint" class="signup-hint">Occasional updates on MIRA's progress and how to get involved.</p>
-      <p class="signup-done" role="status">Thanks. We will keep you posted.</p>
-      <p class="signup-error" role="alert"></p>
-    </form>
+    </div>
   </div>
 </section>
 
