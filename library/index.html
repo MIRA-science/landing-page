@@ -6,6 +6,7 @@
 <title>MIRA · Library</title>
 <meta name="description" content="Recordings, transcripts, and other resources for MIRA collaborators." />
 <meta name="robots" content="noindex, nofollow" />
+<meta name="referrer" content="same-origin" />
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://accounts.google.com/gsi/client; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://accounts.google.com/gsi/style; font-src https://fonts.gstatic.com; connect-src 'self' https://vcdkoqpvurrdheyxeduu.supabase.co https://vcdkoqpvurrdheyxeduu.storage.supabase.co wss://vcdkoqpvurrdheyxeduu.supabase.co https://accounts.google.com/gsi/; img-src 'self' data: blob: https://vcdkoqpvurrdheyxeduu.supabase.co; media-src 'self' blob: https://vcdkoqpvurrdheyxeduu.supabase.co; frame-src https://vcdkoqpvurrdheyxeduu.supabase.co https://accounts.google.com/gsi/; object-src 'none'; base-uri 'self'" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -194,6 +195,25 @@
   .summary-text .sum-h:first-child{margin-top:0}
   .summary-text .sum-l{min-height:.5em}
   .hint-line{font-size:13px;color:var(--faint);margin:-6px 0 14px}
+  .iv-google{margin:16px 0 0}
+  .dlg-wide{width:min(760px,calc(100vw - 32px))}
+  .dlg-top{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+  .grid3{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr) 120px;gap:12px}
+  .invite-form{border:1px solid var(--line);border-radius:12px;padding:16px 16px 16px;margin-bottom:16px}
+  .invite-out{border:1px solid var(--accent);border-radius:12px;padding:16px;margin-bottom:16px;background:var(--tint-1)}
+  .invite-out .io-note{font-size:13.5px;color:var(--muted);margin:2px 0 10px}
+  .io-acts{display:flex;gap:8px;flex-wrap:wrap}
+  .invite-out textarea{width:100%;margin-top:12px;font:inherit;font-size:14px;line-height:1.5;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px 12px;resize:vertical}
+  .mlist{list-style:none;border-top:1px solid var(--line)}
+  .mlist .note{color:var(--muted);font-size:14.5px;padding:14px 0}
+  .m{display:flex;justify-content:space-between;gap:12px 16px;align-items:flex-start;padding:14px 0;border-bottom:1px solid var(--line);flex-wrap:wrap}
+  .m-main{min-width:0;flex:1 1 260px}
+  .m-main strong{font-weight:500;margin-right:8px}
+  .m-sub{font-size:14px;color:var(--muted);overflow-wrap:anywhere}
+  .m-acts{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .m-acts input{font:inherit;font-size:14px;padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);width:220px;max-width:100%}
+  .m-acts .confirm{font-size:14px;color:var(--ink-2)}
+  @media(max-width:560px){.grid3{grid-template-columns:1fr}}
   @media(max-width:720px){
     .sub-items .item-body{padding-left:14px}
     .bundle > .item-body{padding-left:8px}
@@ -316,16 +336,19 @@
       <p class="msg" id="signin-msg" role="status"></p>
     </section>
 
-    <!-- RESET REQUEST -->
-    <section class="panel" data-view="forgot" hidden aria-labelledby="forgot-h">
-      <h2 id="forgot-h">Reset your password</h2>
-      <p>We'll email you a link to choose a new password.</p>
-      <form id="forgot-form" novalidate>
-        <label class="field"><span>Email</span><input type="email" id="fg-email" autocomplete="username" required /></label>
-        <button class="btn btn-primary btn-block" type="submit" id="fg-go">Email me a link</button>
+    <!-- INVITATION -->
+    <section class="panel" data-view="invite" hidden aria-labelledby="iv-h">
+      <h2 id="iv-h">Welcome to the MIRA library</h2>
+      <p id="iv-text">Checking your invitation…</p>
+      <form id="iv-form" novalidate hidden>
+        <label class="field"><span>Your email</span><input type="email" id="iv-email" autocomplete="username" readonly /></label>
+        <label class="field"><span>Choose a password</span><input type="password" id="iv-1" autocomplete="new-password" minlength="10" required /></label>
+        <label class="field"><span>Type it again</span><input type="password" id="iv-2" autocomplete="new-password" minlength="10" required /></label>
+        <button class="btn btn-primary btn-block" type="submit" id="iv-go">Save and open the library</button>
       </form>
-      <div class="foot-links"><button class="linkish" type="button" id="back-to-signin">Back to sign in</button></div>
-      <p class="msg" id="forgot-msg" role="status"></p>
+      <p class="hint-line iv-google" id="iv-google" hidden></p>
+      <div class="foot-links"><button class="linkish" type="button" id="iv-signin" hidden>Go to sign in</button></div>
+      <p class="msg" id="iv-msg" role="status"></p>
     </section>
 
     <!-- SET PASSWORD -->
@@ -359,7 +382,7 @@
     <section data-view="library" hidden aria-label="Library">
       <div class="account">
         <span class="who">Signed in as <strong id="me-name"></strong></span>
-        <span class="acts"><button class="linkish" type="button" id="set-pw-link">Set a password</button><button class="linkish" type="button" data-signout>Sign out</button></span>
+        <span class="acts"><button class="linkish" type="button" id="members-link" hidden>Members</button><button class="linkish" type="button" id="set-pw-link">Set a password</button><button class="linkish" type="button" data-signout>Sign out</button></span>
       </div>
       <div class="toolbar">
         <input class="search" type="search" id="q" placeholder="Search titles, sessions, and descriptions" aria-label="Search the library" />
@@ -414,6 +437,32 @@
 </dialog>
 <datalist id="collections"></datalist>
 <datalist id="bundle-titles"></datalist>
+
+<!-- MEMBERS (admins) -->
+<dialog class="dlg dlg-wide" id="members-dlg" aria-labelledby="mb-h">
+  <div class="dlg-top"><h2 id="mb-h">Members</h2><button class="x" type="button" id="members-close">Close</button></div>
+  <p class="sub">Only the people on this list can sign in. Inviting someone makes their account and a personal link to choose a password, which you send them from your own email.</p>
+  <form class="invite-form" id="invite-form" novalidate>
+    <div class="grid3">
+      <label class="field"><span>Name</span><input type="text" id="in-name" maxlength="120" required /></label>
+      <label class="field"><span>Email</span><input type="email" id="in-email" maxlength="254" required /></label>
+      <label class="field"><span>Link lasts</span><select id="in-days"><option value="7">7 days</option><option value="14">14 days</option><option value="30" selected>30 days</option><option value="60">60 days</option><option value="90">90 days</option></select></label>
+    </div>
+    <button class="btn btn-primary btn-sm" type="submit" id="in-go">Invite</button>
+  </form>
+  <div class="invite-out" id="invite-out" hidden>
+    <strong id="io-title"></strong>
+    <p class="io-note">Send it from your own email. The link is personal and works once.</p>
+    <div class="io-acts">
+      <a class="btn btn-primary btn-sm" id="io-mail" href="#">Open in my email</a>
+      <button class="btn btn-ghost btn-sm" type="button" id="io-copy-text">Copy the email</button>
+      <button class="btn btn-ghost btn-sm" type="button" id="io-copy-link">Copy the link only</button>
+    </div>
+    <textarea id="io-text" rows="13" readonly aria-label="The invitation email"></textarea>
+  </div>
+  <p class="msg" id="members-msg" role="status"></p>
+  <ul class="mlist" id="mlist"></ul>
+</dialog>
 
 <!-- EDIT BUNDLE -->
 <dialog class="dlg" id="bundle-dlg" aria-labelledby="bd-h">
@@ -536,6 +585,7 @@
   const SUPABASE_KEY='sb_publishable_fYOCFVHuLxgQhh3YAOMTXA_HjA-0yjM';
   const GOOGLE_SIGN_IN=true;
   const GOOGLE_CLIENT_ID='765430449011-ic6rmslo8ofrjtcqj13u9ntejcq71lv8.apps.googleusercontent.com';
+  const LIBRARY_URL='https://mira.science/library/';
   const BUCKET='library';
   const MAX_BYTES=5*1024*1024*1024;
   const TEXT_PREVIEW_MAX=3*1024*1024;
@@ -576,6 +626,10 @@
     return p.get('error_description')||p.get('error')||'';
   })();
   if(urlError)history.replaceState(null,'',location.pathname);
+  // A personal invitation arrives as ?invite=<token>; take it out of the address at once.
+  const inviteToken=new URLSearchParams(location.search).get('invite');
+  let inviting=!!inviteToken,redeemed=false;
+  if(inviteToken)history.replaceState(null,'',location.pathname);
 
   const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{
     auth:{flowType:'implicit',detectSessionInUrl:true,persistSession:true,autoRefreshToken:true}
@@ -594,6 +648,7 @@
   async function route(event,session){
     state.session=session;
     if(event==='PASSWORD_RECOVERY'){recovering=true;}
+    if(inviting)return;
     if(!session){
       loadedFor=null;state.me=null;
       showSignIn(urlError?friendlyError(urlError):'');
@@ -661,22 +716,63 @@
     const {error}=await sb.auth.signInWithPassword({email,password});
     $('si-go').disabled=false;
     if(error){
-      say('signin-msg',/invalid/i.test(error.message)?'That email and password don’t match. If you’ve never set a password, use “Forgot your password?” to choose one.':error.message,'err');
+      say('signin-msg',/invalid/i.test(error.message)?'That email and password don’t match. If you haven’t chosen a password yet, use the link in your invitation.':error.message,'err');
     }else{$('si-password').value='';}
   });
 
-  $('forgot-link').addEventListener('click',()=>{$('fg-email').value=$('si-email').value;say('forgot-msg','');show('forgot');$('fg-email').focus();});
-  $('back-to-signin').addEventListener('click',()=>showSignIn(''));
+  // Supabase can't email people outside the MIRA team, so a new password comes from a new invitation link.
+  $('forgot-link').addEventListener('click',()=>say('signin-msg','Ask Jonathan for a new invitation link. It lets you choose a new password.','ok'));
 
-  $('forgot-form').addEventListener('submit',async e=>{
+  async function callFn(name,body){
+    const {data,error}=await sb.functions.invoke(name,{body});
+    if(!error)return data;
+    let detail={};try{detail=await error.context.json();}catch(_){}
+    return {...detail,failed:true,error:detail.error||error.message};
+  }
+  const firstName=n=>(n||'').trim().split(/\s+/)[0]||'';
+
+  /* ---------- invitation ---------- */
+
+  async function startInvite(){
+    show('invite');
+    const r=await callFn('library-invite',{action:'check',token:inviteToken});
+    $('iv-signin').hidden=false;
+    if(!r.valid){
+      $('iv-text').textContent=r.reason==='used'?'This link has already been used. If you chose a password with it, sign in with your email and that password.'
+        :r.reason==='expired'?'This link has expired. Ask Jonathan for a new one.'
+        :'This link isn’t valid. Check that you copied all of it, or ask Jonathan for a new one.';
+      return;
+    }
+    $('iv-h').textContent='Welcome, '+(firstName(r.name)||'and welcome');
+    $('iv-text').textContent='Choose a password for your MIRA library account. From now on you’ll sign in with your email and this password.';
+    $('iv-email').value=r.email;$('iv-form').hidden=false;
+    $('iv-google').textContent='If '+r.email+' is a Google account, you can skip this and use “Continue with Google” on the sign-in page instead.';
+    $('iv-google').hidden=false;$('iv-1').focus();
+  }
+  $('iv-signin').addEventListener('click',()=>{inviting=false;route('INITIAL_SESSION',state.session);});
+
+  $('iv-form').addEventListener('submit',async e=>{
     e.preventDefault();
-    const email=$('fg-email').value.trim();
-    if(!email){say('forgot-msg','Enter your email.','err');return;}
-    $('fg-go').disabled=true;
-    const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:location.origin+location.pathname});
-    $('fg-go').disabled=false;
-    if(error)say('forgot-msg',error.message,'err');
-    else say('forgot-msg','If that address has an account, a link is on its way. It works once, for an hour.','ok');
+    const a=$('iv-1').value,b=$('iv-2').value;
+    if(a.length<10){say('iv-msg','Use at least 10 characters.','err');return;}
+    if(a!==b){say('iv-msg','The two passwords don’t match.','err');return;}
+    $('iv-go').disabled=true;say('iv-msg','');
+    try{
+      if(!redeemed){
+        const r=await callFn('library-invite',{action:'redeem',token:inviteToken});
+        if(!r.valid)throw new Error(r.reason==='used'?'This link has already been used.':r.reason==='expired'?'This link has expired. Ask Jonathan for a new one.':(r.error||'This link isn’t valid.'));
+        const {error}=await sb.auth.verifyOtp({type:'magiclink',token_hash:r.token_hash});
+        if(error)throw error;
+        redeemed=true;
+      }
+      const {error}=await sb.auth.updateUser({password:a});
+      if(error)throw new Error(/pwned|breach|leak|weak/i.test(error.message)?'That password has appeared in a data breach. Please choose another.':error.message);
+    }catch(err){$('iv-go').disabled=false;say('iv-msg',err.message||String(err),'err');return;}
+    inviting=false;
+    const {data}=await sb.auth.getSession();
+    state.session=data.session;loadedFor=data.session.user.id;
+    await enterLibrary();
+    say('lib-msg','Welcome to the library. Your password is saved.','ok');
   });
 
   function openPassword(fromLink){
@@ -718,6 +814,7 @@
       show('noaccess');return;
     }
     $('me-name').textContent=state.me.display_name||state.me.email;
+    $('members-link').hidden=!state.me.is_admin;
     await loadResources();
     show('library');
   }
@@ -1041,6 +1138,126 @@
     bundleDlg.close();await loadResources();
   });
 
+  /* ---------- members (admins only; the server checks too) ---------- */
+
+  const membersDlg=$('members-dlg');
+  $('members-link').addEventListener('click',()=>{say('members-msg','');$('invite-out').hidden=true;membersDlg.showModal();loadMembers();$('in-name').focus();});
+  $('members-close').addEventListener('click',()=>membersDlg.close());
+
+  async function loadMembers(){
+    $('mlist').replaceChildren(el('li',{class:'note'},'Loading the list…'));
+    const r=await callFn('library-admin',{action:'list'});
+    if(r.failed){$('mlist').replaceChildren();say('members-msg',r.error,'err');return;}
+    const people=r.members.filter(m=>!m.alias_of);
+    $('mlist').replaceChildren(...people.map(m=>memberNode(m,r.members.filter(a=>a.alias_of===m.user_id))));
+  }
+
+  function memberStatus(m,aliases){
+    const all=[m,...aliases],seen=all.map(x=>x.last_sign_in_at).filter(Boolean).sort().pop();
+    const parts=[];
+    if(seen)parts.push('Last signed in '+fmtStamp(seen));
+    else if(m.invite&&new Date(m.invite.expires_at)>new Date())parts.push('Invited · link works until '+fmtStamp(m.invite.expires_at));
+    else if(m.invite)parts.push('Link expired on '+fmtStamp(m.invite.expires_at));
+    else parts.push('Hasn’t signed in yet');
+    if(m.password_set)parts.push('has a password');
+    if(all.some(x=>(x.providers||[]).includes('google')))parts.push('uses Google');
+    return parts.join(' · ');
+  }
+
+  function memberNode(m,aliases){
+    const self=m.user_id===state.me.user_id,name=m.display_name||m.email;
+    const acts=el('div',{class:'m-acts'});
+    const reset=()=>acts.replaceChildren(...[
+      self?null:el('button',{class:'btn btn-ghost btn-sm',type:'button',onclick:()=>newLink(m)},'New link'),
+      el('button',{class:'btn btn-ghost btn-sm',type:'button',onclick:()=>addGmail(m,acts,reset)},'Add Gmail'),
+      self?null:el('button',{class:'btn btn-danger btn-sm',type:'button',onclick:()=>confirmRemove(m,acts,reset)},'Remove')].filter(Boolean));
+    reset();
+    return el('li',{class:'m'},
+      el('div',{class:'m-main'},
+        el('strong',{},name),m.is_admin?el('span',{class:'kind'},'Admin'):null,
+        el('div',{class:'m-sub'},m.email),
+        ...aliases.map(a=>el('div',{class:'m-sub'},'Also signs in with Google as '+a.email)),
+        el('div',{class:'m-sub'},memberStatus(m,aliases))),
+      acts);
+  }
+
+  function addGmail(m,acts,reset){
+    const input=el('input',{type:'email',placeholder:'their Gmail address','aria-label':'Gmail address for '+(m.display_name||m.email)});
+    acts.replaceChildren(input,
+      el('button',{class:'btn btn-primary btn-sm',type:'button',onclick:async e=>{
+        const btn=e.currentTarget;btn.disabled=true;
+        const r=await callFn('library-admin',{action:'add-google',user_id:m.user_id,email:input.value});
+        if(r.failed){btn.disabled=false;say('members-msg',r.error,'err');return;}
+        say('members-msg',input.value.trim()+' can now sign in with Google for '+(m.display_name||m.email)+'.','ok');
+        loadMembers();
+      }},'Add'),
+      el('button',{class:'btn btn-ghost btn-sm',type:'button',onclick:reset},'Cancel'));
+    input.focus();
+  }
+
+  function confirmRemove(m,acts,reset){
+    acts.replaceChildren(
+      el('span',{class:'confirm'},'Remove their access?'),
+      el('button',{class:'btn btn-danger solid btn-sm',type:'button',onclick:async e=>{
+        const btn=e.currentTarget;btn.disabled=true;
+        const r=await callFn('library-admin',{action:'remove',user_id:m.user_id});
+        if(r.failed){btn.disabled=false;say('members-msg',r.error,'err');return;}
+        say('members-msg',(m.display_name||m.email)+' can no longer sign in. What they added stays in the library.','ok');
+        loadMembers();
+      }},'Remove'),
+      el('button',{class:'btn btn-ghost btn-sm',type:'button',onclick:reset},'Keep'));
+  }
+
+  async function newLink(m){
+    say('members-msg','');
+    const r=await callFn('library-admin',{action:'new-link',user_id:m.user_id,days:$('in-days').value});
+    if(r.failed){say('members-msg',r.error,'err');return;}
+    showInvite(r);loadMembers();
+  }
+
+  $('invite-form').addEventListener('submit',async e=>{
+    e.preventDefault();
+    const name=$('in-name').value.trim(),email=$('in-email').value.trim();
+    if(!name||!email){say('members-msg','Give their name and email.','err');return;}
+    $('in-go').disabled=true;say('members-msg','');
+    const r=await callFn('library-admin',{action:'invite',name,email,days:$('in-days').value});
+    $('in-go').disabled=false;
+    if(r.failed){say('members-msg',r.error,'err');return;}
+    $('in-name').value='';$('in-email').value='';
+    showInvite(r);loadMembers();
+  });
+
+  function inviteEmail(r){
+    const until=new Date(r.expires_at).toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
+    const subject='Your invitation to the MIRA library';
+    const body=[
+      'Hi '+(firstName(r.name)||'there')+',','',
+      'You’re invited to the MIRA library, where we keep the recordings, transcripts, and summaries of our calls: '+LIBRARY_URL,'',
+      'To get in, open your personal link and choose a password:',r.link,'',
+      'The link is just for you, works once, and lasts until '+until+'.','',
+      'If '+r.email+' is a Google account, you can skip the link and click “Continue with Google” on the sign-in page instead.','',
+      'If you’d rather sign in with a different Google account, such as a Gmail address, reply with that address and I’ll add it.','',
+      'Jonathan'].join('\n');
+    return {subject,body};
+  }
+
+  let invitation=null;
+  function showInvite(r){
+    invitation=r;
+    const {subject,body}=inviteEmail(r);
+    $('io-title').textContent='The invitation for '+r.name+' is ready';
+    $('io-text').value=body;
+    $('io-mail').href='mailto:'+r.email+'?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
+    $('io-copy-text').textContent='Copy the email';$('io-copy-link').textContent='Copy the link only';
+    $('invite-out').hidden=false;
+  }
+  async function copy(btn,text){
+    try{await navigator.clipboard.writeText(text);btn.textContent='Copied';}
+    catch(_){btn.textContent='Select and copy it below';}
+  }
+  $('io-copy-text').addEventListener('click',e=>copy(e.currentTarget,$('io-text').value));
+  $('io-copy-link').addEventListener('click',e=>copy(e.currentTarget,invitation.link));
+
   /* ---------- upload ---------- */
 
   const upDlg=$('upload-dlg');
@@ -1184,6 +1401,8 @@
       up.start();
     });
   }
+
+  if(inviting)startInvite();
 })();
 </script>
 </body>
