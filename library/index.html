@@ -1233,10 +1233,11 @@
     const body=[
       'Hi '+(firstName(r.name)||'there')+',','',
       'You’re invited to the MIRA library, where we keep the recordings, transcripts, and summaries of our calls: '+LIBRARY_URL,'',
-      'To get in, open your personal link and choose a password:',r.link,'',
-      'The link is just for you, works once, and lasts until '+until+'.','',
-      'If '+r.email+' is a Google account, you can skip the link and click “Continue with Google” on the sign-in page instead.','',
-      'If you’d rather sign in with a different Google account, such as a Gmail address, reply with that address and I’ll add it.','',
+      'If '+r.email+' is a Gmail address (or any other Google account), just click “Continue with Google” on the sign-in page.','',
+      'If not, you can either:',
+      '- choose a password with your personal link below, or',
+      '- reply to this email with a Gmail address, and I’ll give that address access.','',
+      'Your personal link, just for you (it works once, until '+until+'):',r.link,'',
       'Jonathan'].join('\n');
     return {subject,body};
   }
