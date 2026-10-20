@@ -220,6 +220,7 @@
   .ack a{color:var(--footer-text);text-decoration:underline;text-underline-offset:2px;transition:color .2s}
   .ack a:hover{color:var(--accent)}
   .foot-end .fine{margin-top:10px}
+  .fine a{text-decoration:underline;text-underline-offset:2px}
   @media(max-width:560px){.foot-end{text-align:left}.ack{margin-left:0}.wrap{padding:0 22px}.lib{padding:40px 0 80px}.panel{padding:26px 20px}}
 </style>
 </head>
@@ -440,7 +441,7 @@
     </div>
     <div class="foot-end">
       <p class="ack">With thanks to <a href="https://elifepathways.org" target="_blank" rel="noopener">eLife Pathways</a> for their review</p>
-      <p class="fine">© 2026 MIRA</p>
+      <p class="fine">© 2026 MIRA · <a href="/privacy/">Privacy</a></p>
     </div>
   </div>
 </footer>
@@ -493,7 +494,7 @@
   const PROJECT_REF='vcdkoqpvurrdheyxeduu';
   const SUPABASE_URL='https://'+PROJECT_REF+'.supabase.co';
   const SUPABASE_KEY='sb_publishable_fYOCFVHuLxgQhh3YAOMTXA_HjA-0yjM';
-  const GOOGLE_SIGN_IN=false;
+  const GOOGLE_SIGN_IN=true;
   const BUCKET='library';
   const MAX_BYTES=5*1024*1024*1024;
   const TEXT_PREVIEW_MAX=3*1024*1024;

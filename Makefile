@@ -7,5 +7,6 @@ schema:
 	cp -r schema/site public/schema
 	cp -r blog public/
 	cp -r library public/
+	cp -r privacy public/
 
 .PHONY: all schema
