@@ -904,7 +904,7 @@
         el('ul',{class:'sub-items'},...shown.map(r=>itemNode(r,b))),
         el('div',{class:'bundle-actions'},
           el('button',{class:'linkish',type:'button',onclick:()=>openUpload(b)},'Add to this bundle'),
-          el('button',{class:'linkish',type:'button',onclick:()=>openBundleEdit(b)},'Edit bundle')));
+          b.created_by===state.me.user_id||state.me.is_admin?el('button',{class:'linkish',type:'button',onclick:()=>openBundleEdit(b)},'Edit bundle'):null));
     };
     head.addEventListener('click',()=>{
       const now=!state.open.has(key);
@@ -1029,6 +1029,7 @@
   }
 
   function fillActions(box,r){
+    // The person who added a file, or an admin, can edit or delete it (the database holds the same rule).
     const canDelete=r.uploaded_by===state.me.user_id||state.me.is_admin;
     const isPdf=(r.mime_type||'').includes('pdf')||ext(r.file_name)==='pdf';
     box.replaceChildren(...[
@@ -1043,7 +1044,7 @@
         try{const u=await signedUrl(r);if(w){w.opener=null;w.location=u;}else location.href=u;}
         catch(err){if(w)w.close();say('lib-msg','Couldn’t open it: '+err.message,'err');}
       }},'Open'):null,
-      el('button',{class:'btn btn-ghost btn-sm',type:'button',onclick:()=>openEdit(r)},'Edit details'),
+      canDelete?el('button',{class:'btn btn-ghost btn-sm',type:'button',onclick:()=>openEdit(r)},'Edit details'):null,
       canDelete?el('button',{class:'btn btn-danger btn-sm',type:'button',onclick:()=>confirmDelete(box,r)},'Delete'):null].filter(Boolean));
   }
 
