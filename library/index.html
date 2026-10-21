@@ -149,14 +149,17 @@
   .account{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;font-size:14px;color:var(--muted);margin-bottom:28px}
   .account .who strong{color:var(--ink-2);font-weight:500}
   .account .acts{display:flex;gap:18px}
-  .toolbar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:16px}
+  .tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:20px;overflow-x:auto}
+  .tab{font:inherit;font-size:16px;font-weight:500;color:var(--muted);background:none;border:0;border-bottom:2px solid transparent;padding:10px 14px;margin-bottom:-1px;cursor:pointer;white-space:nowrap;transition:color .2s,border-color .2s}
+  .tab:first-child{padding-left:2px}
+  .tab:hover{color:var(--ink)}
+  .tab[aria-selected="true"]{color:var(--accent);border-bottom-color:var(--accent)}
+  .tab .n{font-family:var(--mono);font-size:12px;font-weight:400;color:var(--faint);margin-left:7px}
+  .toolbar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:18px}
   .toolbar .search{flex:1 1 260px;width:auto}
   .toolbar .select{flex:0 1 240px;width:auto}
-  .chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:22px}
-  .chip{font:inherit;font-size:13.5px;color:var(--muted);background:transparent;border:1px solid var(--line);border-radius:999px;padding:5px 13px;cursor:pointer;transition:color .2s,border-color .2s,background .2s}
-  .chip:hover{color:var(--ink);border-color:var(--ink-2)}
-  .chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--bg)}
-  .count{font-family:var(--mono);font-size:12px;letter-spacing:.04em;color:var(--faint);margin-bottom:10px}
+  .from-call{margin-bottom:14px}
+  .bundle{scroll-margin-top:84px}
   .items{list-style:none;border-top:1px solid var(--line)}
   .item{border-bottom:1px solid var(--line)}
   .item-head{display:grid;grid-template-columns:118px minmax(0,1fr) auto;gap:18px;align-items:center;width:100%;text-align:left;font:inherit;color:inherit;background:none;border:0;padding:18px 4px;cursor:pointer}
@@ -384,25 +387,20 @@
         <span class="who">Signed in as <strong id="me-name"></strong></span>
         <span class="acts"><button class="linkish" type="button" id="members-link" hidden>Members</button><button class="linkish" type="button" id="set-pw-link">Set a password</button><button class="linkish" type="button" data-signout>Sign out</button></span>
       </div>
+      <div class="tabs" role="tablist" aria-label="What to show">
+        <button class="tab" type="button" role="tab" data-tab="calls" aria-selected="true">Calls<span class="n" id="n-calls"></span></button>
+        <button class="tab" type="button" role="tab" data-tab="presentations" aria-selected="false">Presentations<span class="n" id="n-presentations"></span></button>
+        <button class="tab" type="button" role="tab" data-tab="documents" aria-selected="false">Documents<span class="n" id="n-documents"></span></button>
+      </div>
       <div class="toolbar">
-        <input class="search" type="search" id="q" placeholder="Search titles, sessions, and descriptions" aria-label="Search the library" />
-        <select class="select" id="f-collection" aria-label="Filter by session or event"><option value="">All sessions and events</option></select>
+        <input class="search" type="search" id="q" placeholder="Search calls, presentations, and documents" aria-label="Search the library" />
+        <select class="select" id="f-collection" aria-label="Filter by series or event"><option value="">All series and events</option></select>
         <button class="btn btn-primary" type="button" id="add-btn">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
-          Add files
+          <span id="add-label">Add a call</span>
         </button>
       </div>
-      <div class="chips" role="group" aria-label="Filter by type">
-        <button class="chip" type="button" data-kind="" aria-pressed="true">All</button>
-        <button class="chip" type="button" data-kind="summary" aria-pressed="false">Summaries</button>
-        <button class="chip" type="button" data-kind="recording" aria-pressed="false">Recordings</button>
-        <button class="chip" type="button" data-kind="transcript" aria-pressed="false">Transcripts</button>
-        <button class="chip" type="button" data-kind="slides" aria-pressed="false">Slides</button>
-        <button class="chip" type="button" data-kind="document" aria-pressed="false">Documents</button>
-        <button class="chip" type="button" data-kind="other" aria-pressed="false">Other</button>
-      </div>
-      <p class="count" id="count" aria-live="polite"></p>
-      <ul class="items" id="items"></ul>
+      <ul class="items" id="items" aria-live="polite"></ul>
       <div class="empty" id="empty" hidden></div>
       <p class="msg" id="lib-msg" role="status"></p>
     </section>
@@ -413,18 +411,18 @@
 <!-- UPLOAD -->
 <dialog class="dlg" id="upload-dlg" aria-labelledby="up-h">
   <form id="upload-form" novalidate>
-    <h2 id="up-h">Add files</h2>
-    <p class="sub">Recordings, transcripts, slides, or anything else. Everyone with access to the library can see what you add.</p>
+    <h2 id="up-h">Add a call</h2>
+    <p class="sub" id="up-sub"></p>
     <div class="drop" id="drop">
       <p>Drop files here or <button class="linkish" type="button" id="pick">choose files</button></p>
       <p class="hint">Up to 5 GB each. Large files upload in pieces and pick up again after a dropped connection.</p>
       <input type="file" id="file-input" multiple hidden />
     </div>
     <ul class="files" id="file-list"></ul>
-    <label class="field"><span>Bundle (optional)</span><input type="text" id="u-bundle" list="bundle-titles" maxlength="300" placeholder="e.g. MIRA co-working session, 2 November 2026" /></label>
-    <p class="hint-line">Files in the same bundle appear together, like a call's summary, recording, and transcript. Pick an existing bundle or type a new name.</p>
+    <label class="field"><span id="u-bundle-label">Call</span><input type="text" id="u-bundle" list="bundle-titles" maxlength="300" placeholder="e.g. MIRA co-working session, 2 November 2026" /></label>
+    <p class="hint-line" id="u-bundle-hint"></p>
     <div class="grid2">
-      <label class="field"><span>Session or event</span><input type="text" id="u-collection" list="collections" maxlength="200" placeholder="e.g. MIRA co-working sessions" /></label>
+      <label class="field"><span>Series or event</span><input type="text" id="u-collection" list="collections" maxlength="200" placeholder="e.g. MIRA co-working sessions" /></label>
       <label class="field"><span>Date</span><input type="date" id="u-date" /></label>
     </div>
     <label class="field"><span>Description (optional)</span><textarea id="u-desc" rows="3" maxlength="5000"></textarea></label>
@@ -467,11 +465,11 @@
 <!-- EDIT BUNDLE -->
 <dialog class="dlg" id="bundle-dlg" aria-labelledby="bd-h">
   <form id="bundle-form" novalidate>
-    <h2 id="bd-h">Edit bundle</h2>
-    <p class="sub">Everything in the bundle shows under this name and date.</p>
+    <h2 id="bd-h">Edit call</h2>
+    <p class="sub">Everything from this call shows under this name and date.</p>
     <label class="field"><span>Name</span><input type="text" id="b-title" maxlength="300" required /></label>
     <div class="grid2">
-      <label class="field"><span>Session or event</span><input type="text" id="b-collection" list="collections" maxlength="200" /></label>
+      <label class="field"><span>Series or event</span><input type="text" id="b-collection" list="collections" maxlength="200" /></label>
       <label class="field"><span>Date</span><input type="date" id="b-date" /></label>
     </div>
     <p class="msg" id="bundle-msg" role="status"></p>
@@ -491,12 +489,12 @@
       <label class="field" style="margin:0"><span>Title</span><input type="text" id="e-title" maxlength="300" required /></label>
       <label class="field" style="margin:0"><span>Type</span><select id="e-kind"></select></label>
     </div>
-    <label class="field"><span>Bundle</span><input type="text" id="e-bundle" list="bundle-titles" maxlength="300" placeholder="Not in a bundle" /></label>
+    <label class="field"><span>Call</span><input type="text" id="e-bundle" list="bundle-titles" maxlength="300" placeholder="Not part of a call" /></label>
     <div class="grid2" id="e-loose">
-      <label class="field"><span>Session or event</span><input type="text" id="e-collection" list="collections" maxlength="200" /></label>
+      <label class="field"><span>Series or event</span><input type="text" id="e-collection" list="collections" maxlength="200" /></label>
       <label class="field"><span>Date</span><input type="date" id="e-date" /></label>
     </div>
-    <p class="hint-line" id="e-bundled-note" hidden>The date and session come from the bundle.</p>
+    <p class="hint-line" id="e-bundled-note" hidden>The date and series come from the call.</p>
     <label class="field"><span>Description</span><textarea id="e-desc" rows="4" maxlength="5000"></textarea></label>
     <p class="msg" id="edit-msg" role="status"></p>
     <div class="dlg-actions">
@@ -589,7 +587,9 @@
   const BUCKET='library';
   const MAX_BYTES=5*1024*1024*1024;
   const TEXT_PREVIEW_MAX=3*1024*1024;
-  const KINDS={summary:'Summary',recording:'Recording',transcript:'Transcript',slides:'Slides',document:'Document',other:'Other'};
+  const KINDS={summary:'Summary',recording:'Recording',transcript:'Transcript',slides:'Presentation',document:'Document',other:'Other'};
+  const TABS={calls:'Calls',presentations:'Presentations',documents:'Documents'};
+  const ADD_LABEL={calls:'Add a call',presentations:'Add a presentation',documents:'Add a document'};
   const KIND_ORDER=Object.keys(KINDS);
   const SUMMARY_HEADINGS=/^(Summary|Decided|Next steps|Open questions)$/;
 
@@ -635,7 +635,8 @@
     auth:{flowType:'implicit',detectSessionInUrl:true,persistSession:true,autoRefreshToken:true}
   });
 
-  const state={session:null,me:null,members:new Map(),resources:[],bundles:new Map(),kind:'',q:'',collection:'',open:new Set(),seen:new Set()};
+  const state={session:null,me:null,members:new Map(),resources:[],bundles:new Map(),tab:'calls',q:'',collection:'',open:new Set(),seen:new Set()};
+  try{const t=localStorage.getItem('mira-library-tab');if(TABS[t])state.tab=t;}catch(_){}
   let loadedFor=null;
 
   /* ---------- auth ---------- */
@@ -841,14 +842,13 @@
     const names=[...new Set([...state.resources.map(r=>eff(r).collection),...[...state.bundles.values()].map(b=>b.collection)].filter(Boolean))].sort((a,b)=>a.localeCompare(b));
     const sel=$('f-collection');
     if(state.collection&&!names.includes(state.collection))state.collection='';
-    sel.replaceChildren(el('option',{value:''},'All sessions and events'),...names.map(n=>el('option',{value:n},n)));
+    sel.replaceChildren(el('option',{value:''},'All series and events'),...names.map(n=>el('option',{value:n},n)));
     sel.value=state.collection;
     $('collections').replaceChildren(...names.map(n=>el('option',{value:n})));
     $('bundle-titles').replaceChildren(...[...state.bundles.values()].sort((a,b)=>(b.happened_on||'').localeCompare(a.happened_on||'')).map(b=>el('option',{value:b.title})));
   }
 
   function matches(r,extra){
-    if(state.kind&&r.kind!==state.kind)return false;
     if(state.collection&&eff(r).collection!==state.collection)return false;
     if(state.q){
       const hay=[r.title,eff(r).collection,r.description,r.file_name,extra].filter(Boolean).join(' ').toLowerCase();
@@ -859,52 +859,84 @@
 
   const byKind=(a,b)=>KIND_ORDER.indexOf(a.kind)-KIND_ORDER.indexOf(b.kind)||a.created_at.localeCompare(b.created_at);
 
-  function render(){
-    const groups=[],inBundle=new Map();
-    for(const r of state.resources){
-      const b=bundleOf(r);
-      if(b){if(!inBundle.has(b.id))inBundle.set(b.id,[]);inBundle.get(b.id).push(r);}
-      else if(matches(r))groups.push({r,date:r.happened_on,created:r.created_at});
+  // Recordings, transcripts and summaries belong to Calls; presentations and documents have tabs of their own.
+  function tabOf(r){return r.kind==='slides'?'presentations':(r.kind==='document'||r.kind==='other')?'documents':'calls';}
+
+  // Calls are the bundles, each shown whole, plus any recording, transcript or summary not yet in one.
+  // Presentations and documents are listed one by one, including those that belong to a call.
+  function entries(tab){
+    const out=[];
+    if(tab==='calls'){
+      const byCall=new Map();
+      for(const r of state.resources){const b=bundleOf(r);if(b){if(!byCall.has(b.id))byCall.set(b.id,[]);byCall.get(b.id).push(r);}}
+      for(const [id,items] of byCall){
+        const b=state.bundles.get(id);
+        if(items.some(r=>matches(r,b.title)))out.push({b,items:items.sort(byKind),date:b.happened_on,created:b.created_at});
+      }
+      for(const r of state.resources)if(!bundleOf(r)&&tabOf(r)==='calls'&&matches(r))out.push({r,date:r.happened_on,created:r.created_at});
+    }else{
+      for(const r of state.resources){
+        const b=bundleOf(r);
+        if(tabOf(r)===tab&&matches(r,b&&b.title))out.push({r,date:eff(r).happened_on,created:r.created_at});
+      }
     }
-    for(const [id,items] of inBundle){
-      const b=state.bundles.get(id);
-      const shown=items.filter(r=>matches(r,b.title)).sort(byKind);
-      if(shown.length)groups.push({b,items:items.sort(byKind),shown,date:b.happened_on,created:b.created_at});
-    }
-    groups.sort((x,y)=>(y.date||'').localeCompare(x.date||'')||y.created.localeCompare(x.created));
-    const total=state.resources.length,count=groups.reduce((n,g)=>n+(g.b?g.shown.length:1),0);
-    $('count').textContent=total?(count===total?total+(total===1?' item':' items'):count+' of '+total+' items'):'';
-    $('items').replaceChildren(...groups.map(g=>g.b?bundleNode(g.b,g.items,g.shown):itemNode(g.r)));
-    const empty=$('empty');
-    if(!total){
-      empty.replaceChildren(el('strong',{},'Nothing here yet'),'Add the first recording, transcript, or summary.',el('br'),
-        el('button',{class:'btn btn-primary',type:'button',onclick:()=>openUpload()},'Add files'));
-      empty.hidden=false;
-    }else if(!groups.length){
-      empty.replaceChildren(el('strong',{},'No matches'),'Try another search or filter.');
-      empty.hidden=false;
-    }else empty.hidden=true;
+    return out.sort((x,y)=>(y.date||'').localeCompare(x.date||'')||y.created.localeCompare(x.created));
   }
 
-  // A bundle opens to show its items; the first time it opens, its summary opens too.
-  function bundleNode(b,items,shown){
+  function setTab(t){
+    state.tab=t;
+    try{localStorage.setItem('mira-library-tab',t);}catch(_){}
+    render();
+  }
+  document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>setTab(b.dataset.tab)));
+
+  function render(){
+    const lists=Object.fromEntries(Object.keys(TABS).map(t=>[t,entries(t)]));
+    for(const t of Object.keys(TABS)){
+      $('n-'+t).textContent=lists[t].length||'';
+      document.querySelector('.tab[data-tab="'+t+'"]').setAttribute('aria-selected',String(t===state.tab));
+    }
+    $('add-label').textContent=ADD_LABEL[state.tab];
+    const list=lists[state.tab];
+    $('items').replaceChildren(...list.map(g=>g.b?bundleNode(g.b,g.items):itemNode(g.r)));
+    const empty=$('empty');
+    if(list.length){empty.hidden=true;return;}
+    if(state.q||state.collection){
+      const elsewhere=Object.keys(TABS).filter(t=>t!==state.tab&&lists[t].length);
+      empty.replaceChildren(el('strong',{},'No matches in '+TABS[state.tab]),
+        ...(elsewhere.length?['Found in ',...elsewhere.flatMap((t,i)=>[i?' and ':'',el('button',{class:'linkish',type:'button',onclick:()=>setTab(t)},TABS[t]+' ('+lists[t].length+')')]),'.']:['Try another search.']));
+    }else{
+      empty.replaceChildren(el('strong',{},{calls:'No calls yet',presentations:'No presentations yet',documents:'No documents yet'}[state.tab]),
+        el('button',{class:'btn btn-primary',type:'button',onclick:()=>openUpload()},ADD_LABEL[state.tab]));
+    }
+    empty.hidden=false;
+  }
+
+  function openCall(b){
+    state.open.add('b:'+b.id);
+    setTab('calls');
+    requestAnimationFrame(()=>{const n=document.getElementById('call-'+b.id);if(n)n.scrollIntoView({block:'start',behavior:'smooth'});});
+  }
+
+  // A call opens to show everything from it; the first time it opens, its summary opens too.
+  function bundleNode(b,items){
     const key='b:'+b.id,open=state.open.has(key);
-    const li=el('li',{class:'item bundle'+(open?' open':'')});
+    const li=el('li',{class:'item bundle'+(open?' open':''),id:'call-'+b.id});
     const bodyId='body-'+key;
     const kinds=[...new Set(items.map(r=>KINDS[r.kind]||r.kind))].join(', ').toLowerCase();
     const meta=[b.collection,fmtDate(b.happened_on),kinds.charAt(0).toUpperCase()+kinds.slice(1)].filter(Boolean).join(' · ');
     const head=el('button',{class:'item-head',type:'button','aria-expanded':String(open),'aria-controls':bodyId},
-      el('span',{class:'kind bundle-kind'},items.length+(items.length===1?' item':' items')),
+      el('span',{class:'kind bundle-kind'},items.length+(items.length===1?' file':' files')),
       el('span',{},el('span',{class:'item-title'},b.title),el('span',{class:'item-meta'},meta)),
       chevron());
     const body=el('div',{class:'item-body',id:bodyId,hidden:!open});
     const fill=()=>{
       if(!state.seen.has(b.id)){state.seen.add(b.id);items.filter(r=>r.kind==='summary').forEach(r=>state.open.add(r.id));}
       body.replaceChildren(
-        el('ul',{class:'sub-items'},...shown.map(r=>itemNode(r,b))),
+        el('ul',{class:'sub-items'},...items.map(r=>itemNode(r,b))),
         el('div',{class:'bundle-actions'},
-          el('button',{class:'linkish',type:'button',onclick:()=>openUpload(b)},'Add to this bundle'),
-          b.created_by===state.me.user_id||state.me.is_admin?el('button',{class:'linkish',type:'button',onclick:()=>openBundleEdit(b)},'Edit bundle'):null));
+          el('button',{class:'linkish',type:'button',onclick:()=>openUpload(b)},'Add to this call'),
+          b.created_by===state.me.user_id||state.me.is_admin?el('button',{class:'linkish',type:'button',onclick:()=>openBundleEdit(b)},'Edit call'):null));
     };
     head.addEventListener('click',()=>{
       const now=!state.open.has(key);
@@ -936,9 +968,11 @@
     const open=state.open.has(r.id);
     const li=el('li',{class:'item'+(open?' open':'')});
     const bodyId='body-'+r.id;
-    // Inside a bundle the bundle already names the session and date; say what this file is.
+    // Inside a call the call already names the series and date; say what this file is. Listed on its own,
+    // a presentation or document from a call says which call.
+    const call=!b&&bundleOf(r);
     const title=b&&r.title.trim()===b.title.trim()?r.file_name:r.title;
-    const meta=(b?[fmtSize(r.size_bytes)]:[r.collection,fmtDate(r.happened_on),fmtSize(r.size_bytes)]).filter(Boolean).join(' · ');
+    const meta=(b?[fmtSize(r.size_bytes)]:call?['From: '+call.title,fmtSize(r.size_bytes)]:[r.collection,fmtDate(r.happened_on),fmtSize(r.size_bytes)]).filter(Boolean).join(' · ');
     const head=el('button',{class:'item-head',type:'button','aria-expanded':String(open),'aria-controls':bodyId},
       el('span',{class:'kind'},KINDS[r.kind]||r.kind),
       el('span',{},el('span',{class:'item-title'},title),el('span',{class:'item-meta'},meta)),
@@ -948,9 +982,9 @@
       const now=!state.open.has(r.id);
       if(now)state.open.add(r.id);else state.open.delete(r.id);
       li.classList.toggle('open',now);head.setAttribute('aria-expanded',String(now));body.hidden=!now;
-      if(now&&!body.childElementCount)fillBody(body,r);
+      if(now&&!body.childElementCount)fillBody(body,r,call);
     });
-    if(open)fillBody(body,r);
+    if(open)fillBody(body,r,call);
     li.append(head,body);
     return li;
   }
@@ -968,10 +1002,11 @@
     return data.signedUrl;
   }
 
-  function fillBody(body,r){
+  function fillBody(body,r,call){
     const preview=el('div',{class:'preview'});
     const actions=el('div',{class:'item-actions'});
     body.replaceChildren(...[
+      call?el('p',{class:'from-call'},el('button',{class:'linkish',type:'button',onclick:()=>openCall(call)},'Open the call: '+call.title)):null,
       r.description?el('p',{class:'desc'},r.description):null,
       preview,actions,
       el('p',{class:'by'},'Added by '+memberName(r.uploaded_by)+' on '+fmtStamp(r.created_at)+' · '+r.file_name)].filter(Boolean));
@@ -1064,11 +1099,6 @@
 
   $('q').addEventListener('input',e=>{state.q=e.target.value.trim();render();});
   $('f-collection').addEventListener('change',e=>{state.collection=e.target.value;render();});
-  document.querySelectorAll('.chip').forEach(c=>c.addEventListener('click',()=>{
-    state.kind=c.dataset.kind;
-    document.querySelectorAll('.chip').forEach(x=>x.setAttribute('aria-pressed',String(x===c)));
-    render();
-  }));
 
   /* ---------- edit ---------- */
 
@@ -1129,9 +1159,9 @@
   $('bundle-form').addEventListener('submit',async e=>{
     e.preventDefault();
     const title=$('b-title').value.trim();
-    if(!title){say('bundle-msg','Give the bundle a name.','err');return;}
+    if(!title){say('bundle-msg','Give the call a name.','err');return;}
     const other=findBundle(title);
-    if(other&&other.id!==editingBundle.id){say('bundle-msg','Another bundle already has that name.','err');return;}
+    if(other&&other.id!==editingBundle.id){say('bundle-msg','Another call already has that name.','err');return;}
     $('bundle-go').disabled=true;
     const {error}=await sb.from('bundles').update({title,collection:$('b-collection').value.trim()||null,happened_on:$('b-date').value||null}).eq('id',editingBundle.id);
     $('bundle-go').disabled=false;
@@ -1270,7 +1300,7 @@
     if(t.startsWith('video/')||t.startsWith('audio/'))return 'recording';
     if(/summary/.test(n))return 'summary';
     if(['vtt','srt'].includes(x)||/transcript/.test(n))return 'transcript';
-    if(['ppt','pptx','key','odp'].includes(x)||/slide|deck/.test(n))return 'slides';
+    if(['ppt','pptx','key','odp'].includes(x)||/slide|deck|presentation/.test(n))return 'slides';
     if(['pdf','doc','docx','md','txt','odt','rtf'].includes(x))return 'document';
     return 'other';
   }
@@ -1282,8 +1312,23 @@
     return (base||'file').slice(-120);
   }
 
+  // The add dialog follows the tab: a call needs a name; a presentation or document may belong to a call.
+  const MODES={
+    calls:{title:'Add a call',sub:'The call’s recording, transcript, summary, and anything shared on it. Everyone with access to the library can see what you add.',
+      label:'Call',hint:'Type the new call’s name, or pick an existing call to add to it.'},
+    presentations:{title:'Add a presentation',sub:'Slides or a deck. Everyone with access to the library can see what you add.',
+      label:'Shown on a call (optional)',hint:'Pick the call it was shown on, if any.'},
+    documents:{title:'Add a document',sub:'Papers, drafts, notes, or anything else. Everyone with access to the library can see what you add.',
+      label:'Part of a call (optional)',hint:'Pick the call it belongs to, if any.'}
+  };
+  let uploadMode='calls';
+
   function openUpload(b){
     if(uploading){upDlg.showModal();return;}
+    uploadMode=b?'calls':state.tab;
+    const m=MODES[uploadMode];
+    $('up-h').textContent=b?'Add to this call':m.title;$('up-sub').textContent=m.sub;
+    $('u-bundle-label').textContent=m.label;$('u-bundle-hint').textContent=m.hint;
     pending=[];$('file-list').replaceChildren();
     $('u-bundle').value=b?b.title:'';
     $('u-collection').value=b?(b.collection||''):(state.collection||'');$('u-date').value=b?(b.happened_on||''):'';$('u-desc').value='';
@@ -1291,7 +1336,7 @@
     upDlg.showModal();
   }
   $('add-btn').addEventListener('click',()=>openUpload());
-  // Naming an existing bundle brings in its session and date.
+  // Naming an existing call brings in its series and date.
   $('u-bundle').addEventListener('input',()=>{
     const b=findBundle($('u-bundle').value);
     if(b){$('u-collection').value=b.collection||'';$('u-date').value=b.happened_on||'';}
@@ -1309,7 +1354,7 @@
       if(file.size>MAX_BYTES){say('upload-msg',file.name+' is larger than 5 GB and can’t be added.','err');continue;}
       if(!file.size){say('upload-msg',file.name+' is empty.','err');continue;}
       const kind=el('select',{'aria-label':'Type for '+file.name},...Object.entries(KINDS).map(([v,t])=>el('option',{value:v},t)));
-      kind.value=guessKind(file);
+      kind.value=uploadMode==='presentations'?'slides':uploadMode==='documents'?'document':guessKind(file);
       const title=el('input',{type:'text',value:titleFrom(file.name),maxlength:'300','aria-label':'Title for '+file.name});
       const bar=el('i');const stateLine=el('p',{class:'state'});
       const item={file,title,kind,bar,stateLine,done:false,upload:null};
@@ -1342,10 +1387,12 @@
     const todo=pending.filter(p=>!p.done);
     if(!todo.length){say('upload-msg','Choose at least one file.','err');return;}
     if(todo.some(p=>!p.title.value.trim())){say('upload-msg','Every file needs a title.','err');return;}
+    if(uploadMode==='calls'&&!$('u-bundle').value.trim()){say('upload-msg','Give the call a name, for example “MIRA co-working session, 2 November 2026”.','err');$('u-bundle').focus();return;}
     say('upload-msg','');setUploadBusy(true);
     const shared={collection:$('u-collection').value.trim()||null,happened_on:$('u-date').value||null,description:$('u-desc').value.trim()||null};
     try{shared.bundle_id=await resolveBundle($('u-bundle').value,shared.collection,shared.happened_on);}
-    catch(err){setUploadBusy(false);say('upload-msg','Couldn’t make the bundle: '+(err.message||err),'err');return;}
+    catch(err){setUploadBusy(false);say('upload-msg','Couldn’t make the call: '+(err.message||err),'err');return;}
+    if(shared.bundle_id&&uploadMode==='calls')state.open.add('b:'+shared.bundle_id);
     let failed=0;
     for(const p of todo){
       try{await uploadOne(p,shared);p.done=true;p.stateLine.textContent='Added.';p.stateLine.className='state';}
