@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>MIRA · Extensions</title>
+<meta name="description" content="The extensions to MIRA's core schema that people are trying, and the use cases behind each extension." />
+<link rel="canonical" href="https://mira.science/extensions/" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self' https://vcdkoqpvurrdheyxeduu.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:ital,wght@0,400..700;1,400&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<script>
+  /* set theme before first paint to avoid a flash */
+  (function(){
+    try{
+      var stored=localStorage.getItem('mira-theme');
+      var sys=window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches;
+      document.documentElement.setAttribute('data-theme', stored || (sys?'dark':'light'));
+    }catch(e){document.documentElement.setAttribute('data-theme','light');}
+  })();
+</script>
+<style>
+  :root{
+    color-scheme:light;
+    --bg:#ffffff;--ink:#16181b;--ink-2:#33373c;--muted:#5b616a;--faint:#6b717a;
+    --line:#e9eaec;--line-soft:#f3f4f5;--accent:#1d5440;--accent-deep:#163f30;
+    --tint-1:#f6f8f7;--tint-2:#eef2f0;--card-bg:#ffffff;
+    --hero-bg:radial-gradient(125% 120% at 82% -15%, #235e46 0%, #163f30 48%, #102e22 100%);
+    --hero-text:#ffffff;--hero-muted:#b6cdc1;--hero-eyebrow:#8ed8b3;
+    --footer-bg:#0f2c21;--footer-text:#ffffff;--footer-muted:#b6cdc1;
+    --danger:#b4342b;
+    --sans:"Schibsted Grotesk",-apple-system,BlinkMacSystemFont,sans-serif;
+    --mono:"Geist Mono",ui-monospace,SFMono-Regular,monospace;
+    --maxw:1080px;
+  }
+  [data-theme="dark"]{
+    color-scheme:dark;
+    --bg:#0c1411;--ink:#e9efeb;--ink-2:#cad6d0;--muted:#93a39b;--faint:#7f8f87;
+    --line:#1f2b26;--line-soft:#172019;--accent:#7fd3a8;--accent-deep:#9ce3c1;
+    --tint-1:#0f1814;--tint-2:#121d18;--card-bg:#16241d;
+    --hero-bg:radial-gradient(125% 120% at 82% -15%, #15392a 0%, #0e271d 50%, #081711 100%);
+    --hero-text:#eafaf2;--hero-muted:#9fb4aa;--hero-eyebrow:#7fd3a8;
+    --footer-bg:#0a1d15;--footer-text:#e9efeb;--footer-muted:#8ba197;
+    --danger:#f08c84;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+  body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:17px;line-height:1.6;font-weight:400;letter-spacing:-.005em;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;transition:background-color .3s ease,color .3s ease}
+  a{color:inherit;text-decoration:none}
+  ::selection{background:var(--accent);color:var(--bg)}
+  [hidden]{display:none !important}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 32px}
+  .eyebrow{font-family:var(--mono);font-size:12px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
+
+  /* NAV */
+  nav{position:sticky;top:0;z-index:60;background:var(--bg);border-bottom:1px solid transparent;transition:border-color .3s,background-color .3s}
+  nav.scrolled{border-color:var(--line)}
+  .nav-in{display:flex;align-items:center;justify-content:space-between;height:66px}
+  .brand{display:inline-flex;align-items:center}
+  .logo{height:21px;width:auto;display:block;color:inherit}
+  .logo text{font-family:var(--sans)}
+  .nav-right{display:flex;align-items:center;gap:24px}
+  .nav-links{display:flex;gap:28px}
+  .nav-links a{font-size:14.5px;color:var(--muted);transition:color .2s}
+  .nav-links a:hover{color:var(--ink)}
+  .theme-toggle{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:8px;border:1px solid var(--line);background:transparent;color:var(--muted);cursor:pointer;transition:color .2s,border-color .2s}
+  .theme-toggle:hover{color:var(--ink);border-color:var(--ink-2)}
+  .theme-toggle svg{width:18px;height:18px}
+  .theme-toggle .ico-sun{display:none}
+  [data-theme="dark"] .theme-toggle .ico-moon{display:none}
+  [data-theme="dark"] .theme-toggle .ico-sun{display:block}
+  .nav-cta{font-size:14px;font-weight:500;background:var(--accent);color:var(--bg);padding:9px 17px;border-radius:7px;transition:background .2s,transform .2s}
+  .nav-cta:hover{background:var(--accent-deep);transform:translateY(-1px)}
+  .menu-toggle{display:none;align-items:center;justify-content:center;width:36px;height:36px;border-radius:8px;border:1px solid var(--line);background:transparent;color:var(--muted);cursor:pointer;transition:color .2s,border-color .2s}
+  .menu-toggle:hover{color:var(--ink);border-color:var(--ink-2)}
+  .menu-toggle svg{width:18px;height:18px}
+  .menu-toggle .ico-close{display:none}
+  nav.open .menu-toggle .ico-menu{display:none}
+  nav.open .menu-toggle .ico-close{display:block}
+  @media(max-width:760px){
+    .nav-right{gap:10px}
+    .menu-toggle{display:inline-flex}
+    .nav-links{display:none;position:absolute;top:100%;left:0;right:0;flex-direction:column;gap:0;padding:6px 22px 14px;background:var(--bg);border-bottom:1px solid var(--line);box-shadow:0 12px 24px -16px rgba(0,0,0,.25)}
+    nav.open{border-color:var(--line)}
+    nav.open .nav-links{display:flex}
+    .nav-links a{font-size:16px;padding:13px 0;border-bottom:1px solid var(--line);color:var(--ink-2)}
+    .nav-links a:last-child{border-bottom:0}
+  }
+  @media(max-width:380px){.nav-right{gap:8px}.nav-cta{white-space:nowrap;padding:9px 11px;font-size:13px}}
+  @media(min-width:761px) and (max-width:900px){.nav-right{gap:16px}.nav-links{gap:18px}}
+
+  /* PAGE HEADER */
+  .page-head{background:var(--hero-bg);color:var(--hero-text);padding:64px 0 76px}
+  .page-head .eyebrow{display:block;margin-bottom:20px;color:var(--hero-eyebrow)}
+  .page-head h1{font-size:clamp(34px,5vw,58px);line-height:1.04;font-weight:500;letter-spacing:-.032em;max-width:16ch;margin-bottom:24px}
+  .page-head .lede{font-size:19.5px;line-height:1.55;color:var(--hero-muted);max-width:58ch}
+  .page-head .lede+.lede{margin-top:12px}
+  .page-head .note{font-size:15px;line-height:1.55;color:var(--hero-text);max-width:58ch;margin-top:26px;padding-left:14px;border-left:2px solid var(--hero-eyebrow)}
+  .page-head .back{display:inline-flex;align-items:center;gap:8px;font-size:14.5px;color:var(--hero-muted);margin-bottom:34px;transition:color .2s}
+  .page-head .back:hover{color:var(--hero-text)}
+  .page-head .back .arr{transition:transform .22s}
+  .page-head .back:hover .arr{transform:translateX(-3px)}
+  @media(max-width:560px){.page-head{padding:44px 0 56px}.page-head .lede{font-size:18px}}
+
+  /* FORMS AND BUTTONS */
+  .field{display:block;font-size:14px;font-weight:500;color:var(--ink-2);margin-bottom:14px}
+  .field > span{display:block;margin-bottom:6px}
+  .field em,.picker legend em{font-style:normal;font-weight:400;color:var(--faint)}
+  .field input,.field select,.field textarea{width:100%;font:inherit;font-size:15.5px;font-weight:400;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px 12px;transition:border-color .2s}
+  .field textarea{resize:vertical;min-height:84px}
+  .field input:focus,.field select:focus,.field textarea:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:var(--accent)}
+  .field .hint{display:block;font-size:13px;font-weight:400;color:var(--faint);margin-top:5px}
+  .hp{position:absolute !important;left:-9999px;width:1px;height:1px;opacity:0;pointer-events:none}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;font:inherit;font-size:15px;font-weight:500;line-height:1.2;border-radius:8px;padding:11px 18px;cursor:pointer;border:1px solid transparent;transition:background .2s,border-color .2s,color .2s;white-space:nowrap}
+  .btn-primary{background:var(--accent);color:var(--bg)}
+  .btn-primary:hover{background:var(--accent-deep)}
+  .btn-ghost{background:transparent;color:var(--ink-2);border-color:var(--line)}
+  .btn-ghost:hover{border-color:var(--ink-2);color:var(--ink)}
+  .btn[disabled]{opacity:.55;cursor:default}
+  .btn svg{width:18px;height:18px;flex:none}
+  .btn-sm{font-size:14px;padding:8px 13px}
+  .msg{font-size:14.5px;line-height:1.5;margin-top:12px}
+  .msg:empty{display:none}
+  .msg.err{color:var(--danger)}
+  .msg.ok{color:var(--accent)}
+
+  /* LISTS */
+  .ext{padding:56px 0 112px;min-height:30vh}
+  .load-msg{font-size:16px;color:var(--muted)}
+  .lists{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:48px;align-items:start}
+  .list-sec{min-width:0;scroll-margin-top:84px}
+  .sec-head{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:8px 16px;padding-bottom:16px;border-bottom:1px solid var(--line)}
+  .sec-head h2{font-size:26px;line-height:1.2;font-weight:500;letter-spacing:-.02em}
+  .sec-head h2 .n{font-family:var(--mono);font-size:13px;font-weight:400;letter-spacing:0;color:var(--faint);margin-left:9px}
+  .sec-sub{grid-column:1/-1;font-size:15px;line-height:1.5;color:var(--muted);max-width:52ch}
+  .sec-msg{margin:12px 0 0}
+  .cards{list-style:none;display:flex;flex-direction:column;gap:16px;margin-top:18px}
+  .empty{color:var(--muted);font-size:15.5px;padding:34px 16px;margin-top:18px;text-align:center;border:1px dashed var(--line);border-radius:14px}
+  .card{background:var(--card-bg);border:1px solid var(--line);border-radius:14px;padding:20px 22px 14px;scroll-margin-top:84px;transition:border-color .4s,box-shadow .4s}
+  .card:target,.card.flash{border-color:var(--accent);box-shadow:0 0 0 3px var(--tint-2)}
+  .card-tags{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+  .chip{font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;line-height:1.3;border-radius:5px;padding:4px 8px;color:var(--accent);background:var(--tint-2);border:1px solid transparent}
+  .chip-idea{background:transparent;border-color:var(--line);color:var(--muted)}
+  .chip-in_use{background:var(--accent);color:var(--bg)}
+  .tag{font-size:13px;line-height:1.4;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:2px 10px;overflow-wrap:anywhere}
+  .card-title{font-size:20px;line-height:1.3;font-weight:500;letter-spacing:-.015em;margin-bottom:6px;overflow-wrap:anywhere}
+  .card-text{font-size:16px;line-height:1.6;color:var(--ink-2);white-space:pre-line;overflow-wrap:anywhere}
+  .facts{display:grid;gap:10px;margin-top:14px}
+  .facts:empty{display:none}
+  .fact dt{font-size:13px;font-weight:500;color:var(--faint);margin-bottom:1px}
+  .fact dd{font-size:15px;line-height:1.55;color:var(--ink-2);white-space:pre-line;overflow-wrap:anywhere}
+  .fact dd a.out{color:var(--accent);text-decoration:underline;text-underline-offset:2px}
+  .xrefs{list-style:none;display:flex;flex-wrap:wrap;gap:6px;margin-top:3px;white-space:normal}
+  .xrefs a{display:inline-block;font-size:14px;line-height:1.4;color:var(--ink-2);border:1px solid var(--line);border-radius:7px;padding:3px 9px;transition:border-color .2s,color .2s}
+  .xrefs a:hover{border-color:var(--accent);color:var(--accent)}
+  .none-yet{color:var(--muted)}
+  .by{font-size:13.5px;color:var(--faint);margin-top:14px;overflow-wrap:anywhere}
+  .card-actions{display:flex;align-items:center;gap:8px 18px;flex-wrap:wrap;margin-top:12px;padding-top:12px;border-top:1px solid var(--line-soft)}
+  .thumb{display:inline-flex;align-items:center;gap:7px;font:inherit;font-size:14px;font-weight:500;line-height:1.2;color:var(--ink-2);background:transparent;border:1px solid var(--line);border-radius:999px;padding:6px 13px 6px 11px;cursor:pointer;transition:background .2s,border-color .2s,color .2s}
+  .thumb svg{width:16px;height:16px;flex:none}
+  .thumb .n{font-family:var(--mono);font-size:13px}
+  .thumb:hover{border-color:var(--accent);color:var(--accent)}
+  .thumb.on{background:var(--accent);border-color:var(--accent);color:var(--bg)}
+  .thumb[disabled]{opacity:.6;cursor:default}
+  .act{background:none;border:0;padding:4px 0;font:inherit;font-size:14px;color:var(--muted);cursor:pointer;text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:3px;transition:color .2s}
+  .act:hover{color:var(--ink);text-decoration-color:currentColor}
+  .act[disabled]{opacity:.55;cursor:default}
+  .act-danger{color:var(--danger)}
+  .acts-end{display:flex;gap:16px;margin-left:auto}
+  .card-msg{margin-top:8px}
+
+  /* COMMENTS */
+  .comments{margin-top:12px;padding-top:14px;border-top:1px solid var(--line-soft)}
+  .comment-list{list-style:none;display:flex;flex-direction:column;gap:12px;margin-bottom:14px}
+  .comment{border-left:2px solid var(--line);padding-left:12px}
+  .c-body{font-size:15px;line-height:1.55;color:var(--ink-2);white-space:pre-line;overflow-wrap:anywhere}
+  .c-by{display:flex;flex-wrap:wrap;align-items:center;gap:2px 14px;font-size:13px;color:var(--faint);margin-top:3px;overflow-wrap:anywhere}
+  .c-by .act{font-size:13px;padding:0}
+  .c-none{font-size:14.5px;color:var(--muted);margin-bottom:12px}
+  .c-load{margin:0 0 12px}
+  .c-form{background:var(--tint-1);border:1px solid var(--line);border-radius:10px;padding:14px 14px 12px}
+  .c-form .field{margin-bottom:10px}
+  .c-form .field textarea{min-height:70px}
+  .c-form .msg{margin:0 0 10px}
+
+  /* HIDDEN (admins) */
+  .hidden-sec{margin-top:72px}
+  .hidden-list{list-style:none;margin-top:8px}
+  .hidden-list li{display:flex;justify-content:space-between;gap:8px 16px;align-items:baseline;flex-wrap:wrap;padding:12px 0;border-bottom:1px solid var(--line)}
+  .hidden-list .h-main{min-width:0;flex:1 1 300px;font-size:15px;color:var(--ink-2);overflow-wrap:anywhere}
+  .hidden-list .h-kind{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);margin-right:10px}
+
+  /* DIALOGS */
+  .dlg{border:1px solid var(--line);border-radius:16px;background:var(--card-bg);color:var(--ink);width:min(680px,calc(100vw - 32px));max-height:calc(100vh - 48px);margin:auto;padding:30px 30px 26px}
+  .dlg::backdrop{background:rgba(6,16,12,.55)}
+  .dlg h2{font-size:24px;line-height:1.2;font-weight:500;letter-spacing:-.02em;margin-bottom:18px}
+  .grid2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0 14px}
+  .picker{border:0;margin-bottom:14px;min-width:0}
+  .picker legend{font-size:14px;font-weight:500;color:var(--ink-2);margin-bottom:6px;padding:0}
+  .pick-list{list-style:none;border:1px solid var(--line);border-radius:8px;padding:6px 12px;max-height:210px;overflow:auto;background:var(--bg)}
+  .pick-list label{display:flex;gap:10px;align-items:flex-start;font-size:15px;line-height:1.4;padding:6px 0;cursor:pointer;overflow-wrap:anywhere}
+  .pick-list input{margin-top:3px;accent-color:var(--accent);flex:none}
+  .pick-none{font-size:14.5px;color:var(--muted);padding:4px 0}
+  .fine-print{font-size:13px;line-height:1.5;color:var(--faint);margin-top:4px}
+  .fine-print a{text-decoration:underline;text-underline-offset:2px}
+  .dlg-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:18px}
+
+  @media(max-width:980px){.lists{grid-template-columns:minmax(0,1fr);gap:64px}}
+  @media(max-width:560px){
+    .wrap{padding:0 22px}
+    .ext{padding:40px 0 80px}
+    .card{padding:18px 16px 12px}
+    .dlg{padding:24px 18px 20px}
+    .grid2{grid-template-columns:minmax(0,1fr)}
+  }
+
+  /* footer */
+  footer{background:var(--footer-bg);color:var(--footer-text);border-top:0;padding:56px 0 60px;transition:background-color .3s ease}
+  .foot{display:flex;justify-content:space-between;gap:40px;flex-wrap:wrap}
+  .foot .brand{margin-bottom:12px;color:var(--footer-text)}
+  .foot .brand .logo{height:22px}
+  .foot .tg{font-size:14px;color:var(--footer-muted);max-width:32ch}
+  .fine{font-family:var(--mono);font-size:12px;color:var(--footer-muted);margin-top:38px}
+  .foot-end{text-align:right}
+  .ack{font-size:13px;color:var(--footer-muted);max-width:34ch;margin-left:auto}
+  .ack a{color:var(--footer-text);text-decoration:underline;text-underline-offset:2px;transition:color .2s}
+  .ack a:hover{color:var(--accent)}
+  .foot-end .fine{margin-top:10px}
+  .fine a{text-decoration:underline;text-underline-offset:2px}
+  @media(max-width:560px){.foot-end{text-align:left}.ack{margin-left:0}}
+</style>
+<script>
+  window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+</script>
+<script defer src="/_vercel/insights/script.js"></script>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="nav">
+  <div class="wrap nav-in">
+    <a href="/" class="brand" aria-label="MIRA — home">
+      <svg class="logo" viewBox="0 0 96 24" role="img" aria-label="MIRA" xmlns="http://www.w3.org/2000/svg">
+        <title>MIRA</title>
+        <g stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+          <line x1="5" y1="6.5" x2="5" y2="17.5"/>
+          <line x1="5" y1="6.5" x2="17" y2="12"/>
+          <line x1="5" y1="17.5" x2="17" y2="12"/>
+        </g>
+        <g fill="currentColor">
+          <circle cx="5" cy="6.5" r="2.7"/>
+          <circle cx="5" cy="17.5" r="2.7"/>
+          <circle cx="17" cy="12" r="3.4"/>
+        </g>
+        <text x="29" y="17" fill="currentColor" font-size="17" font-weight="600" letter-spacing="0.4">MIRA</text>
+      </svg>
+    </a>
+    <div class="nav-right">
+      <div class="nav-links" id="nav-links">
+        <a href="/#what">What it is</a>
+        <a href="/#why">Why it matters</a>
+        <a href="/#who">Who's using it</a>
+        <a href="/extensions/" aria-current="page">Extensions</a>
+        <a href="/blog/">Blog</a>
+      </div>
+      <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Switch to dark theme" aria-pressed="false" title="Toggle light / dark">
+        <svg class="ico-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg>
+        <svg class="ico-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+      </button>
+      <a href="/#involved" class="nav-cta">Get involved</a>
+      <button id="menu-toggle" class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links">
+        <svg class="ico-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        <svg class="ico-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- PAGE HEADER -->
+<header class="page-head">
+  <div class="wrap">
+    <a class="back" href="/"><span class="arr" aria-hidden="true">&larr;</span> Back to MIRA</a>
+    <span class="eyebrow">Extensions</span>
+    <h1>What people are trying outside the core.</h1>
+    <p class="lede">MIRA's core schema is kept small on purpose. People who need more than it holds build extensions and try them in their own tools.</p>
+    <p class="lede">This page lists those extensions and the use cases behind them. Add yours, give a thumbs up to what you need, and find who to talk to.</p>
+    <p class="note">Every extension listed here is an experiment by the people named on it. None has been adopted into MIRA's core.</p>
+  </div>
+</header>
+
+<main class="ext">
+  <div class="wrap">
+
+    <!-- Shown as it is when JavaScript is off; the script replaces it while loading. -->
+    <p class="load-msg" id="load-msg" role="status">The lists could not be loaded. Try again in a minute.</p>
+
+    <div id="lists-wrap" hidden>
+      <p class="msg sec-msg" id="lists-msg" role="status"></p>
+      <div class="lists">
+        <section class="list-sec" id="extensions" aria-labelledby="ext-h">
+          <div class="sec-head">
+            <h2 id="ext-h">Extensions<span class="n" id="n-ext"></span></h2>
+            <button class="btn btn-primary btn-sm" type="button" id="add-ext">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+              Add an extension
+            </button>
+          </div>
+          <p class="msg sec-msg" id="ext-msg" role="status"></p>
+          <ul class="cards" id="ext-list"></ul>
+          <p class="empty" id="ext-empty" hidden>No extensions yet.</p>
+        </section>
+
+        <section class="list-sec" id="use-cases" aria-labelledby="uc-h">
+          <div class="sec-head">
+            <h2 id="uc-h">Use cases<span class="n" id="n-uc"></span></h2>
+            <button class="btn btn-primary btn-sm" type="button" id="add-uc">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+              Add a use case
+            </button>
+            <p class="sec-sub">A use case is something you want to record that the core does not let you record yet.</p>
+          </div>
+          <p class="msg sec-msg" id="uc-msg" role="status"></p>
+          <ul class="cards" id="uc-list"></ul>
+          <p class="empty" id="uc-empty" hidden>No use cases yet.</p>
+        </section>
+      </div>
+
+      <!-- Library admins only -->
+      <section class="list-sec hidden-sec" id="hidden-sec" aria-labelledby="hid-h" hidden>
+        <div class="sec-head">
+          <h2 id="hid-h">Hidden</h2>
+          <p class="sec-sub">Only library admins see this list.</p>
+        </div>
+        <p class="msg sec-msg" id="hid-msg" role="status"></p>
+        <ul class="hidden-list" id="hid-list"></ul>
+        <p class="empty" id="hid-empty" hidden>Nothing is hidden.</p>
+      </section>
+    </div>
+
+  </div>
+</main>
+
+<!-- ADD OR EDIT AN EXTENSION -->
+<dialog class="dlg" id="ext-dlg" aria-labelledby="ext-dlg-h">
+  <form id="ext-form" novalidate>
+    <h2 id="ext-dlg-h">Add an extension</h2>
+    <input type="text" name="company" class="hp" id="x-company" tabindex="-1" autocomplete="off" aria-hidden="true" />
+    <label class="field"><span>Name</span><input type="text" id="x-name" autocomplete="off" /></label>
+    <label class="field"><span>What it adds</span><textarea id="x-adds" rows="3"></textarea></label>
+    <div class="grid2">
+      <label class="field"><span>Field or domain <em>(optional)</em></span><input type="text" id="x-field" autocomplete="off" /></label>
+      <label class="field"><span>Status</span>
+        <select id="x-status">
+          <option value="">Choose one</option>
+          <option value="idea">Idea</option>
+          <option value="experimenting">Experimenting</option>
+          <option value="in_use">In use</option>
+        </select>
+      </label>
+    </div>
+    <label class="field"><span>Who to talk to <em>(optional)</em></span><input type="text" id="x-contact" autocomplete="off" /></label>
+    <label class="field"><span>Where to see it <em>(optional, a link)</em></span><input type="url" id="x-link" inputmode="url" autocomplete="off" placeholder="https://" /><span class="hint">Its code, a branch, a pull request, or a document.</span></label>
+    <label class="field"><span>How it relates to the core <em>(optional)</em></span><textarea id="x-relation" rows="3"></textarea></label>
+    <div class="grid2">
+      <label class="field"><span>Your name</span><input type="text" id="x-author" autocomplete="name" /></label>
+      <label class="field" id="x-email-wrap"><span>Your email <em>(optional, never shown)</em></span><input type="email" id="x-email" autocomplete="email" /></label>
+    </div>
+    <p class="fine-print">Your name and what you write show on this page at once. Your email is never shown. <a href="/privacy/#extensions">What we keep</a></p>
+    <p class="msg" id="ext-form-msg" role="status"></p>
+    <div class="dlg-actions">
+      <button class="btn btn-ghost" type="button" data-close>Cancel</button>
+      <button class="btn btn-primary" type="submit" id="ext-go">Add the extension</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- ADD OR EDIT A USE CASE -->
+<dialog class="dlg" id="uc-dlg" aria-labelledby="uc-dlg-h">
+  <form id="uc-form" novalidate>
+    <h2 id="uc-dlg-h">Add a use case</h2>
+    <input type="text" name="company" class="hp" id="u-company" tabindex="-1" autocomplete="off" aria-hidden="true" />
+    <label class="field"><span>Title</span><input type="text" id="u-title" autocomplete="off" /></label>
+    <label class="field"><span>What you are trying to do</span><textarea id="u-goal" rows="3"></textarea></label>
+    <label class="field"><span>What the core does not let you record</span><textarea id="u-gap" rows="3"></textarea></label>
+    <label class="field"><span>Field or domain <em>(optional)</em></span><input type="text" id="u-field" autocomplete="off" /></label>
+    <fieldset class="picker">
+      <legend>Extensions that would cover it <em>(pick any, or none)</em></legend>
+      <ul class="pick-list" id="u-picks"></ul>
+    </fieldset>
+    <div class="grid2">
+      <label class="field"><span>Your name</span><input type="text" id="u-author" autocomplete="name" /></label>
+      <label class="field" id="u-email-wrap"><span>Your email <em>(optional, never shown)</em></span><input type="email" id="u-email" autocomplete="email" /></label>
+    </div>
+    <p class="fine-print">Your name and what you write show on this page at once. Your email is never shown. <a href="/privacy/#extensions">What we keep</a></p>
+    <p class="msg" id="uc-form-msg" role="status"></p>
+    <div class="dlg-actions">
+      <button class="btn btn-ghost" type="button" data-close>Cancel</button>
+      <button class="btn btn-primary" type="submit" id="uc-go">Add the use case</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- EDIT A COMMENT (admins) -->
+<dialog class="dlg" id="cm-dlg" aria-labelledby="cm-dlg-h">
+  <form id="cm-form" novalidate>
+    <h2 id="cm-dlg-h">Edit the comment</h2>
+    <label class="field"><span>Name</span><input type="text" id="c-author" autocomplete="off" /></label>
+    <label class="field"><span>Comment</span><textarea id="c-body" rows="4"></textarea></label>
+    <p class="msg" id="cm-form-msg" role="status"></p>
+    <div class="dlg-actions">
+      <button class="btn btn-ghost" type="button" data-close>Cancel</button>
+      <button class="btn btn-primary" type="submit" id="cm-go">Save</button>
+    </div>
+  </form>
+</dialog>
+
+<template id="tpl-thumb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 10v11H4a1 1 0 0 1-1-1v-9a1 1 0 0 1 1-1h3Zm0 0 4-8a3 3 0 0 1 3 3v4h5.5a2 2 0 0 1 2 2.3l-1.4 8A2 2 0 0 1 18.1 21H7"/></svg></template>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap foot">
+    <div>
+      <div class="brand">
+        <svg class="logo" viewBox="0 0 96 24" role="img" aria-label="MIRA" xmlns="http://www.w3.org/2000/svg">
+          <title>MIRA</title>
+          <g stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+            <line x1="5" y1="6.5" x2="5" y2="17.5"/>
+            <line x1="5" y1="6.5" x2="17" y2="12"/>
+            <line x1="5" y1="17.5" x2="17" y2="12"/>
+          </g>
+          <g fill="currentColor">
+            <circle cx="5" cy="6.5" r="2.7"/>
+            <circle cx="5" cy="17.5" r="2.7"/>
+            <circle cx="17" cy="12" r="3.4"/>
+          </g>
+          <text x="29" y="17" fill="currentColor" font-size="17" font-weight="600" letter-spacing="0.4">MIRA</text>
+        </svg>
+      </div>
+      <p class="tg">Modular Interoperable Research Attribution. An open architecture for collaborative research communication.</p>
+    </div>
+    <div class="foot-end">
+      <p class="ack">With thanks to <a href="https://elifepathways.org" target="_blank" rel="noopener">eLife Pathways</a> for their review</p>
+      <p class="fine">© 2026 MIRA · <a href="/privacy/">Privacy</a></p>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const nav=document.getElementById('nav');
+  addEventListener('scroll',()=>nav.classList.toggle('scrolled',scrollY>8),{passive:true});
+
+  /* phone menu */
+  (function(){
+    const btn=document.getElementById('menu-toggle');
+    const links=document.getElementById('nav-links');
+    function set(open){
+      nav.classList.toggle('open',open);
+      btn.setAttribute('aria-expanded',String(open));
+      btn.setAttribute('aria-label',open?'Close menu':'Open menu');
+    }
+    btn.addEventListener('click',()=>set(!nav.classList.contains('open')));
+    links.addEventListener('click',e=>{if(e.target.closest('a'))set(false);});
+    addEventListener('keydown',e=>{if(e.key==='Escape'&&nav.classList.contains('open')){set(false);btn.focus();}});
+    matchMedia('(min-width:761px)').addEventListener('change',e=>{if(e.matches)set(false);});
+  })();
+
+  /* theme toggle */
+  (function(){
+    const root=document.documentElement;
+    const btn=document.getElementById('theme-toggle');
+    function sync(){
+      const dark=root.getAttribute('data-theme')==='dark';
+      btn.setAttribute('aria-pressed',String(dark));
+      btn.setAttribute('aria-label',dark?'Switch to light theme':'Switch to dark theme');
+    }
+    sync();
+    btn.addEventListener('click',()=>{
+      const next=root.getAttribute('data-theme')==='dark'?'light':'dark';
+      root.setAttribute('data-theme',next);
+      try{localStorage.setItem('mira-theme',next);}catch(e){}
+      sync();
+    });
+  })();
+</script>
+<script>
+/* EXTENSIONS
+   The lists live in the MIRA Supabase project. The key below is the project's publishable key,
+   meant for browsers. Visitors can only read the three *_shown views and call the checked write
+   functions; the database refuses everything else (see supabase/migrations/*_extensions.sql).
+   Everything that comes from the database goes on the page as plain text, never as HTML. */
+(function(){
+  'use strict';
+  const API='https://vcdkoqpvurrdheyxeduu.supabase.co';
+  const KEY='sb_publishable_fYOCFVHuLxgQhh3YAOMTXA_HjA-0yjM';
+  const LIBRARY_SESSION='sb-vcdkoqpvurrdheyxeduu-auth-token';  // the library's sign-in, kept by supabase-js
+  const STATUS={idea:'Idea',experimenting:'Experimenting',in_use:'In use'};
+  const FAILED='The lists could not be loaded. Try again in a minute.';
+  const GENERIC='Something went wrong. Try again in a minute.';
+  const UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  const STORE={voter:'mira-ext-voter',supported:'mira-ext-supported',keys:'mira-ext-keys'};
+
+  const $=id=>document.getElementById(id);
+
+  // Builds an element; strings among the children become text nodes, never HTML.
+  function el(tag,attrs,...kids){
+    const n=document.createElement(tag);
+    for(const [k,v] of Object.entries(attrs||{})){
+      if(v==null||v===false)continue;
+      if(k==='class')n.className=v;
+      else n.setAttribute(k,v===true?'':String(v));
+    }
+    for(const kid of kids.flat()){if(kid!=null&&kid!==false&&kid!=='')n.append(kid);}
+    return n;
+  }
+  const str=v=>typeof v==='string'?v:(v==null?'':String(v));
+  function say(target,text,kind){const m=typeof target==='string'?$(target):target;m.textContent=text||'';m.className=m.className.replace(/\s*\b(err|ok)\b/g,'')+(kind?' '+kind:'');}
+  function fmtDate(s){const d=new Date(s);return isNaN(d)?'':d.toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});}
+
+  /* ---------- what this browser keeps ---------- */
+
+  function readJSON(k,fallback){try{const v=JSON.parse(localStorage.getItem(k));return v==null?fallback:v;}catch(_){return fallback;}}
+  function writeJSON(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(_){}}
+  function newId(){
+    if(window.crypto&&crypto.randomUUID)return crypto.randomUUID();
+    const b=crypto.getRandomValues(new Uint8Array(16));b[6]=(b[6]&15)|64;b[8]=(b[8]&63)|128;
+    const h=[...b].map(x=>x.toString(16).padStart(2,'0')).join('');
+    return h.slice(0,8)+'-'+h.slice(8,12)+'-'+h.slice(12,16)+'-'+h.slice(16,20)+'-'+h.slice(20);
+  }
+  // A random id for thumbs up, made once per browser.
+  function voter(){
+    let v=null;try{v=localStorage.getItem(STORE.voter);}catch(_){}
+    if(!v||!UUID.test(v)){v=newId();try{localStorage.setItem(STORE.voter,v);}catch(_){}}
+    return v;
+  }
+  const supported=new Set([].concat(readJSON(STORE.supported,[])).filter(s=>typeof s==='string'));
+  const editKeys=(()=>{const k=readJSON(STORE.keys,{});return k&&typeof k==='object'&&!Array.isArray(k)?k:{};})();
+
+  // A library admin's sign-in, if this browser holds one that has not expired.
+  function adminToken(){
+    try{
+      const s=JSON.parse(localStorage.getItem(LIBRARY_SESSION));
+      if(s&&typeof s.access_token==='string'&&Number(s.expires_at)*1000>Date.now()+60000)return s.access_token;
+    }catch(_){}
+    return null;
+  }
+
+  /* ---------- the database ---------- */
+
+  async function api(path,opts){
+    opts=opts||{};
+    const token=opts.admin?adminToken():null;
+    const headers={apikey:KEY,Authorization:'Bearer '+(token||KEY),Accept:'application/json'};
+    const post=opts.body!==undefined;
+    if(post)headers['Content-Type']='application/json';
+    let res;
+    try{
+      res=await fetch(API+'/rest/v1/'+path,{method:post?'POST':'GET',headers,body:post?JSON.stringify(opts.body):undefined,credentials:'omit',cache:'no-store'});
+    }catch(_){throw new Error(GENERIC);}
+    let data=null;try{data=await res.json();}catch(_){}
+    if(!res.ok){
+      // The write functions' own refusals (code P0001) are written for visitors; anything else is not.
+      const err=new Error(data&&data.code==='P0001'&&typeof data.message==='string'&&data.message?data.message:GENERIC);
+      err.status=res.status;throw err;
+    }
+    return data;
+  }
+  const rpc=(name,body,admin)=>api('rpc/'+name,{body:body||{},admin:!!admin});
+
+  /* ---------- checks, the same as the database's ---------- */
+
+  const EDGE=/^[ \t\r\n]+|[ \t\r\n]+$/g;
+  const n0=n=>n.toLocaleString('en-US');
+  function text(raw,label,max,required){
+    const v=String(raw==null?'':raw).replace(EDGE,'');
+    if(!v)return required?{error:'“'+label+'” is required.'}:{value:null};
+    const n=[...v].length;
+    if(n>max)return {error:'“'+label+'” can be at most '+n0(max)+' characters. This one has '+n0(n)+'.'};
+    return {value:v};
+  }
+  function link(raw){
+    const r=text(raw,'Where to see it',500,false);
+    if(r.error||!r.value)return r;
+    if(!r.value.startsWith('https://'))return {error:'“Where to see it” must start with https://.'};
+    if(!/^https:\/\/[^ \t\n\v\f\r]+$/.test(r.value))return {error:'“Where to see it” must be a single web address without spaces.'};
+    return r;
+  }
+  function email(raw){
+    const r=text(raw,'Your email',254,false);
+    if(r.value&&!/^[^@ \t\n\v\f\r]+@[^@ \t\n\v\f\r]+\.[^@ \t\n\v\f\r]+$/.test(r.value))return {error:'“Your email” does not look like an email address.'};
+    return r;
+  }
+  const status=v=>STATUS[v]?{value:v}:{error:'Choose a status.'};
+  const firstError=checks=>{for(const c of Object.values(checks))if(c.error)return c.error;return '';};
+
+  /* ---------- state and loading ---------- */
+
+  const state={ext:[],uc:[],admin:false,loaded:false,open:new Set()};
+
+  async function load(){
+    try{
+      const [ext,uc]=await Promise.all([
+        api('extensions_shown?select=*&order=support_count.desc,created_at.desc'),
+        api('use_cases_shown?select=*&order=support_count.desc,created_at.desc')
+      ]);
+      if(!Array.isArray(ext)||!Array.isArray(uc))throw new Error(FAILED);
+      state.ext=ext.filter(x=>x&&UUID.test(str(x.id)));
+      state.uc=uc.filter(x=>x&&UUID.test(str(x.id)));
+      state.loaded=true;
+      $('load-msg').hidden=true;$('lists-wrap').hidden=false;say('lists-msg','');
+      render();
+      if(state.admin)await loadHidden();
+      return true;
+    }catch(_){
+      if(state.loaded)say('lists-msg',FAILED,'err');
+      else{$('load-msg').textContent=FAILED;$('load-msg').hidden=false;$('lists-wrap').hidden=true;}
+      return false;
+    }
+  }
+
+  function render(){
+    $('ext-list').replaceChildren(...state.ext.map(x=>card('extension',x)));
+    $('uc-list').replaceChildren(...state.uc.map(x=>card('use_case',x)));
+    $('ext-empty').hidden=state.ext.length>0;
+    $('uc-empty').hidden=state.uc.length>0;
+    $('n-ext').textContent=state.ext.length?String(state.ext.length):'';
+    $('n-uc').textContent=state.uc.length?String(state.uc.length):'';
+    for(const k of [...state.open]){
+      const c=document.querySelector('.card[data-key="'+k+'"]');
+      if(c)openComments(c);else state.open.delete(k);
+    }
+  }
+
+  /* ---------- cards ---------- */
+
+  const anchor=(kind,id)=>(kind==='extension'?'extension-':'use-case-')+id;
+  function fact(label,...value){return el('div',{class:'fact'},el('dt',{},label),el('dd',{},...value));}
+  function outLink(url){
+    url=str(url);
+    if(!url)return null;
+    // Only an https:// address becomes a link; anything else would stay plain text.
+    return url.startsWith('https://')?el('a',{class:'out',href:url,target:'_blank',rel:'noopener noreferrer nofollow ugc'},url):url;
+  }
+  function xrefs(items,kind,labelKey){
+    const list=(Array.isArray(items)?items:[]).filter(i=>i&&UUID.test(str(i.id)));
+    if(!list.length)return null;
+    return el('ul',{class:'xrefs'},list.map(i=>el('li',{},el('a',{href:'#'+anchor(kind,i.id)},str(i[labelKey])))));
+  }
+
+  function card(kind,x){
+    const key=kind+':'+x.id;
+    const c=el('li',{class:'card',id:anchor(kind,x.id),'data-key':key});
+    if(kind==='extension'){
+      const st=STATUS[x.status]?x.status:null;
+      const ucs=xrefs(x.use_cases,'use_case','title');
+      c.append(
+        el('div',{class:'card-tags'},st?el('span',{class:'chip chip-'+st},STATUS[st]):null,x.field?el('span',{class:'tag'},str(x.field)):null),
+        el('h3',{class:'card-title'},str(x.name)),
+        el('p',{class:'card-text'},str(x.adds)),
+        el('dl',{class:'facts'},
+          x.core_relation?fact('How it relates to the core',str(x.core_relation)):null,
+          x.contact?fact('Who to talk to',str(x.contact)):null,
+          x.link?fact('Where to see it',outLink(x.link)):null,
+          ucs?fact('Use cases that need it',ucs):null)
+      );
+    }else{
+      const exts=xrefs(x.extensions,'extension','name');
+      if(x.field)c.append(el('div',{class:'card-tags'},el('span',{class:'tag'},str(x.field))));
+      c.append(
+        el('h3',{class:'card-title'},str(x.title)),
+        el('dl',{class:'facts'},
+          fact('What they are trying to do',str(x.goal)),
+          fact('What the core does not let them record',str(x.gap)),
+          fact('Extensions that would cover it',exts||el('span',{class:'none-yet'},'No extension yet')))
+      );
+    }
+    c.append(el('p',{class:'by'},'Added by '+str(x.author_name)+(fmtDate(x.created_at)?' · '+fmtDate(x.created_at):'')));
+
+    const acts=el('div',{class:'card-actions'},thumb(kind,x));
+    const ct=el('button',{type:'button',class:'act','aria-expanded':'false'},commentsLabel(x.comment_count));
+    ct.addEventListener('click',()=>{if(c.querySelector('.comments').hidden)openComments(c);else closeComments(c);});
+    acts.append(ct);
+    const end=el('span',{class:'acts-end'});
+    if(state.admin||editKeys[key]){
+      const ed=el('button',{type:'button',class:'act'},'Edit');
+      ed.addEventListener('click',()=>kind==='extension'?openExtension(x):openUseCase(x));
+      end.append(ed);
+    }
+    if(state.admin){
+      const hd=el('button',{type:'button',class:'act act-danger'},'Hide');
+      hd.addEventListener('click',()=>setHidden(kind,x.id,true,hd,c.querySelector('.card-msg')));
+      end.append(hd);
+    }
+    if(end.childNodes.length)acts.append(end);
+    c.append(acts,el('p',{class:'msg card-msg',role:'status'}),commentsBox(kind,x));
+    c._entry={kind,x,toggle:ct};
+    return c;
+  }
+  const commentsLabel=n=>'Comments ('+(Number(n)||0)+')';
+
+  /* ---------- thumbs up ---------- */
+
+  function thumb(kind,x){
+    const key=kind+':'+x.id;
+    const b=el('button',{type:'button',class:'thumb'});
+    b.append($('tpl-thumb').content.cloneNode(true),el('span',{class:'n'}));
+    const show=()=>{
+      const on=supported.has(key),n=Number(x.support_count)||0;
+      b.classList.toggle('on',on);
+      b.setAttribute('aria-pressed',String(on));
+      b.setAttribute('aria-label','Thumbs up ('+n+')');
+      b.title=on?'Take back your thumbs up':'Give a thumbs up';
+      b.querySelector('.n').textContent=String(n);
+    };
+    show();
+    b.addEventListener('click',async()=>{
+      const msg=b.closest('.card').querySelector('.card-msg');
+      const on=!supported.has(key);
+      b.disabled=true;say(msg,'');
+      try{
+        const r=await rpc('set_entry_support',{p_voter:voter(),p_on:on,[kind==='extension'?'p_extension_id':'p_use_case_id']:x.id});
+        if(r&&r.supported)supported.add(key);else supported.delete(key);
+        writeJSON(STORE.supported,[...supported]);
+        x.support_count=Number(r&&r.support_count)||0;
+        show();
+      }catch(e){say(msg,e.message,'err');}
+      b.disabled=false;
+    });
+    return b;
+  }
+
+  /* ---------- comments ---------- */
+
+  function commentsBox(kind,x){
+    const box=el('div',{class:'comments',hidden:true});
+    const form=el('form',{class:'c-form',novalidate:true});
+    const hp=el('input',{type:'text',name:'company',class:'hp',tabindex:'-1',autocomplete:'off','aria-hidden':'true'});
+    const name=el('input',{type:'text',autocomplete:'name'});
+    const body=el('textarea',{rows:'3'});
+    const msg=el('p',{class:'msg',role:'status'});
+    const go=el('button',{type:'submit',class:'btn btn-primary btn-sm'},'Add comment');
+    form.append(hp,el('label',{class:'field'},el('span',{},'Your name'),name),el('label',{class:'field'},el('span',{},'Comment'),body),msg,go);
+    form.addEventListener('submit',async e=>{
+      e.preventDefault();
+      const checks={name:text(name.value,'Your name',120,true),body:text(body.value,'Comment',2000,true)};
+      const err=firstError(checks);
+      if(err){say(msg,err,'err');return;}
+      go.disabled=true;say(msg,'');
+      try{
+        await rpc('add_entry_comment',{p_body:checks.body.value,p_author_name:checks.name.value,[kind==='extension'?'p_extension_id':'p_use_case_id']:x.id,p_company:hp.value});
+        body.value='';
+        await loadComments(box.closest('.card'));
+      }catch(er){say(msg,er.message,'err');}
+      go.disabled=false;
+    });
+    box.append(el('ul',{class:'comment-list'}),el('p',{class:'c-none',hidden:true},'No comments yet.'),el('p',{class:'msg c-load',role:'status'}),form);
+    return box;
+  }
+
+  function openComments(c){
+    const box=c.querySelector('.comments');
+    box.hidden=false;c._entry.toggle.setAttribute('aria-expanded','true');
+    state.open.add(c.dataset.key);
+    loadComments(c);
+  }
+  function closeComments(c){
+    c.querySelector('.comments').hidden=true;c._entry.toggle.setAttribute('aria-expanded','false');
+    state.open.delete(c.dataset.key);
+  }
+
+  async function loadComments(c){
+    const {kind,x,toggle}=c._entry;
+    const box=c.querySelector('.comments');
+    const load=box.querySelector('.c-load');
+    say(load,'');
+    try{
+      const rows=await api('comments_shown?select=*&'+(kind==='extension'?'extension_id':'use_case_id')+'=eq.'+encodeURIComponent(x.id)+'&order=created_at.asc');
+      if(!Array.isArray(rows))throw new Error();
+      box.querySelector('.comment-list').replaceChildren(...rows.filter(r=>r&&UUID.test(str(r.id))).map(commentItem));
+      box.querySelector('.c-none').hidden=rows.length>0;
+      x.comment_count=rows.length;toggle.textContent=commentsLabel(rows.length);
+    }catch(_){say(load,'The comments could not be loaded. Try again in a minute.','err');}
+  }
+
+  function commentItem(cm){
+    const by=el('p',{class:'c-by'},el('span',{},str(cm.author_name)+(fmtDate(cm.created_at)?' · '+fmtDate(cm.created_at):'')));
+    const li=el('li',{class:'comment'},el('p',{class:'c-body'},str(cm.body)),by);
+    if(state.admin){
+      const ed=el('button',{type:'button',class:'act'},'Edit');
+      ed.addEventListener('click',()=>openComment(cm,li));
+      const hd=el('button',{type:'button',class:'act act-danger'},'Hide');
+      hd.addEventListener('click',()=>setHidden('comment',cm.id,true,hd,li.closest('.comments').querySelector('.c-load')));
+      by.append(ed,hd);
+    }
+    return li;
+  }
+
+  /* ---------- adding and editing ---------- */
+
+  let editing=null;
+  document.querySelectorAll('dialog [data-close]').forEach(b=>b.addEventListener('click',()=>b.closest('dialog').close()));
+
+  function openExtension(x){
+    editing=x||null;
+    $('ext-dlg-h').textContent=x?'Edit the extension':'Add an extension';
+    $('ext-go').textContent=x?'Save':'Add the extension';
+    $('x-name').value=x?str(x.name):'';
+    $('x-adds').value=x?str(x.adds):'';
+    $('x-field').value=x?str(x.field):'';
+    $('x-status').value=x&&STATUS[x.status]?x.status:'';
+    $('x-contact').value=x?str(x.contact):'';
+    $('x-link').value=x?str(x.link):'';
+    $('x-relation').value=x?str(x.core_relation):'';
+    $('x-author').value=x?str(x.author_name):'';
+    $('x-email').value='';$('x-company').value='';
+    $('x-email-wrap').hidden=!!x;
+    say('ext-form-msg','');$('ext-go').disabled=false;clearMessages();
+    $('ext-dlg').showModal();$('x-name').focus();
+  }
+  $('add-ext').addEventListener('click',()=>openExtension(null));
+
+  $('ext-form').addEventListener('submit',async e=>{
+    e.preventDefault();
+    const checks={
+      name:text($('x-name').value,'Name',120,true),
+      adds:text($('x-adds').value,'What it adds',2000,true),
+      field:text($('x-field').value,'Field or domain',120,false),
+      status:status($('x-status').value),
+      contact:text($('x-contact').value,'Who to talk to',300,false),
+      link:link($('x-link').value),
+      relation:text($('x-relation').value,'How it relates to the core',2000,false),
+      author:text($('x-author').value,'Your name',120,true),
+      email:editing?{value:null}:email($('x-email').value)
+    };
+    const err=firstError(checks);
+    if(err){say('ext-form-msg',err,'err');return;}
+    const body={p_name:checks.name.value,p_adds:checks.adds.value,p_status:checks.status.value,p_author_name:checks.author.value,
+      p_field:checks.field.value,p_contact:checks.contact.value,p_link:checks.link.value,p_core_relation:checks.relation.value};
+    $('ext-go').disabled=true;say('ext-form-msg','');
+    let id;
+    try{
+      if(editing){
+        id=editing.id;
+        await rpc('edit_extension',{p_id:id,...body,p_edit_key:editKeys['extension:'+id]||null},state.admin);
+      }else{
+        const r=await rpc('add_extension',{...body,p_email:checks.email.value,p_company:$('x-company').value});
+        id=r&&r.id;
+        if(UUID.test(str(id))&&r.edit_key){editKeys['extension:'+id]=String(r.edit_key);writeJSON(STORE.keys,editKeys);}
+      }
+    }catch(er){say('ext-form-msg',er.message,'err');$('ext-go').disabled=false;return;}
+    const was=editing;
+    $('ext-dlg').close();
+    await load();
+    say('ext-msg',was?'Saved.':'Added. This browser can edit it later.','ok');
+    flash('extension',id);
+  });
+
+  function openUseCase(x){
+    editing=x||null;
+    $('uc-dlg-h').textContent=x?'Edit the use case':'Add a use case';
+    $('uc-go').textContent=x?'Save':'Add the use case';
+    $('u-title').value=x?str(x.title):'';
+    $('u-goal').value=x?str(x.goal):'';
+    $('u-gap').value=x?str(x.gap):'';
+    $('u-field').value=x?str(x.field):'';
+    $('u-author').value=x?str(x.author_name):'';
+    $('u-email').value='';$('u-company').value='';
+    $('u-email-wrap').hidden=!!x;
+    const chosen=new Set((x&&Array.isArray(x.extensions)?x.extensions:[]).map(e=>e&&e.id));
+    const picks=state.ext.map(e=>el('li',{},el('label',{},el('input',{type:'checkbox',value:e.id,checked:chosen.has(e.id)}),el('span',{},str(e.name)))));
+    $('u-picks').replaceChildren(...(picks.length?picks:[el('li',{class:'pick-none'},'No extensions yet.')]));
+    say('uc-form-msg','');$('uc-go').disabled=false;clearMessages();
+    $('uc-dlg').showModal();$('u-title').focus();
+  }
+  $('add-uc').addEventListener('click',()=>openUseCase(null));
+
+  $('uc-form').addEventListener('submit',async e=>{
+    e.preventDefault();
+    const checks={
+      title:text($('u-title').value,'Title',200,true),
+      goal:text($('u-goal').value,'What you are trying to do',2000,true),
+      gap:text($('u-gap').value,'What the core does not let you record',2000,true),
+      field:text($('u-field').value,'Field or domain',120,false),
+      author:text($('u-author').value,'Your name',120,true),
+      email:editing?{value:null}:email($('u-email').value)
+    };
+    const err=firstError(checks);
+    if(err){say('uc-form-msg',err,'err');return;}
+    const ids=[...$('u-picks').querySelectorAll('input:checked')].map(i=>i.value).filter(v=>UUID.test(v));
+    const body={p_title:checks.title.value,p_goal:checks.goal.value,p_gap:checks.gap.value,p_author_name:checks.author.value,
+      p_field:checks.field.value,p_extension_ids:ids};
+    $('uc-go').disabled=true;say('uc-form-msg','');
+    let id;
+    try{
+      if(editing){
+        id=editing.id;
+        await rpc('edit_use_case',{p_id:id,...body,p_edit_key:editKeys['use_case:'+id]||null},state.admin);
+      }else{
+        const r=await rpc('add_use_case',{...body,p_email:checks.email.value,p_company:$('u-company').value});
+        id=r&&r.id;
+        if(UUID.test(str(id))&&r.edit_key){editKeys['use_case:'+id]=String(r.edit_key);writeJSON(STORE.keys,editKeys);}
+      }
+    }catch(er){say('uc-form-msg',er.message,'err');$('uc-go').disabled=false;return;}
+    const was=editing;
+    $('uc-dlg').close();
+    await load();
+    say('uc-msg',was?'Saved.':'Added. This browser can edit it later.','ok');
+    flash('use_case',id);
+  });
+
+  function flash(kind,id){
+    if(!UUID.test(str(id)))return;
+    const c=$(anchor(kind,id));
+    if(!c)return;
+    c.classList.add('flash');
+    c.scrollIntoView({block:'center',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
+    setTimeout(()=>c.classList.remove('flash'),2600);
+  }
+
+  /* ---------- library admins ---------- */
+
+  let editingComment=null;
+  function openComment(cm,li){
+    editingComment={cm,li};
+    $('c-author').value=str(cm.author_name);$('c-body').value=str(cm.body);
+    say('cm-form-msg','');$('cm-go').disabled=false;
+    $('cm-dlg').showModal();$('c-body').focus();
+  }
+  $('cm-form').addEventListener('submit',async e=>{
+    e.preventDefault();
+    const checks={author:text($('c-author').value,'Name',120,true),body:text($('c-body').value,'Comment',2000,true)};
+    const err=firstError(checks);
+    if(err){say('cm-form-msg',err,'err');return;}
+    $('cm-go').disabled=true;
+    try{await rpc('edit_entry_comment',{p_id:editingComment.cm.id,p_body:checks.body.value,p_author_name:checks.author.value},true);}
+    catch(er){say('cm-form-msg',er.message,'err');$('cm-go').disabled=false;return;}
+    const c=editingComment.li.closest('.card');
+    $('cm-dlg').close();
+    if(c)await loadComments(c);
+  });
+
+  async function setHidden(kind,id,hidden,btn,msg){
+    if(btn)btn.disabled=true;
+    if(msg)say(msg,'');
+    clearMessages();
+    try{await rpc('set_entry_hidden',{p_kind:kind,p_id:id,p_hidden:hidden},true);}
+    catch(e){if(msg)say(msg,e.message,'err');if(btn)btn.disabled=false;return;}
+    await load();
+    if(!hidden)say('hid-msg','Shown again.','ok');
+    else if(kind!=='comment')say(kind==='extension'?'ext-msg':'uc-msg','Hidden. It is listed under Hidden at the end of the page.','ok');
+  }
+  function clearMessages(){['ext-msg','uc-msg','hid-msg'].forEach(id=>say(id,''));}
+
+  async function loadHidden(){
+    $('hidden-sec').hidden=false;
+    try{
+      const h=await rpc('hidden_entries',{},true);
+      const rows=[];
+      const add=(kind,label,item,main)=>{
+        if(!item||!UUID.test(str(item.id)))return;
+        const b=el('button',{type:'button',class:'btn btn-ghost btn-sm'},'Show again');
+        b.addEventListener('click',()=>setHidden(kind,item.id,false,b,$('hid-msg')));
+        rows.push(el('li',{},el('span',{class:'h-main'},el('span',{class:'h-kind'},label),main),b));
+      };
+      (h&&h.extensions||[]).forEach(i=>add('extension','Extension',i,str(i.name)+' · '+str(i.author_name)));
+      (h&&h.use_cases||[]).forEach(i=>add('use_case','Use case',i,str(i.title)+' · '+str(i.author_name)));
+      (h&&h.comments||[]).forEach(i=>{const b=str(i.body);add('comment','Comment',i,(b.length>160?b.slice(0,160)+'…':b)+' · '+str(i.author_name));});
+      $('hid-list').replaceChildren(...rows);
+      $('hid-empty').hidden=rows.length>0;
+    }catch(e){say('hid-msg',e.message,'err');}
+  }
+
+  /* ---------- start ---------- */
+
+  (async function start(){
+    $('load-msg').textContent='Loading…';
+    if(adminToken()){
+      try{state.admin=(await rpc('can_moderate_entries',{},true))===true;}catch(_){state.admin=false;}
+    }
+    await load();
+    const target=location.hash&&document.getElementById(decodeURIComponent(location.hash.slice(1)));
+    if(target&&target.classList.contains('card'))target.scrollIntoView();
+  })();
+})();
+</script>
+</body>
+</html>

@@ -8,5 +8,6 @@ schema:
 	cp -r blog public/
 	cp -r library public/
 	cp -r privacy public/
+	cp -r extensions public/
 
 .PHONY: all schema
