@@ -1208,6 +1208,11 @@
     openDialog(dialogs.ext,x,$('x-name'));
   }
   $('add-ext').addEventListener('click',()=>openExtension(null));
+  // Enter in a one-line field of the link editor, the row editor, or the paste box does not send the
+  // whole form; it stays where it is.
+  $('ext-form').addEventListener('keydown',e=>{
+    if(e.key==='Enter'&&!e.isComposing&&e.target.matches('.editor input'))e.preventDefault();
+  });
 
   $('ext-form').addEventListener('submit',e=>{
     e.preventDefault();
