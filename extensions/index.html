@@ -199,13 +199,84 @@
   .grid2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0 14px}
   .picker{border:0;margin-bottom:14px;min-width:0}
   .picker legend{font-size:14px;font-weight:500;color:var(--ink-2);margin-bottom:6px;padding:0}
-  .pick-list{list-style:none;border:1px solid var(--line);border-radius:8px;padding:6px 12px;max-height:210px;overflow:auto;background:var(--bg)}
+  .pick-list{list-style:none;border:1px solid var(--line);border-radius:8px;padding:6px 12px;max-height:340px;overflow:auto;background:var(--bg)}
   .pick-list label{display:flex;gap:10px;align-items:flex-start;font-size:15px;line-height:1.4;padding:6px 0;cursor:pointer;overflow-wrap:anywhere}
   .pick-list input{margin-top:3px;accent-color:var(--accent);flex:none}
   .pick-none{font-size:14.5px;color:var(--muted);padding:4px 0}
   .fine-print{font-size:13px;line-height:1.5;color:var(--faint);margin-top:4px}
   .fine-print a{text-decoration:underline;text-underline-offset:2px}
   .dlg-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:18px}
+
+  /* ROWS AND LINKS ON A CARD */
+  .facts.compact{grid-template-columns:max-content minmax(0,1fr);gap:3px 14px;margin-top:12px}
+  .facts.compact .fact{display:contents}
+  .facts.compact dt{margin:0;align-self:baseline}
+  .facts.compact dd{align-self:baseline}
+  .rgroups{display:grid;gap:8px;margin-top:14px}
+  .rgroup{border:1px solid var(--line);border-radius:10px;padding:0 12px;background:var(--tint-1);min-width:0}
+  .rgroup > summary,.rg-head{display:flex;align-items:baseline;gap:8px;padding:9px 0;font-size:14.5px;font-weight:500;color:var(--ink-2);list-style:none}
+  .rgroup > summary{cursor:pointer}
+  .rgroup > summary::-webkit-details-marker{display:none}
+  .rgroup > summary::before{content:"";flex:none;align-self:center;width:7px;height:7px;margin:0 3px 2px 1px;border-right:1.6px solid currentColor;border-bottom:1.6px solid currentColor;transform:rotate(-45deg);transition:transform .2s}
+  .rgroup[open] > summary::before{transform:rotate(45deg)}
+  .rgroup > summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+  .rgroup .n{font-family:var(--mono);font-size:12px;font-weight:400;color:var(--faint)}
+  .rlist{list-style:none;border-top:1px solid var(--line);padding:2px 0 6px}
+  .rrow{padding:8px 0;border-bottom:1px solid var(--line-soft)}
+  .rrow:last-child{border-bottom:0}
+  .rr-top{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 10px}
+  .rr-name{font-size:15px;font-weight:500;color:var(--ink);overflow-wrap:anywhere}
+  .rr-kind{font-family:var(--mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--faint)}
+  .rr-term{font-size:13.5px;color:var(--muted);overflow-wrap:anywhere}
+  .rr-note{font-size:14.5px;line-height:1.5;color:var(--ink-2);white-space:pre-line;overflow-wrap:anywhere;margin-top:2px}
+  .rr-uses{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;margin-top:6px}
+  .rr-uses-label{font-size:12.5px;color:var(--faint)}
+  .rr-uses .xrefs{margin-top:0}
+  .rr-uses .xrefs a{font-size:13px;padding:1px 8px}
+  .links{list-style:none;display:grid;gap:3px;white-space:normal}
+  .links .host{font-size:13px;color:var(--faint);margin-left:8px;overflow-wrap:anywhere}
+  .xrefs-rows{flex-direction:column;align-items:flex-start;gap:6px}
+  .xrefs-rows li{display:flex;flex-wrap:wrap;align-items:baseline;gap:3px 10px;max-width:100%}
+  .xr-rows{font-size:13.5px;color:var(--muted);overflow-wrap:anywhere}
+
+  /* LINK AND ROW EDITORS */
+  .dlg-wide{width:min(820px,calc(100vw - 32px))}
+  .vh{position:absolute !important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  .editor{border:0;margin:4px 0 16px;min-width:0}
+  .editor > legend{font-size:14px;font-weight:500;color:var(--ink-2);margin-bottom:6px;padding:0}
+  .editor em{font-style:normal;font-weight:400;color:var(--faint)}
+  .ed-hint{font-size:13px;color:var(--faint);margin:0 0 8px}
+  .ed-list{list-style:none;display:grid;gap:10px;margin-bottom:10px}
+  .ed-list:empty{display:none}
+  .ed-box{border:1px solid var(--line);border-radius:10px;padding:6px 12px 8px;min-width:0;background:var(--tint-1)}
+  .ed-box > legend{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);padding:0 6px}
+  .ed-box .field{margin-bottom:8px}
+  .ed-box .field > span{font-size:13px;margin-bottom:4px}
+  .ed-box .field input,.ed-box .field select,.ed-box .field textarea{font-size:15px;padding:8px 10px}
+  .ed-box .field textarea{min-height:44px}
+  .ed-grid{display:grid;gap:0 10px}
+  .ed-link{grid-template-columns:minmax(0,1fr) minmax(0,2fr)}
+  .ed-row{grid-template-columns:minmax(0,2fr) minmax(0,1fr) minmax(0,1fr)}
+  .ed-row2{grid-template-columns:minmax(0,1fr) minmax(0,2fr)}
+  .ed-btns{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:2px 16px}
+  .ed-actions{display:flex;flex-wrap:wrap;gap:8px}
+  .paste{margin-top:12px;padding:12px;border:1px dashed var(--line);border-radius:10px}
+  .paste .field textarea{font-family:var(--mono);font-size:13.5px}
+  .paste .msg{margin-top:10px}
+  .pick-rows{border:0;margin:0 0 8px 28px;min-width:0}
+  .pick-rows legend{font-size:13px;font-weight:500;color:var(--ink-2);padding:0;margin-bottom:2px}
+  .pick-rows legend em{font-style:normal;font-weight:400;color:var(--faint)}
+  .pick-rows ul{list-style:none}
+  .pick-list .pick-rows label{font-size:14px;padding:3px 0}
+  .pick-tag{font-size:12px;color:var(--faint);white-space:nowrap}
+  @media(max-width:560px){
+    .facts.compact{grid-template-columns:minmax(0,1fr);gap:0}
+    .facts.compact dd{margin-bottom:6px}
+    .ed-link,.ed-row2{grid-template-columns:minmax(0,1fr)}
+    .ed-row{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+    .ed-row > :first-child{grid-column:1/-1}
+    .pick-rows{margin-left:12px}
+  }
 
   @media(max-width:980px){.lists{grid-template-columns:minmax(0,1fr);gap:64px}}
   @media(max-width:560px){
@@ -343,12 +414,13 @@
 </main>
 
 <!-- ADD OR EDIT AN EXTENSION -->
-<dialog class="dlg" id="ext-dlg" aria-labelledby="ext-dlg-h">
+<dialog class="dlg dlg-wide" id="ext-dlg" aria-labelledby="ext-dlg-h">
   <form id="ext-form" novalidate>
     <h2 id="ext-dlg-h">Add an extension</h2>
     <div class="hp" aria-hidden="true" inert><input type="text" name="trap" id="x-trap" tabindex="-1" autocomplete="off" aria-hidden="true" /></div>
     <label class="field"><span>Name</span><input type="text" id="x-name" autocomplete="off" /></label>
-    <label class="field"><span>What it adds</span><textarea id="x-adds" rows="3"></textarea></label>
+    <label class="field"><span>Also known as <em>(optional)</em></span><input type="text" id="x-aka" autocomplete="off" /></label>
+    <label class="field"><span>What it is for</span><textarea id="x-purpose" rows="3"></textarea></label>
     <div class="grid2">
       <label class="field"><span>Field or domain <em>(optional)</em></span><input type="text" id="x-field" autocomplete="off" /></label>
       <label class="field"><span>Status</span>
@@ -360,9 +432,36 @@
         </select>
       </label>
     </div>
-    <label class="field"><span>Who to talk to <em>(optional)</em></span><input type="text" id="x-contact" autocomplete="off" /></label>
-    <label class="field"><span>Where to see it <em>(optional, a link)</em></span><input type="url" id="x-link" inputmode="url" autocomplete="off" placeholder="https://" /><span class="hint">Its code, a branch, a pull request, or a document.</span></label>
+    <label class="field"><span>Written as <em>(optional)</em></span><input type="text" id="x-written" autocomplete="off" /><span class="hint">For example LinkML, JSON-LD, or AT Protocol lexicons.</span></label>
+    <div class="grid2">
+      <label class="field"><span>Version <em>(optional)</em></span><input type="text" id="x-version" autocomplete="off" /></label>
+      <label class="field"><span>Compared against <em>(optional)</em></span><input type="text" id="x-compared" autocomplete="off" /><span class="hint">The version of MIRA's core you compared it with.</span></label>
+    </div>
     <label class="field"><span>How it relates to the core <em>(optional)</em></span><textarea id="x-relation" rows="3"></textarea></label>
+    <label class="field"><span>Who to talk to <em>(optional)</em></span><input type="text" id="x-contact" autocomplete="off" /></label>
+
+    <fieldset class="editor">
+      <legend>Links <em>(optional)</em></legend>
+      <ol class="ed-list" id="x-links"></ol>
+      <div class="ed-actions"><button class="btn btn-ghost btn-sm" type="button" id="x-add-link">Add a link</button></div>
+    </fieldset>
+
+    <fieldset class="editor">
+      <legend>Rows <em>(optional)</em></legend>
+      <p class="ed-hint">Each row is one thing the extension holds: a record type, a link, or a field.</p>
+      <ol class="ed-list" id="x-rows"></ol>
+      <div class="ed-actions">
+        <button class="btn btn-ghost btn-sm" type="button" id="x-add-row">Add a row</button>
+        <button class="btn btn-ghost btn-sm" type="button" id="x-paste-toggle" aria-expanded="false" aria-controls="x-paste-box">Paste several rows</button>
+      </div>
+      <div class="paste" id="x-paste-box" hidden>
+        <label class="field"><span>One row per line: name | kind | adds, pairs, or differs | core term | note</span><textarea id="x-paste" rows="5" spellcheck="false"></textarea></label>
+        <button class="btn btn-ghost btn-sm" type="button" id="x-paste-go">Add these rows</button>
+        <p class="msg" id="x-paste-msg" role="status"></p>
+      </div>
+      <p class="vh" id="x-ed-status" role="status"></p>
+    </fieldset>
+
     <div class="grid2">
       <label class="field"><span>Your name</span><input type="text" id="x-author" autocomplete="name" /></label>
       <label class="field" id="x-email-wrap"><span>Your email <em>(optional, never shown)</em></span><input type="email" id="x-email" autocomplete="email" /></label>
@@ -496,6 +595,9 @@
   const KEY='sb_publishable_fYOCFVHuLxgQhh3YAOMTXA_HjA-0yjM';
   const LIBRARY_SESSION='sb-vcdkoqpvurrdheyxeduu-auth-token';  // the library's sign-in, kept by supabase-js
   const STATUS={idea:'Idea',experimenting:'Experimenting',in_use:'In use'};
+  const KIND={record_type:'Record type',link:'Link',field:'Field',other:'Other'};
+  const STANDING={adds:'Adds',pairs:'Pairs with',differs:'Differs from'};
+  const GROUPS={adds:'What it adds',pairs:'What it pairs with in the core',differs:'Where it differs from the core'};
   const FAILED='The lists could not be loaded. Try again in a minute.';
   const GENERIC='Something went wrong. Try again in a minute.';
   const UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -593,11 +695,11 @@
   // its locale, the no-break space among them.
   const LINK=/^https:\/\/[^\t\n\v\f\r \u0085\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]+$/;
   const EMAIL=/^[^@\t\n\v\f\r \u0085\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]+@[^@\t\n\v\f\r \u0085\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]+\.[^@\t\n\v\f\r \u0085\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]+$/;
-  function link(raw){
-    const r=text(raw,'Where to see it',500,false);
+  function link(raw,label,required){
+    const r=text(raw,label,500,required);
     if(r.error||!r.value)return r;
-    if(!r.value.startsWith('https://'))return {error:'“Where to see it” must start with https://.'};
-    if(!LINK.test(r.value))return {error:'“Where to see it” must be a single web address without spaces.'};
+    if(!r.value.startsWith('https://'))return {error:'“'+label+'” must start with https://.'};
+    if(!LINK.test(r.value))return {error:'“'+label+'” must be a single web address without spaces.'};
     return r;
   }
   function email(raw){
@@ -650,16 +752,56 @@
 
   const anchor=(kind,id)=>(kind==='extension'?'extension-':'use-case-')+id;
   function fact(label,...value){return el('div',{class:'fact'},el('dt',{},label),el('dd',{},...value));}
-  function outLink(url){
-    url=str(url);
-    if(!url)return null;
-    // Only an https:// address becomes a link; anything else would stay plain text.
-    return url.startsWith('https://')?el('a',{class:'out',href:url,target:'_blank',rel:'noopener noreferrer nofollow ugc'},url):url;
-  }
   function xrefs(items,kind,labelKey){
     const list=(Array.isArray(items)?items:[]).filter(i=>i&&UUID.test(str(i.id)));
     if(!list.length)return null;
     return el('ul',{class:'xrefs'},list.map(i=>el('li',{},el('a',{href:'#'+anchor(kind,i.id)},str(i[labelKey])))));
+  }
+  // An extension's links: each label is the link, with the address's host beside it. Only an https://
+  // address becomes a link.
+  function linkList(links){
+    const list=(Array.isArray(links)?links:[]).filter(k=>k&&str(k.url).startsWith('https://'));
+    if(!list.length)return null;
+    return el('ul',{class:'links'},list.map(k=>{
+      let host='';try{host=new URL(str(k.url)).host;}catch(_){}
+      return el('li',{},el('a',{class:'out',href:str(k.url),target:'_blank',rel:'noopener noreferrer nofollow ugc'},str(k.label)||str(k.url)),
+        host?el('span',{class:'host'},host):null);
+    }));
+  }
+  // An extension's rows in three groups; a group of more than five starts closed.
+  function rowGroups(rows){
+    const list=(Array.isArray(rows)?rows:[]).filter(r=>r&&UUID.test(str(r.id)));
+    const out=[];
+    for(const [standing,title] of Object.entries(GROUPS)){
+      const items=list.filter(r=>r.standing===standing);
+      if(!items.length)continue;
+      const ul=el('ul',{class:'rlist'},items.map(rowItem));
+      const n=el('span',{class:'n'},String(items.length));
+      if(items.length>5){
+        out.push(el('details',{class:'rgroup'},el('summary',{},el('span',{class:'rg-title'},title),n),ul));
+      }else{
+        out.push(el('div',{class:'rgroup'},el('p',{class:'rg-head'},el('span',{class:'rg-title'},title),n),ul));
+      }
+    }
+    return out.length?el('div',{class:'rgroups'},out):null;
+  }
+  function rowItem(r){
+    const uses=xrefs(r.use_cases,'use_case','title');
+    return el('li',{class:'rrow'},
+      el('p',{class:'rr-top'},el('span',{class:'rr-name'},str(r.name)),KIND[r.kind]?el('span',{class:'rr-kind'},KIND[r.kind]):null),
+      r.core_term?el('p',{class:'rr-term'},'Core term: '+str(r.core_term)):null,
+      r.note?el('p',{class:'rr-note'},str(r.note)):null,
+      uses?el('div',{class:'rr-uses'},el('span',{class:'rr-uses-label'},'Needed by'),uses):null);
+  }
+  // A use case's extensions, each followed by the rows of it the use case picked.
+  function extensionPicks(items){
+    const list=(Array.isArray(items)?items:[]).filter(i=>i&&UUID.test(str(i.id)));
+    if(!list.length)return null;
+    return el('ul',{class:'xrefs xrefs-rows'},list.map(i=>{
+      const rows=(Array.isArray(i.rows)?i.rows:[]).map(r=>str(r&&r.name)).filter(Boolean);
+      return el('li',{},el('a',{href:'#'+anchor('extension',i.id)},str(i.name)),
+        rows.length?el('span',{class:'xr-rows'},rows.join(', ')):null);
+    }));
   }
 
   function card(kind,x){
@@ -668,18 +810,25 @@
     if(kind==='extension'){
       const st=STATUS[x.status]?x.status:null;
       const ucs=xrefs(x.use_cases,'use_case','title');
+      const about=el('dl',{class:'facts compact'},
+        x.also_known_as?fact('Also known as',str(x.also_known_as)):null,
+        x.written_as?fact('Written as',str(x.written_as)):null,
+        x.version?fact('Version',str(x.version)):null,
+        x.compared_against?fact('Compared against',str(x.compared_against)):null);
+      const links=linkList(x.links);
       c.append(
         el('div',{class:'card-tags'},st?el('span',{class:'chip chip-'+st},STATUS[st]):null,x.field?el('span',{class:'tag'},str(x.field)):null),
         el('h3',{class:'card-title'},str(x.name)),
-        el('p',{class:'card-text'},str(x.adds)),
+        el('p',{class:'card-text'},str(x.purpose)),
+        ...[about.childNodes.length?about:null,rowGroups(x.rows)].filter(Boolean),
         el('dl',{class:'facts'},
+          links?fact('Links',links):null,
           x.core_relation?fact('How it relates to the core',str(x.core_relation)):null,
           x.contact?fact('Who to talk to',str(x.contact)):null,
-          x.link?fact('Where to see it',outLink(x.link)):null,
           ucs?fact('Use cases that need it',ucs):null)
       );
     }else{
-      const exts=xrefs(x.extensions,'extension','name');
+      const exts=extensionPicks(x.extensions);
       if(x.field)c.append(el('div',{class:'card-tags'},el('span',{class:'tag'},str(x.field))));
       c.append(
         el('h3',{class:'card-title'},str(x.title)),
@@ -870,16 +1019,189 @@
     await done(entry,result);
   }
 
+  /* ---------- the link and row editors ---------- */
+
+  const MAX_LINKS=8,MAX_ROWS=100;
+  const choices=map=>[el('option',{value:''},'Choose one'),...Object.entries(map).map(([v,l])=>el('option',{value:v},l))];
+
+  // Numbers the links and rows as the form shows them, and turns off what cannot be used.
+  function renumber(){
+    [...$('x-links').children].forEach((li,i)=>{li.querySelector('legend').textContent='Link '+(i+1);});
+    const rows=[...$('x-rows').children];
+    rows.forEach((li,i)=>{
+      li.querySelector('legend').textContent='Row '+(i+1);
+      li.querySelector('[data-move="-1"]').disabled=i===0;
+      li.querySelector('[data-move="1"]').disabled=i===rows.length-1;
+    });
+    $('x-add-link').hidden=$('x-links').children.length>=MAX_LINKS;
+    $('x-add-row').disabled=rows.length>=MAX_ROWS;
+  }
+
+  function linkEditor(k){
+    const li=el('li',{class:'ed-item'});
+    const label=el('input',{type:'text',class:'l-label',autocomplete:'off'});
+    const url=el('input',{type:'url',class:'l-url',inputmode:'url',autocomplete:'off',placeholder:'https://'});
+    label.value=str(k&&k.label);url.value=str(k&&k.url);
+    const rm=el('button',{type:'button',class:'act act-danger'},'Remove');
+    rm.addEventListener('click',()=>removeItem(li,$('x-add-link')));
+    li.append(el('fieldset',{class:'ed-box'},el('legend',{}),
+      el('div',{class:'ed-grid ed-link'},
+        el('label',{class:'field'},el('span',{},'Label'),label),
+        el('label',{class:'field'},el('span',{},'Address'),url)),
+      el('div',{class:'ed-btns'},rm)));
+    return li;
+  }
+
+  function rowEditor(r){
+    const li=el('li',{class:'ed-item','data-id':r&&UUID.test(str(r.id))?r.id:null});
+    const name=el('input',{type:'text',class:'r-name',autocomplete:'off'});
+    const kind=el('select',{class:'r-kind'},choices(KIND));
+    const standing=el('select',{class:'r-standing'},choices(STANDING));
+    const term=el('input',{type:'text',class:'r-term',autocomplete:'off'});
+    const note=el('textarea',{class:'r-note',rows:'2'});
+    name.value=str(r&&r.name);
+    kind.value=r&&KIND[r.kind]?r.kind:'';
+    standing.value=r&&STANDING[r.standing]?r.standing:'';
+    term.value=str(r&&r.core_term);note.value=str(r&&r.note);
+    const up=el('button',{type:'button',class:'act','data-move':'-1'},'Move up');
+    const down=el('button',{type:'button',class:'act','data-move':'1'},'Move down');
+    const rm=el('button',{type:'button',class:'act act-danger'},'Remove');
+    up.addEventListener('click',()=>moveRow(li,-1,up));
+    down.addEventListener('click',()=>moveRow(li,1,down));
+    rm.addEventListener('click',()=>removeItem(li,$('x-add-row')));
+    li.append(el('fieldset',{class:'ed-box'},el('legend',{}),
+      el('div',{class:'ed-grid ed-row'},
+        el('label',{class:'field'},el('span',{},'Name'),name),
+        el('label',{class:'field'},el('span',{},'Kind'),kind),
+        el('label',{class:'field'},el('span',{},'Against the core'),standing)),
+      el('div',{class:'ed-grid ed-row2'},
+        el('label',{class:'field'},el('span',{},'Core term ',el('em',{},'(optional)')),term),
+        el('label',{class:'field'},el('span',{},'Note ',el('em',{},'(optional)')),note)),
+      el('div',{class:'ed-btns'},up,down,rm)));
+    return li;
+  }
+
+  // Moving a row keeps the keyboard on the same button, or on the other one at either end.
+  function moveRow(li,dir,btn){
+    const sib=dir<0?li.previousElementSibling:li.nextElementSibling;
+    if(!sib)return;
+    li.parentNode.insertBefore(dir<0?li:sib,dir<0?sib:li);
+    renumber();
+    (btn.disabled?li.querySelector('[data-move="'+(-dir)+'"]'):btn).focus();
+    say('x-ed-status','Moved to '+li.querySelector('legend').textContent.toLowerCase()+'.');
+  }
+  function removeItem(li,fallback){
+    const next=li.nextElementSibling||li.previousElementSibling;
+    li.remove();renumber();
+    const f=next&&next.querySelector('input,select,textarea');
+    (f||fallback).focus();
+  }
+
+  $('x-add-link').addEventListener('click',()=>{
+    if($('x-links').children.length>=MAX_LINKS)return;
+    const li=linkEditor(null);$('x-links').append(li);renumber();li.querySelector('input').focus();
+  });
+  $('x-add-row').addEventListener('click',()=>{
+    if($('x-rows').children.length>=MAX_ROWS)return;
+    const li=rowEditor(null);$('x-rows').append(li);renumber();li.querySelector('input').focus();
+  });
+
+  // Pasting rows: one per line, as name | kind | adds, pairs, or differs | core term | note. A kind or a
+  // standing may be written as its label or its stored value, in any case. Parts past the fifth stay in
+  // the note. A line without a name, or with a kind or standing that is not one of these, is not read
+  // and stays in the box.
+  const WORDS=map=>Object.fromEntries(Object.entries(map).flatMap(([v,l])=>[[v,v],[l.toLowerCase(),v]]));
+  const KIND_WORDS=WORDS(KIND),STANDING_WORDS=WORDS(STANDING);
+  const word=s=>s.trim().toLowerCase().replace(/\s+/g,' ');
+  function pastedRow(line){
+    const parts=line.split('|').map(p=>p.trim());
+    if(!parts[0])return null;
+    const kind=parts[1]?KIND_WORDS[word(parts[1])]:'';
+    const standing=parts[2]?STANDING_WORDS[word(parts[2])]:'';
+    if(kind===undefined||standing===undefined)return null;
+    return {name:parts[0],kind,standing,core_term:parts[3]||'',note:parts.slice(4).join(' | ')};
+  }
+  $('x-paste-toggle').addEventListener('click',()=>{
+    const box=$('x-paste-box');box.hidden=!box.hidden;
+    $('x-paste-toggle').setAttribute('aria-expanded',String(!box.hidden));
+    if(!box.hidden)$('x-paste').focus();
+  });
+  $('x-paste-go').addEventListener('click',()=>{
+    const bad=[],full=[],keep=[];let added=0;
+    $('x-paste').value.split(/\r?\n/).forEach((line,i)=>{
+      if(!line.trim())return;
+      const r=pastedRow(line);
+      if(!r){bad.push(i+1);keep.push(line);return;}
+      if($('x-rows').children.length>=MAX_ROWS){full.push(i+1);keep.push(line);return;}
+      $('x-rows').append(rowEditor(r));added++;
+    });
+    renumber();
+    $('x-paste').value=keep.join('\n');
+    const out=[];
+    if(added)out.push(added===1?'Added 1 row.':'Added '+added+' rows.');
+    if(bad.length)out.push('These lines could not be read: '+bad.join(', ')+'.');
+    if(full.length)out.push('An extension holds at most 100 rows, so these lines were left out: '+full.join(', ')+'.');
+    if(!out.length)out.push('There was nothing to add.');
+    say('x-paste-msg',out.join(' '),bad.length||full.length?'err':'ok');
+  });
+
+  // Empty links and rows are dropped before the checks, so the numbers in a message match the form.
+  function dropEmpty(){
+    for(const box of [$('x-links'),$('x-rows')])
+      [...box.children].forEach(li=>{if(![...li.querySelectorAll('input,select,textarea')].some(f=>f.value.trim()))li.remove();});
+    renumber();
+  }
+  function readLinks(){
+    const out=[];
+    for(const [i,li] of [...$('x-links').children].entries()){
+      const p='Link '+(i+1)+': ';
+      const label=text(li.querySelector('.l-label').value,'Label',80,true);
+      if(label.error)return {error:p+label.error,focus:li.querySelector('.l-label')};
+      const url=link(li.querySelector('.l-url').value,'Address',true);
+      if(url.error)return {error:p+url.error,focus:li.querySelector('.l-url')};
+      out.push({label:label.value,url:url.value});
+    }
+    return {value:out};
+  }
+  function readRows(keepIds){
+    const out=[];
+    for(const [i,li] of [...$('x-rows').children].entries()){
+      const p='Row '+(i+1)+': ',q=s=>li.querySelector(s);
+      const name=text(q('.r-name').value,'Name',120,true);
+      if(name.error)return {error:p+name.error,focus:q('.r-name')};
+      const kind=q('.r-kind').value;
+      if(!KIND[kind])return {error:p+'“Kind” must be Record type, Link, Field, or Other.',focus:q('.r-kind')};
+      const standing=q('.r-standing').value;
+      if(!STANDING[standing])return {error:p+'“Against the core” must be Adds, Pairs with, or Differs from.',focus:q('.r-standing')};
+      const term=text(q('.r-term').value,'Core term',200,false);
+      if(term.error)return {error:p+term.error,focus:q('.r-term')};
+      const note=text(q('.r-note').value,'Note',600,false);
+      if(note.error)return {error:p+note.error,focus:q('.r-note')};
+      const row={name:name.value,kind,standing,core_term:term.value,note:note.value};
+      if(keepIds&&UUID.test(li.dataset.id||''))row.id=li.dataset.id;
+      out.push(row);
+    }
+    return {value:out};
+  }
+
   function openExtension(x){
     $('ext-dlg-h').textContent=x?'Edit the extension':'Add an extension';
     $('ext-go').textContent=x?'Save':'Add the extension';
     $('x-name').value=x?str(x.name):'';
-    $('x-adds').value=x?str(x.adds):'';
+    $('x-aka').value=x?str(x.also_known_as):'';
+    $('x-purpose').value=x?str(x.purpose):'';
     $('x-field').value=x?str(x.field):'';
     $('x-status').value=x&&STATUS[x.status]?x.status:'';
-    $('x-contact').value=x?str(x.contact):'';
-    $('x-link').value=x?str(x.link):'';
+    $('x-written').value=x?str(x.written_as):'';
+    $('x-version').value=x?str(x.version):'';
+    $('x-compared').value=x?str(x.compared_against):'';
     $('x-relation').value=x?str(x.core_relation):'';
+    $('x-contact').value=x?str(x.contact):'';
+    $('x-links').replaceChildren(...(x&&Array.isArray(x.links)?x.links:[]).slice(0,MAX_LINKS).map(linkEditor));
+    $('x-rows').replaceChildren(...(x&&Array.isArray(x.rows)?x.rows:[]).slice(0,MAX_ROWS).map(rowEditor));
+    $('x-paste').value='';say('x-paste-msg','');say('x-ed-status','');
+    $('x-paste-box').hidden=true;$('x-paste-toggle').setAttribute('aria-expanded','false');
+    renumber();
     $('x-author').value=x?str(x.author_name):'';
     $('x-email').value='';$('x-trap').value='';
     $('x-email-wrap').hidden=!!x;
@@ -891,21 +1213,30 @@
     e.preventDefault();
     const d=dialogs.ext;
     if(d.busy)return;
+    dropEmpty();
     const checks={
       name:text($('x-name').value,'Name',120,true),
-      adds:text($('x-adds').value,'What it adds',2000,true),
+      aka:text($('x-aka').value,'Also known as',200,false),
+      purpose:text($('x-purpose').value,'What it is for',2000,true),
       field:text($('x-field').value,'Field or domain',120,false),
       status:status($('x-status').value),
-      contact:text($('x-contact').value,'Who to talk to',300,false),
-      link:link($('x-link').value),
+      written:text($('x-written').value,'Written as',200,false),
+      version:text($('x-version').value,'Version',200,false),
+      compared:text($('x-compared').value,'Compared against',300,false),
       relation:text($('x-relation').value,'How it relates to the core',2000,false),
+      contact:text($('x-contact').value,'Who to talk to',300,false),
+      links:readLinks(),
+      rows:readRows(!!d.entry),
       author:text($('x-author').value,'Your name',120,true),
       email:d.entry?{value:null}:email($('x-email').value)
     };
-    const err=firstError(checks);
-    if(err){say(d.msg,err,'err');return;}
-    const body={p_name:checks.name.value,p_adds:checks.adds.value,p_status:checks.status.value,p_author_name:checks.author.value,
-      p_field:checks.field.value,p_contact:checks.contact.value,p_link:checks.link.value,p_core_relation:checks.relation.value};
+    for(const c of Object.values(checks)){
+      if(c.error){say(d.msg,c.error,'err');if(c.focus)c.focus.focus();return;}
+    }
+    const body={p_name:checks.name.value,p_purpose:checks.purpose.value,p_status:checks.status.value,p_author_name:checks.author.value,
+      p_also_known_as:checks.aka.value,p_field:checks.field.value,p_written_as:checks.written.value,p_version:checks.version.value,
+      p_compared_against:checks.compared.value,p_core_relation:checks.relation.value,p_contact:checks.contact.value,
+      p_links:checks.links.value,p_rows:checks.rows.value};
     const extra={p_email:checks.email.value,p_trap:$('x-trap').value};
     save(d,async entry=>{
       if(entry){
@@ -923,6 +1254,7 @@
     });
   });
 
+  // The use case form: under each picked extension that has rows, the rows it may also pick.
   function openUseCase(x){
     $('uc-dlg-h').textContent=x?'Edit the use case':'Add a use case';
     $('uc-go').textContent=x?'Save':'Add the use case';
@@ -933,8 +1265,25 @@
     $('u-author').value=x?str(x.author_name):'';
     $('u-email').value='';$('u-trap').value='';
     $('u-email-wrap').hidden=!!x;
-    const chosen=new Set((x&&Array.isArray(x.extensions)?x.extensions:[]).map(e=>e&&e.id));
-    const picks=state.ext.map(e=>el('li',{},el('label',{},el('input',{type:'checkbox',value:e.id,checked:chosen.has(e.id)}),el('span',{},str(e.name)))));
+    const chosen=new Map((x&&Array.isArray(x.extensions)?x.extensions:[]).filter(e=>e&&e.id)
+      .map(e=>[e.id,new Set((Array.isArray(e.rows)?e.rows:[]).map(r=>r&&r.id))]));
+    const picks=state.ext.map(e=>{
+      const on=chosen.has(e.id);
+      const box=el('input',{type:'checkbox',class:'pick-ext',value:e.id,checked:on});
+      const li=el('li',{},el('label',{},box,el('span',{},str(e.name))));
+      const rows=(Array.isArray(e.rows)?e.rows:[]).filter(r=>r&&UUID.test(str(r.id)));
+      if(rows.length){
+        const picked=chosen.get(e.id)||new Set();
+        const set=el('fieldset',{class:'pick-rows',hidden:!on},
+          el('legend',{},'Which rows? ',el('em',{},'(optional)')),
+          el('ul',{},rows.map(r=>el('li',{},el('label',{},
+            el('input',{type:'checkbox',class:'pick-row',value:r.id,checked:picked.has(r.id)}),
+            el('span',{},str(r.name)),STANDING[r.standing]?el('span',{class:'pick-tag'},STANDING[r.standing]):null)))));
+        box.addEventListener('change',()=>{set.hidden=!box.checked;});
+        li.append(set);
+      }
+      return li;
+    });
     $('u-picks').replaceChildren(...(picks.length?picks:[el('li',{class:'pick-none'},'No extensions yet.')]));
     openDialog(dialogs.uc,x,$('u-title'));
   }
@@ -954,9 +1303,17 @@
     };
     const err=firstError(checks);
     if(err){say(d.msg,err,'err');return;}
-    const ids=[...$('u-picks').querySelectorAll('input:checked')].map(i=>i.value).filter(v=>UUID.test(v));
+    // A row counts only under an extension that is ticked.
+    const ids=[],rowIds=[];
+    for(const li of $('u-picks').children){
+      const box=li.querySelector('.pick-ext');
+      if(!box||!box.checked||!UUID.test(box.value))continue;
+      ids.push(box.value);
+      li.querySelectorAll('.pick-row:checked').forEach(r=>{if(UUID.test(r.value))rowIds.push(r.value);});
+    }
+    if(rowIds.length>200){say(d.msg,'Pick at most 200 rows.','err');return;}
     const body={p_title:checks.title.value,p_goal:checks.goal.value,p_gap:checks.gap.value,p_author_name:checks.author.value,
-      p_field:checks.field.value,p_extension_ids:ids};
+      p_field:checks.field.value,p_extension_ids:ids,p_row_ids:rowIds};
     const extra={p_email:checks.email.value,p_trap:$('u-trap').value};
     save(d,async entry=>{
       if(entry){
