@@ -112,7 +112,7 @@
   .field textarea{resize:vertical;min-height:84px}
   .field input:focus,.field select:focus,.field textarea:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:var(--accent)}
   .field .hint{display:block;font-size:13px;font-weight:400;color:var(--faint);margin-top:5px}
-  .hp{position:absolute !important;left:-9999px;width:1px;height:1px;opacity:0;pointer-events:none}
+  .hp{position:absolute !important;left:-9999px;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none}
   .btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;font:inherit;font-size:15px;font-weight:500;line-height:1.2;border-radius:8px;padding:11px 18px;cursor:pointer;border:1px solid transparent;transition:background .2s,border-color .2s,color .2s;white-space:nowrap}
   .btn-primary{background:var(--accent);color:var(--bg)}
   .btn-primary:hover{background:var(--accent-deep)}
@@ -294,7 +294,7 @@
   <div class="wrap">
 
     <!-- Shown as it is when JavaScript is off; the script replaces it while loading. -->
-    <p class="load-msg" id="load-msg" role="status">The lists could not be loaded. Try again in a minute.</p>
+    <p class="load-msg" id="load-msg" role="status">Turn on JavaScript to see the lists.</p>
 
     <div id="lists-wrap" hidden>
       <p class="msg sec-msg" id="lists-msg" role="status"></p>
@@ -346,7 +346,7 @@
 <dialog class="dlg" id="ext-dlg" aria-labelledby="ext-dlg-h">
   <form id="ext-form" novalidate>
     <h2 id="ext-dlg-h">Add an extension</h2>
-    <input type="text" name="company" class="hp" id="x-company" tabindex="-1" autocomplete="off" aria-hidden="true" />
+    <div class="hp" aria-hidden="true" inert><input type="text" name="trap" id="x-trap" tabindex="-1" autocomplete="off" aria-hidden="true" /></div>
     <label class="field"><span>Name</span><input type="text" id="x-name" autocomplete="off" /></label>
     <label class="field"><span>What it adds</span><textarea id="x-adds" rows="3"></textarea></label>
     <div class="grid2">
@@ -380,7 +380,7 @@
 <dialog class="dlg" id="uc-dlg" aria-labelledby="uc-dlg-h">
   <form id="uc-form" novalidate>
     <h2 id="uc-dlg-h">Add a use case</h2>
-    <input type="text" name="company" class="hp" id="u-company" tabindex="-1" autocomplete="off" aria-hidden="true" />
+    <div class="hp" aria-hidden="true" inert><input type="text" name="trap" id="u-trap" tabindex="-1" autocomplete="off" aria-hidden="true" /></div>
     <label class="field"><span>Title</span><input type="text" id="u-title" autocomplete="off" /></label>
     <label class="field"><span>What you are trying to do</span><textarea id="u-goal" rows="3"></textarea></label>
     <label class="field"><span>What the core does not let you record</span><textarea id="u-gap" rows="3"></textarea></label>
@@ -528,10 +528,14 @@
     const h=[...b].map(x=>x.toString(16).padStart(2,'0')).join('');
     return h.slice(0,8)+'-'+h.slice(8,12)+'-'+h.slice(12,16)+'-'+h.slice(16,20)+'-'+h.slice(20);
   }
-  // A random id for thumbs up, made once per browser.
+  // A random id for thumbs up, made once per browser. When storage is blocked, it is kept in memory,
+  // so that it stays the same for the rest of the visit.
+  let voterId=null;
   function voter(){
+    if(voterId)return voterId;
     let v=null;try{v=localStorage.getItem(STORE.voter);}catch(_){}
     if(!v||!UUID.test(v)){v=newId();try{localStorage.setItem(STORE.voter,v);}catch(_){}}
+    voterId=v;
     return v;
   }
   const supported=new Set([].concat(readJSON(STORE.supported,[])).filter(s=>typeof s==='string'));
@@ -548,17 +552,23 @@
 
   /* ---------- the database ---------- */
 
+  // Every request gives up after 10 seconds and ends in the same message as a failed one.
+  const TIMEOUT=10000;
   async function api(path,opts){
     opts=opts||{};
     const token=opts.admin?adminToken():null;
     const headers={apikey:KEY,Authorization:'Bearer '+(token||KEY),Accept:'application/json'};
     const post=opts.body!==undefined;
     if(post)headers['Content-Type']='application/json';
-    let res;
+    const ctl=new AbortController();
+    const timer=setTimeout(()=>ctl.abort(),TIMEOUT);
+    let res,data=null;
     try{
-      res=await fetch(API+'/rest/v1/'+path,{method:post?'POST':'GET',headers,body:post?JSON.stringify(opts.body):undefined,credentials:'omit',cache:'no-store'});
+      res=await fetch(API+'/rest/v1/'+path,{method:post?'POST':'GET',headers,body:post?JSON.stringify(opts.body):undefined,credentials:'omit',cache:'no-store',signal:ctl.signal});
+      try{data=await res.json();}catch(_){}
+      if(ctl.signal.aborted)throw new Error(GENERIC);
     }catch(_){throw new Error(GENERIC);}
-    let data=null;try{data=await res.json();}catch(_){}
+    finally{clearTimeout(timer);}
     if(!res.ok){
       // The write functions' own refusals (code P0001) are written for visitors; anything else is not.
       const err=new Error(data&&data.code==='P0001'&&typeof data.message==='string'&&data.message?data.message:GENERIC);
@@ -579,16 +589,20 @@
     if(n>max)return {error:'“'+label+'” can be at most '+n0(max)+' characters. This one has '+n0(n)+'.'};
     return {value:v};
   }
+  // The spaces refused inside a link or an email address are the ones the database refuses whatever
+  // its locale, the no-break space among them.
+  const LINK=/^https:\/\/[^\t\n\v\f\r \u0085\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]+$/;
+  const EMAIL=/^[^@\t\n\v\f\r \u0085\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]+@[^@\t\n\v\f\r \u0085\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]+\.[^@\t\n\v\f\r \u0085\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]+$/;
   function link(raw){
     const r=text(raw,'Where to see it',500,false);
     if(r.error||!r.value)return r;
     if(!r.value.startsWith('https://'))return {error:'“Where to see it” must start with https://.'};
-    if(!/^https:\/\/[^ \t\n\v\f\r]+$/.test(r.value))return {error:'“Where to see it” must be a single web address without spaces.'};
+    if(!LINK.test(r.value))return {error:'“Where to see it” must be a single web address without spaces.'};
     return r;
   }
   function email(raw){
     const r=text(raw,'Your email',254,false);
-    if(r.value&&!/^[^@ \t\n\v\f\r]+@[^@ \t\n\v\f\r]+\.[^@ \t\n\v\f\r]+$/.test(r.value))return {error:'“Your email” does not look like an email address.'};
+    if(r.value&&!EMAIL.test(r.value))return {error:'“Your email” does not look like an email address.'};
     return r;
   }
   const status=v=>STATUS[v]?{value:v}:{error:'Choose a status.'};
@@ -732,27 +746,47 @@
 
   /* ---------- comments ---------- */
 
+  // The card for an entry as it is on the page now; a reload of the lists draws new cards.
+  const cardFor=key=>document.querySelector('.card[data-key="'+key+'"]');
+
+  // A spam-trap field: never seen, never reached with the keyboard, and left out for screen readers.
+  function trapField(){
+    return el('div',{class:'hp','aria-hidden':'true',inert:true},
+      el('input',{type:'text',name:'trap',tabindex:'-1',autocomplete:'off','aria-hidden':'true'}));
+  }
+
+  // Entries whose comment is being saved, so that a card drawn again meanwhile cannot start a second one.
+  const commentSaving=new Set();
+
   function commentsBox(kind,x){
+    const key=kind+':'+x.id;
     const box=el('div',{class:'comments',hidden:true});
     const form=el('form',{class:'c-form',novalidate:true});
-    const hp=el('input',{type:'text',name:'company',class:'hp',tabindex:'-1',autocomplete:'off','aria-hidden':'true'});
+    const trap=trapField();
     const name=el('input',{type:'text',autocomplete:'name'});
     const body=el('textarea',{rows:'3'});
     const msg=el('p',{class:'msg',role:'status'});
-    const go=el('button',{type:'submit',class:'btn btn-primary btn-sm'},'Add comment');
-    form.append(hp,el('label',{class:'field'},el('span',{},'Your name'),name),el('label',{class:'field'},el('span',{},'Comment'),body),msg,go);
+    const go=el('button',{type:'submit',class:'btn btn-primary btn-sm',disabled:commentSaving.has(key)},'Add comment');
+    form.append(trap,el('label',{class:'field'},el('span',{},'Your name'),name),el('label',{class:'field'},el('span',{},'Comment'),body),msg,go);
     form.addEventListener('submit',async e=>{
       e.preventDefault();
+      if(commentSaving.has(key))return;
       const checks={name:text(name.value,'Your name',120,true),body:text(body.value,'Comment',2000,true)};
       const err=firstError(checks);
       if(err){say(msg,err,'err');return;}
-      go.disabled=true;say(msg,'');
+      commentSaving.add(key);go.disabled=true;say(msg,'');
+      let failed=null;
       try{
-        await rpc('add_entry_comment',{p_body:checks.body.value,p_author_name:checks.name.value,[kind==='extension'?'p_extension_id':'p_use_case_id']:x.id,p_company:hp.value});
+        await rpc('add_entry_comment',{p_body:checks.body.value,p_author_name:checks.name.value,[kind==='extension'?'p_extension_id':'p_use_case_id']:x.id,p_trap:trap.querySelector('input').value});
         body.value='';
-        await loadComments(box.closest('.card'));
-      }catch(er){say(msg,er.message,'err');}
+      }catch(er){failed=er.message;}
+      commentSaving.delete(key);
       go.disabled=false;
+      const cur=cardFor(key);
+      const curForm=cur&&cur.querySelector('.c-form');
+      if(curForm&&curForm!==form)curForm.querySelector('button[type=submit]').disabled=false;
+      if(failed){say(curForm?curForm.querySelector('.msg'):msg,failed,'err');return;}
+      if(cur)await loadComments(cur);
     });
     box.append(el('ul',{class:'comment-list'}),el('p',{class:'c-none',hidden:true},'No comments yet.'),el('p',{class:'msg c-load',role:'status'}),form);
     return box;
@@ -798,11 +832,45 @@
 
   /* ---------- adding and editing ---------- */
 
-  let editing=null;
+  // Each dialog remembers what it was opened for. A save takes that before it waits for the database,
+  // so a slow answer closes only the dialog it came from and reports its own kind of save. While a
+  // save runs, the dialog's button stays off, even if the dialog is closed and opened again.
+  const dialogs={
+    ext:{box:$('ext-dlg'),go:$('ext-go'),msg:'ext-form-msg',out:'ext-msg',opened:0,busy:false,entry:null},
+    uc:{box:$('uc-dlg'),go:$('uc-go'),msg:'uc-form-msg',out:'uc-msg',opened:0,busy:false,entry:null},
+    cm:{box:$('cm-dlg'),go:$('cm-go'),msg:'cm-form-msg',out:'lists-msg',opened:0,busy:false,entry:null}
+  };
   document.querySelectorAll('dialog [data-close]').forEach(b=>b.addEventListener('click',()=>b.closest('dialog').close()));
 
+  function openDialog(d,entry,focus){
+    d.opened++;d.entry=entry||null;
+    d.go.disabled=d.busy;
+    say(d.msg,d.busy?'The last save is still running.':'');
+    clearMessages();
+    d.box.showModal();focus.focus();
+  }
+
+  // One save from dialog d: work(entry) talks to the database, then done(entry, result) updates the page.
+  async function save(d,work,done){
+    if(d.busy)return;
+    const ticket=d.opened,entry=d.entry;
+    const mine=()=>d.opened===ticket&&d.box.open;
+    d.busy=true;d.go.disabled=true;say(d.msg,'');
+    let result;
+    try{result=await work(entry);}
+    catch(er){
+      d.busy=false;d.go.disabled=false;
+      if(mine())say(d.msg,er.message,'err');
+      else{if(d.box.open)say(d.msg,'');say(d.out,er.message,'err');}
+      return;
+    }
+    d.busy=false;d.go.disabled=false;
+    if(mine())d.box.close();
+    else if(d.box.open)say(d.msg,'');
+    await done(entry,result);
+  }
+
   function openExtension(x){
-    editing=x||null;
     $('ext-dlg-h').textContent=x?'Edit the extension':'Add an extension';
     $('ext-go').textContent=x?'Save':'Add the extension';
     $('x-name').value=x?str(x.name):'';
@@ -813,15 +881,16 @@
     $('x-link').value=x?str(x.link):'';
     $('x-relation').value=x?str(x.core_relation):'';
     $('x-author').value=x?str(x.author_name):'';
-    $('x-email').value='';$('x-company').value='';
+    $('x-email').value='';$('x-trap').value='';
     $('x-email-wrap').hidden=!!x;
-    say('ext-form-msg','');$('ext-go').disabled=false;clearMessages();
-    $('ext-dlg').showModal();$('x-name').focus();
+    openDialog(dialogs.ext,x,$('x-name'));
   }
   $('add-ext').addEventListener('click',()=>openExtension(null));
 
-  $('ext-form').addEventListener('submit',async e=>{
+  $('ext-form').addEventListener('submit',e=>{
     e.preventDefault();
+    const d=dialogs.ext;
+    if(d.busy)return;
     const checks={
       name:text($('x-name').value,'Name',120,true),
       adds:text($('x-adds').value,'What it adds',2000,true),
@@ -831,33 +900,30 @@
       link:link($('x-link').value),
       relation:text($('x-relation').value,'How it relates to the core',2000,false),
       author:text($('x-author').value,'Your name',120,true),
-      email:editing?{value:null}:email($('x-email').value)
+      email:d.entry?{value:null}:email($('x-email').value)
     };
     const err=firstError(checks);
-    if(err){say('ext-form-msg',err,'err');return;}
+    if(err){say(d.msg,err,'err');return;}
     const body={p_name:checks.name.value,p_adds:checks.adds.value,p_status:checks.status.value,p_author_name:checks.author.value,
       p_field:checks.field.value,p_contact:checks.contact.value,p_link:checks.link.value,p_core_relation:checks.relation.value};
-    $('ext-go').disabled=true;say('ext-form-msg','');
-    let id;
-    try{
-      if(editing){
-        id=editing.id;
-        await rpc('edit_extension',{p_id:id,...body,p_edit_key:editKeys['extension:'+id]||null},state.admin);
-      }else{
-        const r=await rpc('add_extension',{...body,p_email:checks.email.value,p_company:$('x-company').value});
-        id=r&&r.id;
-        if(UUID.test(str(id))&&r.edit_key){editKeys['extension:'+id]=String(r.edit_key);writeJSON(STORE.keys,editKeys);}
+    const extra={p_email:checks.email.value,p_trap:$('x-trap').value};
+    save(d,async entry=>{
+      if(entry){
+        await rpc('edit_extension',{p_id:entry.id,...body,p_edit_key:editKeys['extension:'+entry.id]||null},state.admin);
+        return entry.id;
       }
-    }catch(er){say('ext-form-msg',er.message,'err');$('ext-go').disabled=false;return;}
-    const was=editing;
-    $('ext-dlg').close();
-    await load();
-    say('ext-msg',was?'Saved.':'Added. This browser can edit it later.','ok');
-    flash('extension',id);
+      const r=await rpc('add_extension',{...body,...extra});
+      const id=r&&r.id;
+      if(UUID.test(str(id))&&r.edit_key){editKeys['extension:'+id]=String(r.edit_key);writeJSON(STORE.keys,editKeys);}
+      return id;
+    },async(entry,id)=>{
+      await load();
+      say('ext-msg',entry?'Saved.':'Added. This browser can edit it later.','ok');
+      flash('extension',id);
+    });
   });
 
   function openUseCase(x){
-    editing=x||null;
     $('uc-dlg-h').textContent=x?'Edit the use case':'Add a use case';
     $('uc-go').textContent=x?'Save':'Add the use case';
     $('u-title').value=x?str(x.title):'';
@@ -865,48 +931,47 @@
     $('u-gap').value=x?str(x.gap):'';
     $('u-field').value=x?str(x.field):'';
     $('u-author').value=x?str(x.author_name):'';
-    $('u-email').value='';$('u-company').value='';
+    $('u-email').value='';$('u-trap').value='';
     $('u-email-wrap').hidden=!!x;
     const chosen=new Set((x&&Array.isArray(x.extensions)?x.extensions:[]).map(e=>e&&e.id));
     const picks=state.ext.map(e=>el('li',{},el('label',{},el('input',{type:'checkbox',value:e.id,checked:chosen.has(e.id)}),el('span',{},str(e.name)))));
     $('u-picks').replaceChildren(...(picks.length?picks:[el('li',{class:'pick-none'},'No extensions yet.')]));
-    say('uc-form-msg','');$('uc-go').disabled=false;clearMessages();
-    $('uc-dlg').showModal();$('u-title').focus();
+    openDialog(dialogs.uc,x,$('u-title'));
   }
   $('add-uc').addEventListener('click',()=>openUseCase(null));
 
-  $('uc-form').addEventListener('submit',async e=>{
+  $('uc-form').addEventListener('submit',e=>{
     e.preventDefault();
+    const d=dialogs.uc;
+    if(d.busy)return;
     const checks={
       title:text($('u-title').value,'Title',200,true),
       goal:text($('u-goal').value,'What you are trying to do',2000,true),
       gap:text($('u-gap').value,'What the core does not let you record',2000,true),
       field:text($('u-field').value,'Field or domain',120,false),
       author:text($('u-author').value,'Your name',120,true),
-      email:editing?{value:null}:email($('u-email').value)
+      email:d.entry?{value:null}:email($('u-email').value)
     };
     const err=firstError(checks);
-    if(err){say('uc-form-msg',err,'err');return;}
+    if(err){say(d.msg,err,'err');return;}
     const ids=[...$('u-picks').querySelectorAll('input:checked')].map(i=>i.value).filter(v=>UUID.test(v));
     const body={p_title:checks.title.value,p_goal:checks.goal.value,p_gap:checks.gap.value,p_author_name:checks.author.value,
       p_field:checks.field.value,p_extension_ids:ids};
-    $('uc-go').disabled=true;say('uc-form-msg','');
-    let id;
-    try{
-      if(editing){
-        id=editing.id;
-        await rpc('edit_use_case',{p_id:id,...body,p_edit_key:editKeys['use_case:'+id]||null},state.admin);
-      }else{
-        const r=await rpc('add_use_case',{...body,p_email:checks.email.value,p_company:$('u-company').value});
-        id=r&&r.id;
-        if(UUID.test(str(id))&&r.edit_key){editKeys['use_case:'+id]=String(r.edit_key);writeJSON(STORE.keys,editKeys);}
+    const extra={p_email:checks.email.value,p_trap:$('u-trap').value};
+    save(d,async entry=>{
+      if(entry){
+        await rpc('edit_use_case',{p_id:entry.id,...body,p_edit_key:editKeys['use_case:'+entry.id]||null},state.admin);
+        return entry.id;
       }
-    }catch(er){say('uc-form-msg',er.message,'err');$('uc-go').disabled=false;return;}
-    const was=editing;
-    $('uc-dlg').close();
-    await load();
-    say('uc-msg',was?'Saved.':'Added. This browser can edit it later.','ok');
-    flash('use_case',id);
+      const r=await rpc('add_use_case',{...body,...extra});
+      const id=r&&r.id;
+      if(UUID.test(str(id))&&r.edit_key){editKeys['use_case:'+id]=String(r.edit_key);writeJSON(STORE.keys,editKeys);}
+      return id;
+    },async(entry,id)=>{
+      await load();
+      say('uc-msg',entry?'Saved.':'Added. This browser can edit it later.','ok');
+      flash('use_case',id);
+    });
   });
 
   function flash(kind,id){
@@ -920,24 +985,20 @@
 
   /* ---------- library admins ---------- */
 
-  let editingComment=null;
   function openComment(cm,li){
-    editingComment={cm,li};
     $('c-author').value=str(cm.author_name);$('c-body').value=str(cm.body);
-    say('cm-form-msg','');$('cm-go').disabled=false;
-    $('cm-dlg').showModal();$('c-body').focus();
+    const c=li.closest('.card');
+    openDialog(dialogs.cm,{cm,key:c?c.dataset.key:null},$('c-body'));
   }
-  $('cm-form').addEventListener('submit',async e=>{
+  $('cm-form').addEventListener('submit',e=>{
     e.preventDefault();
+    const d=dialogs.cm;
+    if(d.busy)return;
     const checks={author:text($('c-author').value,'Name',120,true),body:text($('c-body').value,'Comment',2000,true)};
     const err=firstError(checks);
-    if(err){say('cm-form-msg',err,'err');return;}
-    $('cm-go').disabled=true;
-    try{await rpc('edit_entry_comment',{p_id:editingComment.cm.id,p_body:checks.body.value,p_author_name:checks.author.value},true);}
-    catch(er){say('cm-form-msg',er.message,'err');$('cm-go').disabled=false;return;}
-    const c=editingComment.li.closest('.card');
-    $('cm-dlg').close();
-    if(c)await loadComments(c);
+    if(err){say(d.msg,err,'err');return;}
+    save(d,entry=>rpc('edit_entry_comment',{p_id:entry.cm.id,p_body:checks.body.value,p_author_name:checks.author.value},true),
+      async entry=>{const c=entry.key&&cardFor(entry.key);if(c)await loadComments(c);});
   });
 
   async function setHidden(kind,id,hidden,btn,msg){
@@ -979,7 +1040,8 @@
       try{state.admin=(await rpc('can_moderate_entries',{},true))===true;}catch(_){state.admin=false;}
     }
     await load();
-    const target=location.hash&&document.getElementById(decodeURIComponent(location.hash.slice(1)));
+    let target=null;
+    try{target=location.hash.length>1?document.getElementById(decodeURIComponent(location.hash.slice(1))):null;}catch(_){}
     if(target&&target.classList.contains('card'))target.scrollIntoView();
   })();
 })();
