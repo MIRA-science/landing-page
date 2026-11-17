@@ -1184,6 +1184,8 @@
     return {value:out};
   }
 
+  const editorValue=read=>{const r=read();return r.error?null:JSON.stringify(r.value);};
+
   function openExtension(x){
     $('ext-dlg-h').textContent=x?'Edit the extension':'Add an extension';
     $('ext-go').textContent=x?'Save':'Add the extension';
@@ -1202,6 +1204,11 @@
     $('x-paste').value='';say('x-paste-msg','');say('x-ed-status','');
     $('x-paste-box').hidden=true;$('x-paste-toggle').setAttribute('aria-expanded','false');
     renumber();
+    // What the editors hold as the form opens. An edit sends the links or the rows only when they no
+    // longer read the same (order included), so an edit of the texts alone counts one write unit, and a
+    // change that is undone counts as none.
+    dialogs.ext.linksAtOpen=x?editorValue(readLinks):null;
+    dialogs.ext.rowsAtOpen=x?editorValue(()=>readRows(true)):null;
     $('x-author').value=x?str(x.author_name):'';
     $('x-email').value='';$('x-trap').value='';
     $('x-email-wrap').hidden=!!x;
@@ -1241,7 +1248,8 @@
     const body={p_name:checks.name.value,p_purpose:checks.purpose.value,p_status:checks.status.value,p_author_name:checks.author.value,
       p_also_known_as:checks.aka.value,p_field:checks.field.value,p_written_as:checks.written.value,p_version:checks.version.value,
       p_compared_against:checks.compared.value,p_core_relation:checks.relation.value,p_contact:checks.contact.value,
-      p_links:checks.links.value,p_rows:checks.rows.value};
+      p_links:d.entry&&JSON.stringify(checks.links.value)===d.linksAtOpen?null:checks.links.value,
+      p_rows:d.entry&&JSON.stringify(checks.rows.value)===d.rowsAtOpen?null:checks.rows.value};
     const extra={p_email:checks.email.value,p_trap:$('x-trap').value};
     save(d,async entry=>{
       if(entry){
@@ -1290,9 +1298,23 @@
       return li;
     });
     $('u-picks').replaceChildren(...(picks.length?picks:[el('li',{class:'pick-none'},'No extensions yet.')]));
+    // The row picks as the form opens: an edit sends them only when the set has changed.
+    dialogs.uc.picksAtOpen=x?readPicks().rowIds.sort().join():null;
     openDialog(dialogs.uc,x,$('u-title'));
   }
   $('add-uc').addEventListener('click',()=>openUseCase(null));
+
+  // The extensions ticked, and the rows ticked under them; a row counts only under a ticked extension.
+  function readPicks(){
+    const ids=[],rowIds=[];
+    for(const li of $('u-picks').children){
+      const box=li.querySelector('.pick-ext');
+      if(!box||!box.checked||!UUID.test(box.value))continue;
+      ids.push(box.value);
+      li.querySelectorAll('.pick-row:checked').forEach(r=>{if(UUID.test(r.value))rowIds.push(r.value);});
+    }
+    return {ids,rowIds};
+  }
 
   $('uc-form').addEventListener('submit',e=>{
     e.preventDefault();
@@ -1308,17 +1330,11 @@
     };
     const err=firstError(checks);
     if(err){say(d.msg,err,'err');return;}
-    // A row counts only under an extension that is ticked.
-    const ids=[],rowIds=[];
-    for(const li of $('u-picks').children){
-      const box=li.querySelector('.pick-ext');
-      if(!box||!box.checked||!UUID.test(box.value))continue;
-      ids.push(box.value);
-      li.querySelectorAll('.pick-row:checked').forEach(r=>{if(UUID.test(r.value))rowIds.push(r.value);});
-    }
+    const {ids,rowIds}=readPicks();
     if(rowIds.length>200){say(d.msg,'Pick at most 200 rows.','err');return;}
     const body={p_title:checks.title.value,p_goal:checks.goal.value,p_gap:checks.gap.value,p_author_name:checks.author.value,
-      p_field:checks.field.value,p_extension_ids:ids,p_row_ids:rowIds};
+      p_field:checks.field.value,p_extension_ids:ids,
+      p_row_ids:d.entry&&[...rowIds].sort().join()===d.picksAtOpen?null:rowIds};
     const extra={p_email:checks.email.value,p_trap:$('u-trap').value};
     save(d,async entry=>{
       if(entry){
@@ -1341,7 +1357,7 @@
     const c=$(anchor(kind,id));
     if(!c)return;
     c.classList.add('flash');
-    c.scrollIntoView({block:'center',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
+    c.scrollIntoView({block:'center',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});
     setTimeout(()=>c.classList.remove('flash'),2600);
   }
 
