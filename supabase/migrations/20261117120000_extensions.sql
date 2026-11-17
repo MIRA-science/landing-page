@@ -9,17 +9,26 @@
 --   policies, and no grants for signed-out or signed-in visitors, so a visitor can never read, add,
 --   change, or delete a row directly.
 -- - Each write function checks what it is given: required fields, length limits (the tables hold the
---   same limits), links that start with https://, an empty spam-trap field, and how many writes the
---   caller's network address made in the last hour. The address is kept only as a salted hash, and
---   only for a day.
+--   same limits), links that start with https:// and hold no spaces, an empty spam-trap field, and how
+--   many writes the caller's network address made in the last hour. The address is kept only as a
+--   salted hash, for about a day: rows older than a day are deleted on each write and by an hourly
+--   pg_cron job, which this migration schedules (it fails if it cannot).
 -- - Email addresses and the hashes of the edit keys sit in a private table no visitor can read. The
 --   browser that adds an entry is given its edit key once and keeps it; only that key, or a library
 --   admin, can change the entry.
 -- - Library admins (private.is_library_admin()) can edit, hide, and show again any entry or comment.
 --
--- Write limits: 20 entries, comments, and edits an hour from one address; 120 thumbs-up changes an
--- hour from one address; 300 entries, comments, and edits an hour from all addresses together, in
--- case an address can be faked.
+-- Write limits, counted per IPv4 address or per IPv6 /64 block:
+-- - 20 entries, comments, and edits an hour from one address, and 300 from all addresses together;
+-- - 120 thumbs-up changes an hour from one address, and 600 from all addresses together.
+-- The site-wide limits hold even if an address can be faked, and keep the tables from growing faster
+-- than that.
+
+-- pg_cron, for the hourly clean-up of the write-limit log at the end of this file. It comes first so
+-- that, where pg_cron cannot be enabled, the migration fails before it creates anything.
+create extension if not exists pg_cron with schema pg_catalog;
+grant usage on schema cron to postgres;
+grant all privileges on all tables in schema cron to postgres;
 
 -- Entries -------------------------------------------------------------------------------------------
 
@@ -30,7 +39,8 @@ create table public.extensions (
   field text check (char_length(field) <= 120),
   status text not null check (status in ('idea', 'experimenting', 'in_use')),
   contact text check (char_length(contact) <= 300),
-  link text check (char_length(link) <= 500 and link ~ '^https://[^[:space:]]+$'),
+  link text check (char_length(link) <= 500
+                   and link ~ '^https://[^[:space:]\u0085\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]+$'),
   core_relation text check (char_length(core_relation) <= 2000),
   author_name text not null check (btrim(author_name) <> '' and char_length(author_name) <= 120),
   hidden boolean not null default false,
@@ -95,7 +105,9 @@ create table private.extensions_page_secrets (
   id uuid primary key default gen_random_uuid(),
   extension_id uuid unique references public.extensions (id) on delete cascade,
   use_case_id uuid unique references public.use_cases (id) on delete cascade,
-  email text check (char_length(email) <= 254 and email ~ '^[^@[:space:]]+@[^@[:space:]]+\.[^@[:space:]]+$'),
+  email text check (char_length(email) <= 254 and email ~ ('^[^@[:space:]\u0085\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]+'
+                                                            '@[^@[:space:]\u0085\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]+'
+                                                            '\.[^@[:space:]\u0085\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]+$')),
   edit_key_hash text not null,
   created_at timestamptz not null default now(),
   check (num_nonnulls(extension_id, use_case_id) = 1)
@@ -176,7 +188,9 @@ begin
   if left(v, 8) <> 'https://' then
     raise exception '“Where to see it” must start with https://.';
   end if;
-  if v !~ '^https://[^[:space:]]+$' then
+  -- The spaces refused are the locale's own plus the Unicode ones listed, such as the no-break space,
+  -- so the check is the same whatever the database's locale. The page refuses the same set.
+  if v !~ '^https://[^[:space:]\u0085\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]+$' then
     raise exception '“Where to see it” must be a single web address without spaces.';
   end if;
   return v;
@@ -190,7 +204,9 @@ as $$
 declare
   v text := private.extensions_page_text(p_value, 'Your email', 254, false);
 begin
-  if v is not null and v !~ '^[^@[:space:]]+@[^@[:space:]]+\.[^@[:space:]]+$' then
+  if v is not null and v !~ ('^[^@[:space:]\u0085\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]+'
+                             '@[^@[:space:]\u0085\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]+'
+                             '\.[^@[:space:]\u0085\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]+$') then
     raise exception '“Your email” does not look like an email address.';
   end if;
   return v;
@@ -210,12 +226,12 @@ end;
 $$;
 
 -- The spam trap: a field people never see, so only a program fills it in.
-create function private.extensions_page_trap(p_company text)
+create function private.extensions_page_trap(p_trap text)
   returns void
   language plpgsql immutable set search_path = ''
 as $$
 begin
-  if coalesce(p_company, '') <> '' then
+  if coalesce(p_trap, '') <> '' then
     raise exception 'This could not be saved.';
   end if;
 end;
@@ -256,10 +272,21 @@ begin
 end;
 $$;
 
+-- Forgets write-limit rows older than a day. Called on each write and by the hourly pg_cron job
+-- scheduled at the end of this file, so an address is kept for about a day even when nobody writes.
+create function private.extensions_page_forget_writes()
+  returns void
+  language sql volatile set search_path = ''
+as $$
+  delete from private.extensions_page_writes where created_at < now() - interval '1 day';
+$$;
+
 -- The write limit. The caller's address is read from the request headers PostgREST passes in:
 -- Cloudflare's cf-connecting-ip when present (Cloudflare sets it, so a caller cannot), otherwise the
--- first address in x-forwarded-for. Only a salted hash of it is stored. Callers whose address cannot
--- be read share one count. The lock makes concurrent writes count one after another.
+-- first address in x-forwarded-for. An IPv4 caller is counted by its address; an IPv6 caller by its
+-- /64 block, since one machine can take any address inside the block it is given. Only a salted hash
+-- of that is stored. Callers whose address cannot be read share one count. The lock makes concurrent
+-- writes count one after another.
 create function private.extensions_page_limit(p_kind text)
   returns void
   language plpgsql volatile set search_path = ''
@@ -267,6 +294,8 @@ as $$
 declare
   v_headers json := nullif(current_setting('request.headers', true), '')::json;
   v_address text;
+  v_inet inet;
+  v_caller text;
   v_hash text;
   v_recent integer;
 begin
@@ -274,10 +303,22 @@ begin
     nullif(btrim(v_headers ->> 'cf-connecting-ip'), ''),
     nullif(btrim(split_part(v_headers ->> 'x-forwarded-for', ',', 1)), ''),
     'unknown');
-  select private.extensions_page_hash(s.salt || v_address) into v_hash from private.extensions_page_salt s;
+  begin
+    v_inet := v_address::inet;
+  exception when invalid_text_representation then
+    v_inet := null;
+  end;
+  if v_inet is null then
+    v_caller := lower(left(v_address, 100));
+  elsif family(v_inet) = 6 and not (v_inet <<= '::ffff:0:0/96'::inet) then
+    v_caller := network(set_masklen(v_inet, 64))::text;
+  else
+    v_caller := host(v_inet);
+  end if;
+  select private.extensions_page_hash(s.salt || v_caller) into v_hash from private.extensions_page_salt s;
 
   perform pg_advisory_xact_lock(hashtextextended('extensions_page_writes', 0));
-  delete from private.extensions_page_writes where created_at < now() - interval '1 day';
+  perform private.extensions_page_forget_writes();
 
   select count(*) into v_recent from private.extensions_page_writes
    where caller_hash = v_hash and kind = p_kind and created_at > now() - interval '1 hour';
@@ -285,12 +326,13 @@ begin
     raise exception 'Too many changes from your network in the last hour. Try again later.';
   end if;
 
-  if p_kind = 'content' then
-    select count(*) into v_recent from private.extensions_page_writes
-     where kind = 'content' and created_at > now() - interval '1 hour';
-    if v_recent >= 300 then
-      raise exception 'This page has had too many additions in the last hour. Try again later.';
-    end if;
+  select count(*) into v_recent from private.extensions_page_writes
+   where kind = p_kind and created_at > now() - interval '1 hour';
+  if p_kind = 'content' and v_recent >= 300 then
+    raise exception 'This page has had too many additions in the last hour. Try again later.';
+  end if;
+  if p_kind = 'support' and v_recent >= 600 then
+    raise exception 'This page has had too many thumbs up in the last hour. Try again later.';
   end if;
 
   insert into private.extensions_page_writes (caller_hash, kind) values (v_hash, p_kind);
@@ -312,13 +354,18 @@ $$;
 revoke execute on function private.extensions_page_text, private.extensions_page_link,
   private.extensions_page_email, private.extensions_page_status, private.extensions_page_trap,
   private.extensions_page_hash, private.extensions_page_new_key, private.extensions_page_target,
-  private.extensions_page_limit, private.extensions_page_may_edit
+  private.extensions_page_forget_writes, private.extensions_page_limit, private.extensions_page_may_edit
   from public, anon, authenticated;
 
 -- What visitors read --------------------------------------------------------------------------------
--- The views run as their owner (security_invoker off), so they can count the thumbs up without
--- showing who gave them; visitors may only select from them. security_barrier keeps a visitor's own
--- filters from being applied before the views leave out hidden rows.
+-- The three views are owner-rights views on purpose (security_invoker off): they read the tables with
+-- their owner's rights, so they can leave out hidden rows and count the thumbs up without showing who
+-- gave them, while visitors have no rights on the tables at all. Supabase's security advisor lists
+-- them as "Security Definer View"; that is expected. Do not turn security_invoker on: the views would
+-- then read the tables with the visitor's own rights, so the lists would fail to load, and even with
+-- table grants added they would come back empty, since the tables have no row-level policies.
+-- Visitors may only select from the views. security_barrier keeps a visitor's own filters from being
+-- applied before the views leave out hidden rows.
 
 create view public.extensions_shown with (security_invoker = false, security_barrier = true) as
 select
@@ -372,7 +419,7 @@ create function public.add_extension(
   p_link text default null,
   p_core_relation text default null,
   p_email text default null,
-  p_company text default null
+  p_trap text default null
 ) returns jsonb
   language plpgsql volatile security definer set search_path = ''
 as $$
@@ -389,7 +436,7 @@ declare
   v_key text := private.extensions_page_new_key();
   v_id uuid;
 begin
-  perform private.extensions_page_trap(p_company);
+  perform private.extensions_page_trap(p_trap);
   v_name := private.extensions_page_text(p_name, 'Name', 120, true);
   v_adds := private.extensions_page_text(p_adds, 'What it adds', 2000, true);
   v_field := private.extensions_page_text(p_field, 'Field or domain', 120, false);
@@ -420,7 +467,7 @@ create function public.add_use_case(
   p_field text default null,
   p_extension_ids uuid[] default '{}',
   p_email text default null,
-  p_company text default null
+  p_trap text default null
 ) returns jsonb
   language plpgsql volatile security definer set search_path = ''
 as $$
@@ -435,7 +482,7 @@ declare
   v_key text := private.extensions_page_new_key();
   v_id uuid;
 begin
-  perform private.extensions_page_trap(p_company);
+  perform private.extensions_page_trap(p_trap);
   v_title := private.extensions_page_text(p_title, 'Title', 200, true);
   v_goal := private.extensions_page_text(p_goal, 'What you are trying to do', 2000, true);
   v_gap := private.extensions_page_text(p_gap, 'What the core does not let you record', 2000, true);
@@ -509,7 +556,7 @@ create function public.add_entry_comment(
   p_author_name text,
   p_extension_id uuid default null,
   p_use_case_id uuid default null,
-  p_company text default null
+  p_trap text default null
 ) returns jsonb
   language plpgsql volatile security definer set search_path = ''
 as $$
@@ -518,7 +565,7 @@ declare
   v_author text;
   v_id uuid;
 begin
-  perform private.extensions_page_trap(p_company);
+  perform private.extensions_page_trap(p_trap);
   perform private.extensions_page_target(p_extension_id, p_use_case_id);
   v_author := private.extensions_page_text(p_author_name, 'Your name', 120, true);
   v_body := private.extensions_page_text(p_body, 'Comment', 2000, true);
@@ -560,12 +607,13 @@ declare
   v_relation text;
   v_author text;
 begin
+  -- The key comes first, so that without it a hidden entry and a missing one look the same.
+  if not private.extensions_page_may_edit(p_id, null, p_edit_key) then
+    raise exception 'This browser cannot edit that entry.';
+  end if;
   select hidden into v_hidden from public.extensions where id = p_id;
   if not found then
     raise exception 'That entry does not exist.';
-  end if;
-  if not private.extensions_page_may_edit(p_id, null, p_edit_key) then
-    raise exception 'This browser cannot edit that entry.';
   end if;
   if v_hidden and not v_admin then
     raise exception 'That entry is no longer listed. Reload the page.';
@@ -614,12 +662,13 @@ declare
   v_author text;
   v_ids uuid[];
 begin
+  -- The key comes first, so that without it a hidden entry and a missing one look the same.
+  if not private.extensions_page_may_edit(null, p_id, p_edit_key) then
+    raise exception 'This browser cannot edit that entry.';
+  end if;
   select hidden into v_hidden from public.use_cases where id = p_id;
   if not found then
     raise exception 'That entry does not exist.';
-  end if;
-  if not private.extensions_page_may_edit(null, p_id, p_edit_key) then
-    raise exception 'This browser cannot edit that entry.';
   end if;
   if v_hidden and not v_admin then
     raise exception 'That entry is no longer listed. Reload the page.';
@@ -752,3 +801,23 @@ grant execute on function public.add_extension, public.add_use_case, public.set_
   public.add_entry_comment, public.edit_extension, public.edit_use_case, public.can_moderate_entries,
   public.edit_entry_comment, public.set_entry_hidden, public.hidden_entries
   to anon, authenticated;
+
+-- The hourly clean-up --------------------------------------------------------------------------------
+-- The job deletes write-limit rows older than a day, so an address is kept for about a day even when
+-- nobody writes. If the job is not there afterwards, this migration fails instead of leaving the
+-- addresses kept for longer than the privacy page says.
+
+select cron.schedule('extensions-page-forget-writes', '0 * * * *',
+                     'select private.extensions_page_forget_writes()');
+
+do $$
+begin
+  if not exists (select 1 from cron.job
+                  where jobname = 'extensions-page-forget-writes'
+                    and schedule = '0 * * * *'
+                    and command = 'select private.extensions_page_forget_writes()'
+                    and active) then
+    raise exception 'The hourly job that forgets old write-limit rows was not scheduled.';
+  end if;
+end;
+$$;
