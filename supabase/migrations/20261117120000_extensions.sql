@@ -611,7 +611,7 @@ select
              'id', r.id, 'name', r.name, 'kind', r.kind, 'standing', r.standing,
              'core_term', r.core_term, 'note', r.note,
              'use_cases', coalesce((
-               select jsonb_agg(jsonb_build_object('id', u.id, 'title', u.title) order by u.created_at)
+               select jsonb_agg(jsonb_build_object('id', u.id, 'title', u.title) order by u.created_at, u.id)
                  from public.use_case_rows p
                  join public.use_cases u on u.id = p.use_case_id
                 where p.extension_id = r.extension_id and p.row_id = r.id   -- both, so use_case_rows_row_idx applies
@@ -621,7 +621,7 @@ select
      where r.extension_id = e.id
   ), '[]'::jsonb) as rows,
   coalesce((
-    select jsonb_agg(jsonb_build_object('id', u.id, 'title', u.title) order by u.created_at)
+    select jsonb_agg(jsonb_build_object('id', u.id, 'title', u.title) order by u.created_at, u.id)
       from public.use_case_extensions l
       cross join lateral (select u.id, u.title, u.created_at from public.use_cases u
                            where u.id = l.use_case_id and not u.hidden offset 0) u
@@ -643,7 +643,7 @@ select
                  from public.use_case_rows p
                  join public.extension_rows r on r.id = p.row_id
                 where p.use_case_id = u.id and p.extension_id = e.id), '[]'::jsonb))
-           order by e.name)
+           order by e.name, e.id)
       from public.use_case_extensions l
       cross join lateral (select e.id, e.name from public.extensions e
                            where e.id = l.extension_id and not e.hidden offset 0) e
@@ -1155,16 +1155,16 @@ begin
   return jsonb_build_object(
     'extensions', coalesce((
       select jsonb_agg(jsonb_build_object('id', e.id, 'name', e.name, 'author_name', e.author_name,
-                                          'created_at', e.created_at) order by e.created_at desc)
+                                          'created_at', e.created_at) order by e.created_at desc, e.id desc)
         from public.extensions e where e.hidden), '[]'::jsonb),
     'use_cases', coalesce((
       select jsonb_agg(jsonb_build_object('id', u.id, 'title', u.title, 'author_name', u.author_name,
-                                          'created_at', u.created_at) order by u.created_at desc)
+                                          'created_at', u.created_at) order by u.created_at desc, u.id desc)
         from public.use_cases u where u.hidden), '[]'::jsonb),
     'comments', coalesce((
       select jsonb_agg(jsonb_build_object('id', c.id, 'body', c.body, 'author_name', c.author_name,
                                           'extension_id', c.extension_id, 'use_case_id', c.use_case_id,
-                                          'created_at', c.created_at) order by c.created_at desc)
+                                          'created_at', c.created_at) order by c.created_at desc, c.id desc)
         from public.comments c where c.hidden), '[]'::jsonb)
   );
 end;
