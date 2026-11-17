@@ -23,12 +23,16 @@
 --   admin, can change the entry.
 -- - Library admins (private.is_library_admin()) can edit, hide, and show again any entry or comment.
 --
--- Write limits, counted per IPv4 address or per IPv6 /64 block. Adding or editing an extension counts
--- as one write however many links and rows it carries.
--- - 20 entries, comments, and edits an hour from one address, and 300 from all addresses together;
+-- Write limits, counted per IPv4 address or per IPv6 /64 block, in write units. A save counts by its
+-- size: one unit, plus one for every 10 rows an extension carries and one for every 20 rows a use case
+-- picks (rounded up), so the largest of either counts 11. Every other write counts one.
+-- - 20 units of entries, comments, and edits an hour from one address, and 300 from all addresses;
 -- - 120 thumbs-up changes an hour from one address, and 600 from all addresses together.
 -- The site-wide limits hold even if an address can be faked, and keep the tables from growing faster
 -- than that.
+--
+-- An edit of an extension that leaves out its links or its rows (or sends JSON null) keeps them as
+-- they are; an empty array removes them all.
 
 -- pg_cron, for the hourly clean-up of the write-limit log at the end of this file. It comes first so
 -- that, where pg_cron cannot be enabled, the migration fails before it creates anything.
@@ -162,12 +166,13 @@ create table private.extensions_page_secrets (
   check (num_nonnulls(extension_id, use_case_id) = 1)
 );
 
--- One row per write, holding a salted hash of the caller's network address. Rows older than a day
--- are deleted on each write.
+-- One row per write, holding a salted hash of the caller's network address and the write's weight in
+-- units (see the limits above). Rows older than a day are deleted on each write.
 create table private.extensions_page_writes (
   id bigint generated always as identity primary key,
   caller_hash text not null,
   kind text not null check (kind in ('content', 'support')),
+  weight smallint not null default 1 check (weight between 1 and 11),
   created_at timestamptz not null default now()
 );
 
@@ -279,6 +284,26 @@ begin
 end;
 $$;
 
+-- A text value inside a link or a row: a JSON string, or for an optional field a missing value or
+-- JSON null. Anything else (a number, a list, an object, true or false) is refused, so it is never
+-- stored as its JSON text.
+create function private.extensions_page_json_text(p_item jsonb, p_key text, p_label text)
+  returns text
+  language plpgsql immutable set search_path = ''
+as $$
+declare
+  v_type text := jsonb_typeof(p_item -> p_key);
+begin
+  if v_type is null or v_type = 'null' then
+    return null;
+  end if;
+  if v_type <> 'string' then
+    raise exception '“%” must be text.', p_label;
+  end if;
+  return p_item ->> p_key;
+end;
+$$;
+
 -- An extension's links as the form sends them: a JSON array of at most 8 objects, each with a label
 -- and an address. Returns them checked, as {label, url, sort_order}. A message names the link by its
 -- place in the list.
@@ -307,8 +332,8 @@ begin
       raise exception 'Link % could not be read.', v_n;
     end if;
     begin
-      v_label := private.extensions_page_text(v_item ->> 'label', 'Label', 80, true);
-      v_url := private.extensions_page_link(v_item ->> 'url', 'Address', true);
+      v_label := private.extensions_page_text(private.extensions_page_json_text(v_item, 'label', 'Label'), 'Label', 80, true);
+      v_url := private.extensions_page_link(private.extensions_page_json_text(v_item, 'url', 'Address'), 'Address', true);
     exception when raise_exception then
       raise exception 'Link %: %', v_n, sqlerrm;
     end;
@@ -351,6 +376,9 @@ begin
     if jsonb_typeof(v_item) <> 'object' then
       raise exception 'Row % could not be read.', v_n;
     end if;
+    if jsonb_typeof(v_item -> 'id') not in ('string', 'null') then
+      raise exception 'Row % could not be read.', v_n;
+    end if;
     v_id := nullif(v_item ->> 'id', '');
     if v_id is not null then
       if v_id !~* '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$' then
@@ -363,17 +391,17 @@ begin
       v_seen := v_seen || v_id;
     end if;
     begin
-      v_name := private.extensions_page_text(v_item ->> 'name', 'Name', 120, true);
-      v_kind := v_item ->> 'kind';
+      v_name := private.extensions_page_text(private.extensions_page_json_text(v_item, 'name', 'Name'), 'Name', 120, true);
+      v_kind := case when jsonb_typeof(v_item -> 'kind') = 'string' then v_item ->> 'kind' end;
       if v_kind is null or v_kind not in ('record_type', 'link', 'field', 'other') then
         raise exception '“Kind” must be Record type, Link, Field, or Other.';
       end if;
-      v_standing := v_item ->> 'standing';
+      v_standing := case when jsonb_typeof(v_item -> 'standing') = 'string' then v_item ->> 'standing' end;
       if v_standing is null or v_standing not in ('adds', 'pairs', 'differs') then
         raise exception '“Against the core” must be Adds, Pairs with, or Differs from.';
       end if;
-      v_term := private.extensions_page_text(v_item ->> 'core_term', 'Core term', 200, false);
-      v_note := private.extensions_page_text(v_item ->> 'note', 'Note', 600, false);
+      v_term := private.extensions_page_text(private.extensions_page_json_text(v_item, 'core_term', 'Core term'), 'Core term', 200, false);
+      v_note := private.extensions_page_text(private.extensions_page_json_text(v_item, 'note', 'Note'), 'Note', 600, false);
     exception when raise_exception then
       raise exception 'Row %: %', v_n, sqlerrm;
     end;
@@ -469,8 +497,9 @@ $$;
 -- first address in x-forwarded-for. An IPv4 caller is counted by its address; an IPv6 caller by its
 -- /64 block, since one machine can take any address inside the block it is given. Only a salted hash
 -- of that is stored. Callers whose address cannot be read share one count. The lock makes concurrent
--- writes count one after another.
-create function private.extensions_page_limit(p_kind text)
+-- writes count one after another. p_weight is the write's size in units (1 to 11); a write is refused
+-- when it would take the hour's total past a limit.
+create function private.extensions_page_limit(p_kind text, p_weight integer default 1)
   returns void
   language plpgsql volatile set search_path = ''
 as $$
@@ -481,6 +510,7 @@ declare
   v_caller text;
   v_hash text;
   v_recent integer;
+  v_weight integer := least(greatest(coalesce(p_weight, 1), 1), 11);
 begin
   v_address := coalesce(
     nullif(btrim(v_headers ->> 'cf-connecting-ip'), ''),
@@ -503,22 +533,22 @@ begin
   perform pg_advisory_xact_lock(hashtextextended('extensions_page_writes', 0));
   perform private.extensions_page_forget_writes();
 
-  select count(*) into v_recent from private.extensions_page_writes
+  select coalesce(sum(weight), 0) into v_recent from private.extensions_page_writes
    where caller_hash = v_hash and kind = p_kind and created_at > now() - interval '1 hour';
-  if v_recent >= (case p_kind when 'support' then 120 else 20 end) then
+  if v_recent + v_weight > (case p_kind when 'support' then 120 else 20 end) then
     raise exception 'Too many changes from your network in the last hour. Try again later.';
   end if;
 
-  select count(*) into v_recent from private.extensions_page_writes
+  select coalesce(sum(weight), 0) into v_recent from private.extensions_page_writes
    where kind = p_kind and created_at > now() - interval '1 hour';
-  if p_kind = 'content' and v_recent >= 300 then
+  if p_kind = 'content' and v_recent + v_weight > 300 then
     raise exception 'This page has had too many additions in the last hour. Try again later.';
   end if;
-  if p_kind = 'support' and v_recent >= 600 then
+  if p_kind = 'support' and v_recent + v_weight > 600 then
     raise exception 'This page has had too many thumbs up in the last hour. Try again later.';
   end if;
 
-  insert into private.extensions_page_writes (caller_hash, kind) values (v_hash, p_kind);
+  insert into private.extensions_page_writes (caller_hash, kind, weight) values (v_hash, p_kind, v_weight);
 end;
 $$;
 
@@ -535,7 +565,8 @@ as $$
 $$;
 
 revoke execute on function private.extensions_page_text, private.extensions_page_link,
-  private.extensions_page_email, private.extensions_page_status, private.extensions_page_links,
+  private.extensions_page_email, private.extensions_page_status, private.extensions_page_json_text,
+  private.extensions_page_links,
   private.extensions_page_rows, private.extensions_page_row_picks, private.extensions_page_trap,
   private.extensions_page_hash, private.extensions_page_new_key, private.extensions_page_target,
   private.extensions_page_forget_writes, private.extensions_page_limit, private.extensions_page_may_edit
@@ -574,7 +605,8 @@ select
                select jsonb_agg(jsonb_build_object('id', u.id, 'title', u.title) order by u.created_at)
                  from public.use_case_rows p
                  join public.use_cases u on u.id = p.use_case_id
-                where p.row_id = r.id and not u.hidden), '[]'::jsonb))
+                where p.extension_id = r.extension_id and p.row_id = r.id   -- both, so use_case_rows_row_idx applies
+                  and not u.hidden), '[]'::jsonb))
            order by r.sort_order)
       from public.extension_rows r
      where r.extension_id = e.id
@@ -676,7 +708,8 @@ begin
   v_rows := private.extensions_page_rows(p_rows);
   v_author := private.extensions_page_text(p_author_name, 'Your name', 120, true);
   v_email := private.extensions_page_email(p_email);
-  perform private.extensions_page_limit('content');
+  -- One unit, plus one for every 10 rows.
+  perform private.extensions_page_limit('content', 1 + ceil(jsonb_array_length(v_rows) / 10.0)::integer);
 
   insert into public.extensions (name, also_known_as, purpose, field, status, written_as, version,
                                  compared_against, core_relation, contact, author_name)
@@ -742,7 +775,8 @@ begin
   v_rows := private.extensions_page_row_picks(p_row_ids, v_ids);
   v_author := private.extensions_page_text(p_author_name, 'Your name', 120, true);
   v_email := private.extensions_page_email(p_email);
-  perform private.extensions_page_limit('content');
+  -- One unit, plus one for every 20 row picks.
+  perform private.extensions_page_limit('content', 1 + ceil(cardinality(v_rows) / 20.0)::integer);
 
   insert into public.use_cases (title, goal, gap, field, author_name)
   values (v_title, v_goal, v_gap, v_field, v_author)
@@ -831,7 +865,8 @@ $$;
 
 -- The links become the ones given. The rows become the ones given, in their order: a row sent with
 -- its id keeps that id (so use cases that picked it keep their pick); a row sent without one is new;
--- a row not sent is removed, with every use case's pick of it.
+-- a row not sent is removed, with every use case's pick of it. Leaving out p_links or p_rows, or
+-- sending JSON null, keeps the links or rows as they are; an empty array removes them all.
 create function public.edit_extension(
   p_id uuid,
   p_name text,
@@ -845,8 +880,8 @@ create function public.edit_extension(
   p_compared_against text default null,
   p_core_relation text default null,
   p_contact text default null,
-  p_links jsonb default '[]',
-  p_rows jsonb default '[]',
+  p_links jsonb default null,
+  p_rows jsonb default null,
   p_edit_key text default null
 ) returns jsonb
   language plpgsql volatile security definer set search_path = ''
@@ -868,6 +903,8 @@ declare
   v_rows jsonb;
   v_author text;
   v_stray integer;
+  v_keep_links boolean := p_links is null or jsonb_typeof(p_links) = 'null';
+  v_keep_rows boolean := p_rows is null or jsonb_typeof(p_rows) = 'null';
 begin
   -- The key comes first, so that without it a hidden entry and a missing one look the same.
   if not private.extensions_page_may_edit(p_id, null, p_edit_key) then
@@ -890,19 +927,25 @@ begin
   v_compared := private.extensions_page_text(p_compared_against, 'Compared against', 300, false);
   v_relation := private.extensions_page_text(p_core_relation, 'How it relates to the core', 2000, false);
   v_contact := private.extensions_page_text(p_contact, 'Who to talk to', 300, false);
-  v_links := private.extensions_page_links(p_links);
-  v_rows := private.extensions_page_rows(p_rows);
-  select min(t.o) into v_stray
-    from jsonb_array_elements(v_rows) with ordinality as t(e, o)
-   where t.e ->> 'id' is not null
-     and not exists (select 1 from public.extension_rows r
-                      where r.id = (t.e ->> 'id')::uuid and r.extension_id = p_id);
-  if v_stray is not null then
-    raise exception 'Row % is no longer part of this extension. Reload the page. Then try again.', v_stray;
+  if not v_keep_links then
+    v_links := private.extensions_page_links(p_links);
+  end if;
+  if not v_keep_rows then
+    v_rows := private.extensions_page_rows(p_rows);
+    select min(t.o) into v_stray
+      from jsonb_array_elements(v_rows) with ordinality as t(e, o)
+     where t.e ->> 'id' is not null
+       and not exists (select 1 from public.extension_rows r
+                        where r.id = (t.e ->> 'id')::uuid and r.extension_id = p_id);
+    if v_stray is not null then
+      raise exception 'Row % is no longer part of this extension. Reload the page. Then try again.', v_stray;
+    end if;
   end if;
   v_author := private.extensions_page_text(p_author_name, 'Your name', 120, true);
   if not v_admin then
-    perform private.extensions_page_limit('content');
+    -- One unit, plus one for every 10 rows sent.
+    perform private.extensions_page_limit('content',
+      1 + case when v_keep_rows then 0 else ceil(jsonb_array_length(v_rows) / 10.0)::integer end);
   end if;
 
   update public.extensions
@@ -911,11 +954,16 @@ begin
          core_relation = v_relation, contact = v_contact, author_name = v_author, updated_at = now()
    where id = p_id;
 
-  delete from public.extension_links where extension_id = p_id;
-  insert into public.extension_links (extension_id, sort_order, label, url)
-  select p_id, x.sort_order, x.label, x.url
-    from jsonb_to_recordset(v_links) as x(label text, url text, sort_order smallint);
+  if not v_keep_links then
+    delete from public.extension_links where extension_id = p_id;
+    insert into public.extension_links (extension_id, sort_order, label, url)
+    select p_id, x.sort_order, x.label, x.url
+      from jsonb_to_recordset(v_links) as x(label text, url text, sort_order smallint);
+  end if;
 
+  if v_keep_rows then
+    return jsonb_build_object('id', p_id);
+  end if;
   delete from public.extension_rows r
    where r.extension_id = p_id
      and not exists (select 1 from jsonb_array_elements(v_rows) as t(e)
@@ -987,7 +1035,8 @@ begin
   v_rows := private.extensions_page_row_picks(p_row_ids, v_ids);
   v_author := private.extensions_page_text(p_author_name, 'Your name', 120, true);
   if not v_admin then
-    perform private.extensions_page_limit('content');
+    -- One unit, plus one for every 20 row picks.
+    perform private.extensions_page_limit('content', 1 + ceil(cardinality(v_rows) / 20.0)::integer);
   end if;
 
   update public.use_cases
