@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>MIRA · Extensions</title>
+<title>MIRA · Extensions and use cases</title>
 <meta name="description" content="The extensions to MIRA's core schema that people are trying, and the use cases behind each extension." />
 <link rel="canonical" href="https://mira.science/extensions/" />
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self' https://vcdkoqpvurrdheyxeduu.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'" />
@@ -26,8 +26,6 @@
     --bg:#ffffff;--ink:#16181b;--ink-2:#33373c;--muted:#5b616a;--faint:#6b717a;
     --line:#e9eaec;--line-soft:#f3f4f5;--accent:#1d5440;--accent-deep:#163f30;
     --tint-1:#f6f8f7;--tint-2:#eef2f0;--card-bg:#ffffff;
-    --hero-bg:radial-gradient(125% 120% at 82% -15%, #235e46 0%, #163f30 48%, #102e22 100%);
-    --hero-text:#ffffff;--hero-muted:#b6cdc1;--hero-eyebrow:#8ed8b3;
     --footer-bg:#0f2c21;--footer-text:#ffffff;--footer-muted:#b6cdc1;
     --danger:#b4342b;
     --sans:"Schibsted Grotesk",-apple-system,BlinkMacSystemFont,sans-serif;
@@ -39,20 +37,23 @@
     --bg:#0c1411;--ink:#e9efeb;--ink-2:#cad6d0;--muted:#93a39b;--faint:#7f8f87;
     --line:#1f2b26;--line-soft:#172019;--accent:#7fd3a8;--accent-deep:#9ce3c1;
     --tint-1:#0f1814;--tint-2:#121d18;--card-bg:#16241d;
-    --hero-bg:radial-gradient(125% 120% at 82% -15%, #15392a 0%, #0e271d 50%, #081711 100%);
-    --hero-text:#eafaf2;--hero-muted:#9fb4aa;--hero-eyebrow:#7fd3a8;
     --footer-bg:#0a1d15;--footer-text:#e9efeb;--footer-muted:#8ba197;
     --danger:#f08c84;
   }
 
   *{box-sizing:border-box;margin:0;padding:0}
-  html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+  /* The padding keeps what is scrolled to, or reached with the keyboard, clear of the sticky menu. */
+  html{scroll-behavior:smooth;scroll-padding-top:82px;-webkit-text-size-adjust:100%}
   body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:17px;line-height:1.6;font-weight:400;letter-spacing:-.005em;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;transition:background-color .3s ease,color .3s ease}
   a{color:inherit;text-decoration:none}
+  button{font:inherit;color:inherit}
   ::selection{background:var(--accent);color:var(--bg)}
   [hidden]{display:none !important}
+  a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
   .wrap{max-width:var(--maxw);margin:0 auto;padding:0 32px}
-  .eyebrow{font-family:var(--mono);font-size:12px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
+  .col{max-width:860px}
+  .vh{position:absolute !important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}
+  .count{font-variant-numeric:tabular-nums}
 
   /* NAV */
   nav{position:sticky;top:0;z-index:60;background:var(--bg);border-bottom:1px solid transparent;transition:border-color .3s,background-color .3s}
@@ -92,200 +93,273 @@
   @media(min-width:761px) and (max-width:900px){.nav-right{gap:16px}.nav-links{gap:18px}}
 
   /* PAGE HEADER */
-  .page-head{background:var(--hero-bg);color:var(--hero-text);padding:64px 0 76px}
-  .page-head .eyebrow{display:block;margin-bottom:20px;color:var(--hero-eyebrow)}
-  .page-head h1{font-size:clamp(34px,5vw,58px);line-height:1.04;font-weight:500;letter-spacing:-.032em;max-width:16ch;margin-bottom:24px}
-  .page-head .lede{font-size:19.5px;line-height:1.55;color:var(--hero-muted);max-width:58ch}
-  .page-head .lede+.lede{margin-top:12px}
-  .page-head .note{font-size:15px;line-height:1.55;color:var(--hero-text);max-width:58ch;margin-top:26px;padding-left:14px;border-left:2px solid var(--hero-eyebrow)}
-  .page-head .back{display:inline-flex;align-items:center;gap:8px;font-size:14.5px;color:var(--hero-muted);margin-bottom:34px;transition:color .2s}
-  .page-head .back:hover{color:var(--hero-text)}
-  .page-head .back .arr{transition:transform .22s}
-  .page-head .back:hover .arr{transform:translateX(-3px)}
-  @media(max-width:560px){.page-head{padding:44px 0 56px}.page-head .lede{font-size:18px}}
+  .page-head{padding:52px 0 0}
+  .page-head h1{font-size:38px;line-height:1.12;font-weight:500;letter-spacing:-.028em;color:var(--ink)}
+  .page-head .lede{font-size:18px;line-height:1.55;color:var(--ink-2);max-width:62ch;margin-top:14px}
+  .page-head .aside{font-size:15px;line-height:1.5;color:var(--muted);margin-top:6px}
 
-  /* FORMS AND BUTTONS */
-  .field{display:block;font-size:14px;font-weight:500;color:var(--ink-2);margin-bottom:14px}
-  .field > span{display:block;margin-bottom:6px}
-  .field em,.picker legend em{font-style:normal;font-weight:400;color:var(--faint)}
-  .field input,.field select,.field textarea{width:100%;font:inherit;font-size:15.5px;font-weight:400;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px 12px;transition:border-color .2s}
-  .field textarea{resize:vertical;min-height:84px}
-  .field input:focus,.field select:focus,.field textarea:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:var(--accent)}
-  .field .hint{display:block;font-size:13px;font-weight:400;color:var(--faint);margin-top:5px}
-  .hp{position:absolute !important;left:-9999px;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none}
-  .btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;font:inherit;font-size:15px;font-weight:500;line-height:1.2;border-radius:8px;padding:11px 18px;cursor:pointer;border:1px solid transparent;transition:background .2s,border-color .2s,color .2s;white-space:nowrap}
+  /* BUTTONS AND FIELDS */
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;font-size:15px;font-weight:500;line-height:1.2;border-radius:8px;padding:11px 18px;cursor:pointer;border:1px solid transparent;transition:background-color .15s,border-color .15s,color .15s;white-space:nowrap}
   .btn-primary{background:var(--accent);color:var(--bg)}
   .btn-primary:hover{background:var(--accent-deep)}
   .btn-ghost{background:transparent;color:var(--ink-2);border-color:var(--line)}
   .btn-ghost:hover{border-color:var(--ink-2);color:var(--ink)}
   .btn[disabled]{opacity:.55;cursor:default}
-  .btn svg{width:18px;height:18px;flex:none}
   .btn-sm{font-size:14px;padding:8px 13px}
-  .msg{font-size:14.5px;line-height:1.5;margin-top:12px}
-  .msg:empty{display:none}
-  .msg.err{color:var(--danger)}
-  .msg.ok{color:var(--accent)}
-
-  /* LISTS */
-  .ext{padding:56px 0 112px;min-height:30vh}
-  .load-msg{font-size:16px;color:var(--muted)}
-  .lists{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:48px;align-items:start}
-  .list-sec{min-width:0;scroll-margin-top:84px}
-  .sec-head{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:8px 16px;padding-bottom:16px;border-bottom:1px solid var(--line)}
-  .sec-head h2{font-size:26px;line-height:1.2;font-weight:500;letter-spacing:-.02em}
-  .sec-head h2 .n{font-family:var(--mono);font-size:13px;font-weight:400;letter-spacing:0;color:var(--faint);margin-left:9px}
-  .sec-sub{grid-column:1/-1;font-size:15px;line-height:1.5;color:var(--muted);max-width:52ch}
-  .sec-msg{margin:12px 0 0}
-  .cards{list-style:none;display:flex;flex-direction:column;gap:16px;margin-top:18px}
-  .empty{color:var(--muted);font-size:15.5px;padding:34px 16px;margin-top:18px;text-align:center;border:1px dashed var(--line);border-radius:14px}
-  .card{background:var(--card-bg);border:1px solid var(--line);border-radius:14px;padding:20px 22px 14px;scroll-margin-top:84px;transition:border-color .4s,box-shadow .4s}
-  .card:target,.card.flash{border-color:var(--accent);box-shadow:0 0 0 3px var(--tint-2)}
-  .card-tags{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
-  .chip{font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;line-height:1.3;border-radius:5px;padding:4px 8px;color:var(--accent);background:var(--tint-2);border:1px solid transparent}
-  .chip-idea{background:transparent;border-color:var(--line);color:var(--muted)}
-  .chip-in_use{background:var(--accent);color:var(--bg)}
-  .tag{font-size:13px;line-height:1.4;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:2px 10px;overflow-wrap:anywhere}
-  .card-title{font-size:20px;line-height:1.3;font-weight:500;letter-spacing:-.015em;margin-bottom:6px;overflow-wrap:anywhere}
-  .card-text{font-size:16px;line-height:1.6;color:var(--ink-2);white-space:pre-line;overflow-wrap:anywhere}
-  .facts{display:grid;gap:10px;margin-top:14px}
-  .facts:empty{display:none}
-  .fact dt{font-size:13px;font-weight:500;color:var(--faint);margin-bottom:1px}
-  .fact dd{font-size:15px;line-height:1.55;color:var(--ink-2);white-space:pre-line;overflow-wrap:anywhere}
-  .fact dd a.out{color:var(--accent);text-decoration:underline;text-underline-offset:2px}
-  .xrefs{list-style:none;display:flex;flex-wrap:wrap;gap:6px;margin-top:3px;white-space:normal}
-  .xrefs a{display:inline-block;font-size:14px;line-height:1.4;color:var(--ink-2);border:1px solid var(--line);border-radius:7px;padding:3px 9px;transition:border-color .2s,color .2s}
-  .xrefs a:hover{border-color:var(--accent);color:var(--accent)}
-  .none-yet{color:var(--muted)}
-  .by{font-size:13.5px;color:var(--faint);margin-top:14px;overflow-wrap:anywhere}
-  .card-actions{display:flex;align-items:center;gap:8px 18px;flex-wrap:wrap;margin-top:12px;padding-top:12px;border-top:1px solid var(--line-soft)}
-  .thumb{display:inline-flex;align-items:center;gap:7px;font:inherit;font-size:14px;font-weight:500;line-height:1.2;color:var(--ink-2);background:transparent;border:1px solid var(--line);border-radius:999px;padding:6px 13px 6px 11px;cursor:pointer;transition:background .2s,border-color .2s,color .2s}
-  .thumb svg{width:16px;height:16px;flex:none}
-  .thumb .n{font-family:var(--mono);font-size:13px}
-  .thumb:hover{border-color:var(--accent);color:var(--accent)}
-  .thumb.on{background:var(--accent);border-color:var(--accent);color:var(--bg)}
-  .thumb[disabled]{opacity:.6;cursor:default}
-  .act{background:none;border:0;padding:4px 0;font:inherit;font-size:14px;color:var(--muted);cursor:pointer;text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:3px;transition:color .2s}
+  .act{background:none;border:0;padding:2px 0;font-size:14px;line-height:1.4;color:var(--ink-2);cursor:pointer;text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:3px;transition:color .15s}
   .act:hover{color:var(--ink);text-decoration-color:currentColor}
   .act[disabled]{opacity:.55;cursor:default}
   .act-danger{color:var(--danger)}
-  .acts-end{display:flex;gap:16px;margin-left:auto}
-  .card-msg{margin-top:8px}
+  .act-danger:hover{color:var(--danger)}
+  .msg{font-size:14.5px;line-height:1.5}
+  .msg:empty{display:none}
+  .msg.err{color:var(--danger)}
+  .msg.ok{color:var(--accent)}
+  .field{display:block;font-size:14px;font-weight:500;color:var(--ink-2);margin-bottom:14px}
+  .field > span{display:block;margin-bottom:6px}
+  .field em{font-style:normal;font-weight:400;color:var(--muted)}
+  .field input,.field select,.field textarea{width:100%;font:inherit;font-size:15.5px;font-weight:400;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px 12px;transition:border-color .15s}
+  .field textarea{resize:vertical;min-height:84px}
+  .field input:focus,.field select:focus,.field textarea:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:var(--accent)}
+  .field [aria-invalid="true"]{border-color:var(--danger)}
+  .field .hint{display:block;font-size:13px;font-weight:400;color:var(--muted);margin-top:5px}
+  .hp{position:absolute !important;left:-9999px;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none}
 
-  /* COMMENTS */
-  .comments{margin-top:12px;padding-top:14px;border-top:1px solid var(--line-soft)}
-  .comment-list{list-style:none;display:flex;flex-direction:column;gap:12px;margin-bottom:14px}
-  .comment{border-left:2px solid var(--line);padding-left:12px}
-  .c-body{font-size:15px;line-height:1.55;color:var(--ink-2);white-space:pre-line;overflow-wrap:anywhere}
-  .c-by{display:flex;flex-wrap:wrap;align-items:center;gap:2px 14px;font-size:13px;color:var(--faint);margin-top:3px;overflow-wrap:anywhere}
+  /* THE LISTS */
+  .ext{padding:32px 0 112px;min-height:50vh}
+  .load-box{display:flex;flex-wrap:wrap;align-items:center;gap:12px 20px;padding:22px 24px;border:1px solid var(--line);border-radius:10px}
+  .load-msg{font-size:16px;line-height:1.5;color:var(--ink-2)}
+  .bar{display:flex;align-items:flex-end;justify-content:space-between;gap:12px 24px;border-bottom:1px solid var(--line)}
+  .bar .btn{margin-bottom:9px}
+  .tabs{display:flex;gap:28px;min-width:0}
+  .tab{display:inline-flex;align-items:baseline;gap:8px;padding:12px 0 11px;margin-bottom:-1px;background:none;border:0;border-bottom:2px solid transparent;font-size:16px;font-weight:500;line-height:1.4;color:var(--muted);cursor:pointer;white-space:nowrap;transition:color .15s,border-color .15s}
+  .tab:hover{color:var(--ink)}
+  .tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+  .tab:focus-visible{outline-offset:3px;border-radius:4px}
+  .tab .count{font-size:14px;font-weight:400;color:var(--muted)}
+  .lists-msg{margin-top:14px}
+  .list-line{font-size:15px;line-height:1.5;color:var(--muted);margin:18px 0 16px}
+  .panel-msg{margin:-4px 0 14px}
+
+  .list{list-style:none;border:1px solid var(--line);border-radius:10px}
+  .entry{transition:background-color .2s}
+  .entry + .entry,.hlist > li + li{border-top:1px solid var(--line)}
+  .entry:first-child{border-top-left-radius:9px;border-top-right-radius:9px}
+  .entry:last-child{border-bottom-left-radius:9px;border-bottom-right-radius:9px}
+  .entry.open,.entry:not(.open):has(.toggle:hover){background:var(--tint-1)}
+  .entry.flash{background:var(--tint-2)}
+  .entry-head{display:grid;grid-template-columns:46px minmax(0,1fr);gap:16px;padding:16px 18px;align-items:start}
+  .entry-h{font:inherit;margin:0;min-width:0}
+  .toggle{display:grid;grid-template-columns:minmax(0,1fr) 18px;gap:16px;align-items:center;width:100%;min-height:50px;padding:0;background:none;border:0;border-radius:6px;text-align:left;cursor:pointer}
+  .toggle:focus-visible{outline-offset:6px}
+  .lines{display:block;min-width:0}
+  .l1{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 10px}
+  .name{font-size:17px;line-height:1.4;font-weight:600;letter-spacing:-.01em;color:var(--ink);overflow-wrap:anywhere}
+  .status{font-size:12.5px;line-height:1.6;font-weight:500;color:var(--muted);background:var(--tint-2);border-radius:999px;padding:0 8px;white-space:nowrap}
+  .status-in_use{color:var(--accent)}
+  .l2{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;margin-top:2px;font-size:15.5px;line-height:1.5;color:var(--ink-2);overflow-wrap:anywhere}
+  .entry.open .l2{display:none}
+  /* The dot before each part sits in the gap; at the start of a line it falls outside the clip. */
+  .l3{display:flex;flex-wrap:wrap;margin:5px 0 0 -15px;clip-path:inset(0 0 0 15px);font-size:13.5px;line-height:1.5;color:var(--muted)}
+  .l3:empty{display:none}
+  .l3 > span{position:relative;margin-left:15px;overflow-wrap:anywhere}
+  .l3 > span::before{content:"·";content:"·" / "";position:absolute;left:-10px}
+  .chev{width:18px;height:18px;flex:none;color:var(--muted);transition:transform .2s}
+  .toggle[aria-expanded="true"] > .chev{transform:rotate(180deg)}
+  .thumb{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;width:46px;min-height:50px;padding:6px 0 5px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink-2);cursor:pointer;transition:background-color .15s,border-color .15s,color .15s}
+  .thumb svg{width:16px;height:16px}
+  .thumb .n{font-size:13px;line-height:1.3;font-weight:500;font-variant-numeric:tabular-nums}
+  .thumb:hover{border-color:var(--accent);color:var(--accent)}
+  .thumb[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--bg)}
+  .thumb[disabled]{opacity:.6;cursor:progress}
+  .entry-msg{padding:0 18px 12px 80px}
+
+  .empty{padding:40px 24px;border:1px solid var(--line);border-radius:10px;text-align:center}
+  .empty-title{font-size:16px;font-weight:600;color:var(--ink)}
+  .empty-hint{margin-top:4px;font-size:14.5px;color:var(--muted)}
+  .skel{position:relative;padding:20px 18px 20px 80px}
+  .skel::before{content:"";position:absolute;left:18px;top:16px;width:46px;height:50px;border-radius:8px;background:var(--line-soft)}
+  .skel span{display:block;height:12px;border-radius:6px;background:var(--line-soft)}
+  .skel span:nth-child(1){width:32%;height:14px}
+  .skel span:nth-child(2){width:76%;margin-top:11px}
+  .skel span:nth-child(3){width:44%;margin-top:11px}
+  @media (prefers-reduced-motion:no-preference){.skel{animation:pulse 1.4s ease-in-out infinite}}
+  @keyframes pulse{50%{opacity:.5}}
+
+  /* AN OPEN ENTRY */
+  .detail{padding:2px 18px 22px 80px}
+  .d-part + .d-part{margin-top:20px}
+  .d-label{font-size:13.5px;line-height:1.4;font-weight:600;color:var(--ink-2);margin-bottom:6px}
+  .d-text{font-size:15.5px;line-height:1.6;color:var(--ink);white-space:pre-line;overflow-wrap:anywhere;max-width:68ch}
+  .d-none{color:var(--muted)}
+  .facts{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:5px 24px;font-size:15px;line-height:1.5;max-width:68ch}
+  .fact{display:contents}
+  .facts dt{color:var(--muted)}
+  .facts dd{min-width:0;color:var(--ink);white-space:pre-line;overflow-wrap:anywhere}
+  .refs{list-style:none;display:flex;flex-wrap:wrap;gap:4px 18px;white-space:normal}
+  .d-part > .refs{font-size:15px;line-height:1.5}
+  .xref,.out{color:var(--accent);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px;overflow-wrap:anywhere}
+  .xref:hover,.out:hover{color:var(--accent-deep);text-decoration-thickness:2px}
+  .host{margin-left:6px;font-size:13.5px;color:var(--muted);overflow-wrap:anywhere}
+  .covered{list-style:none;display:grid;gap:5px}
+  .covered li{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 10px;font-size:15px;line-height:1.5}
+  .picked{font-size:14px;color:var(--muted);overflow-wrap:anywhere}
+  .seg{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+  .seg-btn{display:inline-flex;align-items:baseline;gap:7px;padding:5px 12px;border:1px solid var(--line);border-radius:7px;background:var(--bg);font-size:14px;font-weight:500;line-height:1.4;color:var(--ink-2);cursor:pointer;transition:border-color .15s,background-color .15s,color .15s}
+  .seg-btn .count{font-weight:400;color:var(--muted)}
+  .seg-btn:hover{border-color:var(--ink-2);color:var(--ink)}
+  .seg-btn[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:var(--bg)}
+  .seg-btn[aria-selected="true"] .count{color:inherit}
+  .seg-btn[aria-disabled="true"]{opacity:.5;cursor:default;border-color:var(--line);color:var(--ink-2)}
+  .rtable{width:100%;border-collapse:collapse;font-size:14.5px;line-height:1.5}
+  .rtable th{padding:0 14px 7px 0;border-bottom:1px solid var(--line);text-align:left;font-size:13px;font-weight:600;color:var(--muted);white-space:nowrap}
+  .rtable td{padding:9px 14px 9px 0;border-bottom:1px solid var(--line);vertical-align:top;color:var(--ink-2);overflow-wrap:anywhere}
+  .rtable tr:last-child td{border-bottom:0}
+  .rtable th:last-child,.rtable td:last-child{padding-right:0}
+  .rtable .c-name{width:26%}
+  .rtable td.c-name{font-weight:500;color:var(--ink)}
+  .rtable .c-kind{width:14%}
+  .rtable td.c-kind{color:var(--muted)}
+  .rtable .c-term{width:20%}
+  .rtable tr:focus{outline:2px solid var(--accent);outline-offset:-2px}
+  .uses{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 8px;margin-top:4px;font-size:13.5px}
+  .uses-label{color:var(--muted)}
+  .uses .refs{gap:2px 12px}
+  .show-all{margin-top:10px}
+  .disc{display:inline-flex;align-items:center;gap:8px;padding:4px 0;background:none;border:0;border-radius:4px;font-size:15px;font-weight:600;color:var(--ink-2);cursor:pointer}
+  .disc:hover{color:var(--ink)}
+  .disc .count{font-weight:400;color:var(--muted)}
+  .disc .chev{width:16px;height:16px}
+  .disc[aria-expanded="true"] .chev{transform:rotate(180deg)}
+  .comments{margin-top:12px}
+  .comment-list{list-style:none;display:grid;gap:14px;margin-bottom:16px}
+  .comment-list:empty{display:none}
+  .c-body{font-size:15px;line-height:1.55;color:var(--ink);white-space:pre-line;overflow-wrap:anywhere;max-width:68ch}
+  .c-by{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 14px;margin-top:3px;font-size:13px;color:var(--muted);overflow-wrap:anywhere}
   .c-by .act{font-size:13px;padding:0}
-  .c-none{font-size:14.5px;color:var(--muted);margin-bottom:12px}
+  .c-none{font-size:14.5px;color:var(--muted);margin-bottom:14px}
   .c-load{margin:0 0 12px}
-  .c-form{background:var(--tint-1);border:1px solid var(--line);border-radius:10px;padding:14px 14px 12px}
+  .c-form{max-width:540px}
   .c-form .field{margin-bottom:10px}
   .c-form .field textarea{min-height:70px}
   .c-form .msg{margin:0 0 10px}
+  .d-foot{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 18px;margin-top:22px;font-size:13.5px;color:var(--muted)}
+  .d-foot .by{overflow-wrap:anywhere}
+  .d-foot .act{font-size:13.5px}
 
   /* HIDDEN (admins) */
-  .hidden-sec{margin-top:72px}
-  .hidden-list{list-style:none;margin-top:8px}
-  .hidden-list li{display:flex;justify-content:space-between;gap:8px 16px;align-items:baseline;flex-wrap:wrap;padding:12px 0;border-bottom:1px solid var(--line)}
-  .hidden-list .h-main{min-width:0;flex:1 1 300px;font-size:15px;color:var(--ink-2);overflow-wrap:anywhere}
-  .hidden-list .h-kind{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);margin-right:10px}
+  .hlist > li{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px 16px;padding:12px 18px}
+  .h-main{flex:1 1 300px;min-width:0;font-size:15px;color:var(--ink-2);overflow-wrap:anywhere}
+  .h-kind{display:block;font-size:13px;color:var(--muted)}
 
   /* DIALOGS */
-  .dlg{border:1px solid var(--line);border-radius:16px;background:var(--card-bg);color:var(--ink);width:min(680px,calc(100vw - 32px));max-height:calc(100vh - 48px);margin:auto;padding:30px 30px 26px}
+  .dlg{border:1px solid var(--line);border-radius:14px;background:var(--card-bg);color:var(--ink);width:min(680px,calc(100vw - 32px));max-height:calc(100vh - 48px);margin:auto;padding:28px 30px 24px}
   .dlg::backdrop{background:rgba(6,16,12,.55)}
-  .dlg h2{font-size:24px;line-height:1.2;font-weight:500;letter-spacing:-.02em;margin-bottom:18px}
+  .dlg h2{font-size:22px;line-height:1.25;font-weight:600;letter-spacing:-.015em;margin-bottom:20px}
+  .dlg .msg{margin-top:12px}
   .grid2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0 14px}
-  .picker{border:0;margin-bottom:14px;min-width:0}
-  .picker legend{font-size:14px;font-weight:500;color:var(--ink-2);margin-bottom:6px;padding:0}
-  .pick-list{list-style:none;border:1px solid var(--line);border-radius:8px;padding:6px 12px;max-height:340px;overflow:auto;background:var(--bg)}
-  .pick-list label{display:flex;gap:10px;align-items:flex-start;font-size:15px;line-height:1.4;padding:6px 0;cursor:pointer;overflow-wrap:anywhere}
-  .pick-list input{margin-top:3px;accent-color:var(--accent);flex:none}
-  .pick-none{font-size:14.5px;color:var(--muted);padding:4px 0}
-  .fine-print{font-size:13px;line-height:1.5;color:var(--faint);margin-top:4px}
+  .secs{margin:4px 0 18px}
+  .sec{border-top:1px solid var(--line)}
+  .sec:last-child{border-bottom:1px solid var(--line)}
+  .sec > summary{display:flex;align-items:center;gap:10px;padding:12px 2px;font-size:15px;font-weight:600;line-height:1.4;color:var(--ink);cursor:pointer;list-style:none;border-radius:4px}
+  .sec > summary::-webkit-details-marker{display:none}
+  .sec > summary .chev{width:16px;height:16px;transform:rotate(-90deg)}
+  .sec > summary:hover .chev{color:var(--ink)}
+  .sec[open] > summary .chev{transform:none}
+  .sec > summary .count{font-weight:400;color:var(--muted)}
+  .sec > summary .opt{margin-left:auto;font-size:13px;font-weight:400;color:var(--muted)}
+  .sec-body{padding:4px 2px 16px}
+  .fine-print{font-size:13px;line-height:1.5;color:var(--muted)}
   .fine-print a{text-decoration:underline;text-underline-offset:2px}
   .dlg-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:18px}
-
-  /* ROWS AND LINKS ON A CARD */
-  .facts.compact{grid-template-columns:max-content minmax(0,1fr);gap:3px 14px;margin-top:12px}
-  .facts.compact .fact{display:contents}
-  .facts.compact dt{margin:0;align-self:baseline}
-  .facts.compact dd{align-self:baseline}
-  .rgroups{display:grid;gap:8px;margin-top:14px}
-  .rgroup{border:1px solid var(--line);border-radius:10px;padding:0 12px;background:var(--tint-1);min-width:0}
-  .rgroup > summary,.rg-head{display:flex;align-items:baseline;gap:8px;padding:9px 0;font-size:14.5px;font-weight:500;color:var(--ink-2);list-style:none}
-  .rgroup > summary{cursor:pointer}
-  .rgroup > summary::-webkit-details-marker{display:none}
-  .rgroup > summary::before{content:"";flex:none;align-self:center;width:7px;height:7px;margin:0 3px 2px 1px;border-right:1.6px solid currentColor;border-bottom:1.6px solid currentColor;transform:rotate(-45deg);transition:transform .2s}
-  .rgroup[open] > summary::before{transform:rotate(45deg)}
-  .rgroup > summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
-  .rgroup .n{font-family:var(--mono);font-size:12px;font-weight:400;color:var(--faint)}
-  .rlist{list-style:none;border-top:1px solid var(--line);padding:2px 0 6px}
-  .rrow{padding:8px 0;border-bottom:1px solid var(--line-soft)}
-  .rrow:last-child{border-bottom:0}
-  .rr-top{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 10px}
-  .rr-name{font-size:15px;font-weight:500;color:var(--ink);overflow-wrap:anywhere}
-  .rr-kind{font-family:var(--mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--faint)}
-  .rr-term{font-size:13.5px;color:var(--muted);overflow-wrap:anywhere}
-  .rr-note{font-size:14.5px;line-height:1.5;color:var(--ink-2);white-space:pre-line;overflow-wrap:anywhere;margin-top:2px}
-  .rr-uses{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;margin-top:6px}
-  .rr-uses-label{font-size:12.5px;color:var(--faint)}
-  .rr-uses .xrefs{margin-top:0}
-  .rr-uses .xrefs a{font-size:13px;padding:1px 8px}
-  .links{list-style:none;display:grid;gap:3px;white-space:normal}
-  .links .host{font-size:13px;color:var(--faint);margin-left:8px;overflow-wrap:anywhere}
-  .xrefs-rows{flex-direction:column;align-items:flex-start;gap:6px}
-  .xrefs-rows li{display:flex;flex-wrap:wrap;align-items:baseline;gap:3px 10px;max-width:100%}
-  .xr-rows{font-size:13.5px;color:var(--muted);overflow-wrap:anywhere}
-
-  /* LINK AND ROW EDITORS */
-  .dlg-wide{width:min(820px,calc(100vw - 32px))}
-  .vh{position:absolute !important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-  .editor{border:0;margin:4px 0 16px;min-width:0}
-  .editor > legend{font-size:14px;font-weight:500;color:var(--ink-2);margin-bottom:6px;padding:0}
-  .editor em{font-style:normal;font-weight:400;color:var(--faint)}
-  .ed-hint{font-size:13px;color:var(--faint);margin:0 0 8px}
-  .ed-list{list-style:none;display:grid;gap:10px;margin-bottom:10px}
-  .ed-list:empty{display:none}
-  .ed-box{border:1px solid var(--line);border-radius:10px;padding:6px 12px 8px;min-width:0;background:var(--tint-1)}
-  .ed-box > legend{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);padding:0 6px}
-  .ed-box .field{margin-bottom:8px}
-  .ed-box .field > span{font-size:13px;margin-bottom:4px}
-  .ed-box .field input,.ed-box .field select,.ed-box .field textarea{font-size:15px;padding:8px 10px}
-  .ed-box .field textarea{min-height:44px}
-  .ed-grid{display:grid;gap:0 10px}
-  .ed-link{grid-template-columns:minmax(0,1fr) minmax(0,2fr)}
-  .ed-row{grid-template-columns:minmax(0,2fr) minmax(0,1fr) minmax(0,1fr)}
-  .ed-row2{grid-template-columns:minmax(0,1fr) minmax(0,2fr)}
-  .ed-btns{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:2px 16px}
-  .ed-actions{display:flex;flex-wrap:wrap;gap:8px}
-  .paste{margin-top:12px;padding:12px;border:1px dashed var(--line);border-radius:10px}
-  .paste .field textarea{font-family:var(--mono);font-size:13.5px}
-  .paste .msg{margin-top:10px}
-  .pick-rows{border:0;margin:0 0 8px 28px;min-width:0}
+  .picker{border:0;min-width:0}
+  .pick-list{list-style:none}
+  .pick-list > li{padding:2px 0}
+  .pick-list label{display:flex;gap:10px;align-items:flex-start;font-size:15px;line-height:1.4;padding:4px 0;cursor:pointer;overflow-wrap:anywhere}
+  .pick-list input{width:16px;height:16px;margin-top:2px;accent-color:var(--accent);flex:none}
+  .pick-none{font-size:14.5px;color:var(--muted)}
+  .pick-rows{border:0;margin:2px 0 8px 26px;min-width:0}
   .pick-rows legend{font-size:13px;font-weight:500;color:var(--ink-2);padding:0;margin-bottom:2px}
-  .pick-rows legend em{font-style:normal;font-weight:400;color:var(--faint)}
-  .pick-rows ul{list-style:none}
-  .pick-list .pick-rows label{font-size:14px;padding:3px 0}
-  .pick-tag{font-size:12px;color:var(--faint);white-space:nowrap}
-  @media(max-width:560px){
-    .facts.compact{grid-template-columns:minmax(0,1fr);gap:0}
-    .facts.compact dd{margin-bottom:6px}
-    .ed-link,.ed-row2{grid-template-columns:minmax(0,1fr)}
-    .ed-row{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
-    .ed-row > :first-child{grid-column:1/-1}
-    .pick-rows{margin-left:12px}
-  }
+  .pick-rows legend em{font-style:normal;font-weight:400;color:var(--muted)}
+  .pick-rows ul{list-style:none;columns:2;column-gap:24px}
+  .pick-rows li{break-inside:avoid}
+  .pick-list .pick-rows label{font-size:14px;padding:2px 0}
+  .pick-tag{font-size:12.5px;color:var(--muted);white-space:nowrap}
+  .paste-go{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px}
+  .paste-go .msg{margin:0}
+  #x-paste{font-family:var(--mono);font-size:13.5px}
+  .l-list{list-style:none}
+  .l-list:empty{display:none}
+  .l-item{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.7fr) auto;gap:0 10px;align-items:end}
+  .l-item .act{margin-bottom:25px}
+  .r-list{list-style:none;margin:16px 0 12px;border-top:1px solid var(--line)}
+  .r-list:empty{display:none}
+  .r-item{border-bottom:1px solid var(--line)}
+  .r-item.editing{background:var(--tint-1)}
+  .r-sum{display:grid;grid-template-columns:26px minmax(0,1fr) auto;gap:10px;align-items:center;min-height:44px;padding:6px 4px 6px 0}
+  .r-num{font-size:13px;color:var(--muted);text-align:right;font-variant-numeric:tabular-nums}
+  .r-text{min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-size:14.5px;line-height:1.4}
+  .r-text .rn{font-weight:500;color:var(--ink)}
+  .r-text .rn.none{font-weight:400;color:var(--muted)}
+  .r-text .rm{margin-left:10px;color:var(--muted)}
+  .r-btns{display:flex;align-items:center;gap:4px}
+  .r-btns .act{padding:4px 6px}
+  .icon-btn{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;padding:0;background:none;border:0;border-radius:6px;color:var(--muted);cursor:pointer}
+  .icon-btn:hover{background:var(--tint-2);color:var(--ink)}
+  .icon-btn[disabled]{opacity:.35;cursor:default;background:none}
+  .icon-btn .chev{width:16px;height:16px;color:currentColor}
+  .r-up .chev{transform:rotate(180deg)}
+  .r-fields{padding:2px 8px 6px 36px}
+  .r-grid{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr) minmax(0,1fr);gap:0 10px}
+  .r-grid2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:0 10px}
+  .r-fields .field > span{font-size:13px;margin-bottom:4px}
+  .r-fields .field input,.r-fields .field select,.r-fields .field textarea{font-size:15px;padding:8px 10px}
+  .r-fields .field textarea{min-height:44px}
 
-  @media(max-width:980px){.lists{grid-template-columns:minmax(0,1fr);gap:64px}}
+  @media(max-width:600px){
+    .bar{flex-wrap:wrap;border-bottom:0}
+    .tabs{flex:1 1 100%;gap:24px;border-bottom:1px solid var(--line)}
+    .bar .btn{margin:6px 0 0}
+    .entry-head{grid-template-columns:42px minmax(0,1fr);gap:12px;padding:14px}
+    .toggle{gap:10px}
+    .thumb{width:42px}
+    .entry-msg{padding:0 14px 10px 68px}
+    .detail{padding:2px 14px 20px 68px}
+    .skel{padding-left:68px}
+    .skel::before{left:14px;width:42px}
+    .facts{grid-template-columns:minmax(0,1fr);gap:0}
+    .facts dd{margin-bottom:8px}
+    .rtable thead{display:none}
+    .rtable,.rtable tbody,.rtable tr,.rtable td{display:block;width:auto}
+    .rtable tr{padding:10px 0;border-bottom:1px solid var(--line)}
+    .rtable tr:last-child{border-bottom:0}
+    .rtable td{padding:0;border:0}
+    .rtable td.c-name,.rtable td.c-kind{display:inline;width:auto}
+    .rtable td.c-kind{margin-left:8px;font-size:13.5px}
+    .rtable td.c-term:empty,.rtable td.c-note:empty{display:none}
+    .rtable td.c-term::before{content:"Core term: ";color:var(--muted)}
+    .rtable td.c-term,.rtable td.c-note{margin-top:2px}
+    .l-item{grid-template-columns:minmax(0,1fr)}
+    .l-item .act{justify-self:end;margin:-6px 0 12px}
+    .r-sum{grid-template-columns:22px minmax(0,1fr)}
+    .r-btns{grid-column:2;margin-left:-6px}
+    .r-fields{padding-left:8px}
+    .r-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+    .r-grid > :first-child{grid-column:1/-1}
+    .r-grid2{grid-template-columns:minmax(0,1fr)}
+  }
   @media(max-width:560px){
     .wrap{padding:0 22px}
-    .ext{padding:40px 0 80px}
-    .card{padding:18px 16px 12px}
-    .dlg{padding:24px 18px 20px}
+    .page-head{padding-top:36px}
+    .page-head h1{font-size:30px}
+    .page-head .lede{font-size:17px}
+    .ext{padding:26px 0 80px}
+    .dlg{padding:22px 18px 18px}
     .grid2{grid-template-columns:minmax(0,1fr)}
+    .pick-rows{margin-left:12px}
+    .pick-rows ul{columns:1}
   }
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{transition-duration:0s !important}}
 
   /* footer */
   footer{background:var(--footer-bg);color:var(--footer-text);border-top:0;padding:56px 0 60px;transition:background-color .3s ease}
@@ -351,78 +425,72 @@
 
 <!-- PAGE HEADER -->
 <header class="page-head">
-  <div class="wrap">
-    <a class="back" href="/"><span class="arr" aria-hidden="true">&larr;</span> Back to MIRA</a>
-    <span class="eyebrow">Extensions</span>
-    <h1>What people are trying outside the core.</h1>
-    <p class="lede">MIRA's core schema is kept small on purpose. People who need more than it holds build extensions and try them in their own tools.</p>
-    <p class="lede">This page lists those extensions beside the use cases people have brought. Add yours, give a thumbs up to what you need, and find who to talk to.</p>
-    <p class="note">Every extension listed here is an experiment run by the people its card names. None has been adopted into MIRA's core.</p>
-  </div>
+  <div class="wrap"><div class="col">
+    <h1>Extensions and use cases</h1>
+    <p class="lede">What people are building on top of MIRA's core, and what they need that the core does not hold yet.</p>
+    <p class="aside">Nothing listed here is part of the core.</p>
+  </div></div>
 </header>
 
 <main class="ext">
-  <div class="wrap">
+  <div class="wrap"><div class="col">
 
-    <!-- Shown as it is when JavaScript is off; the script replaces it while loading. -->
-    <p class="load-msg" id="load-msg" role="status">Turn on JavaScript to see the lists.</p>
+    <!-- Shown as it is when JavaScript is off; the script hides it while the lists load. -->
+    <div class="load-box" id="load-box">
+      <p class="load-msg" id="load-msg" role="status">Turn on JavaScript to see the lists.</p>
+      <button class="btn btn-ghost btn-sm" type="button" id="retry" hidden>Try again</button>
+    </div>
 
     <div id="lists-wrap" hidden>
-      <p class="msg sec-msg" id="lists-msg" role="status"></p>
-      <div class="lists">
-        <section class="list-sec" id="extensions" aria-labelledby="ext-h">
-          <div class="sec-head">
-            <h2 id="ext-h">Extensions<span class="n" id="n-ext"></span></h2>
-            <button class="btn btn-primary btn-sm" type="button" id="add-ext">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
-              Add an extension
-            </button>
-          </div>
-          <p class="msg sec-msg" id="ext-msg" role="status"></p>
-          <ul class="cards" id="ext-list"></ul>
-          <p class="empty" id="ext-empty" hidden>No extensions yet.</p>
-        </section>
+      <div class="bar">
+        <div class="tabs" role="tablist" aria-label="Lists">
+          <button class="tab" type="button" role="tab" id="tab-ext" data-tab="ext" aria-controls="panel-ext" aria-selected="true">Extensions <span class="count" id="n-ext"></span></button>
+          <button class="tab" type="button" role="tab" id="tab-uc" data-tab="uc" aria-controls="panel-uc" aria-selected="false" tabindex="-1">Use cases <span class="count" id="n-uc"></span></button>
+          <button class="tab" type="button" role="tab" id="tab-hid" data-tab="hid" aria-controls="panel-hid" aria-selected="false" tabindex="-1" hidden>Hidden <span class="count" id="n-hid"></span></button>
+        </div>
+        <button class="btn btn-primary" type="button" id="add-ext">Add an extension</button>
+        <button class="btn btn-primary" type="button" id="add-uc" hidden>Add a use case</button>
+      </div>
+      <p class="vh" id="lists-status" role="status"></p>
+      <p class="msg lists-msg" id="lists-msg" role="status"></p>
 
-        <section class="list-sec" id="use-cases" aria-labelledby="uc-h">
-          <div class="sec-head">
-            <h2 id="uc-h">Use cases<span class="n" id="n-uc"></span></h2>
-            <button class="btn btn-primary btn-sm" type="button" id="add-uc">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
-              Add a use case
-            </button>
-            <p class="sec-sub">A use case is something you want to record that the core does not let you record yet.</p>
-          </div>
-          <p class="msg sec-msg" id="uc-msg" role="status"></p>
-          <ul class="cards" id="uc-list"></ul>
-          <p class="empty" id="uc-empty" hidden>No use cases yet.</p>
-        </section>
+      <div class="panel" role="tabpanel" id="panel-ext" aria-labelledby="tab-ext">
+        <h2 class="vh">Extensions</h2>
+        <p class="list-line">Schemas, fields, and links that people are trying on top of the core.</p>
+        <p class="msg panel-msg" id="ext-msg" role="status"></p>
+        <ul class="list" id="ext-list"></ul>
+        <div class="empty" id="ext-empty" hidden><p class="empty-title">No extensions yet.</p><p class="empty-hint">Add the first one with “Add an extension”.</p></div>
+      </div>
+
+      <div class="panel" role="tabpanel" id="panel-uc" aria-labelledby="tab-uc" hidden>
+        <h2 class="vh">Use cases</h2>
+        <p class="list-line">Things people want to record that the core does not hold yet.</p>
+        <p class="msg panel-msg" id="uc-msg" role="status"></p>
+        <ul class="list" id="uc-list"></ul>
+        <div class="empty" id="uc-empty" hidden><p class="empty-title">No use cases yet.</p><p class="empty-hint">Add the first one with “Add a use case”.</p></div>
       </div>
 
       <!-- Library admins only -->
-      <section class="list-sec hidden-sec" id="hidden-sec" aria-labelledby="hid-h" hidden>
-        <div class="sec-head">
-          <h2 id="hid-h">Hidden</h2>
-          <p class="sec-sub">Only library admins see this list.</p>
-        </div>
-        <p class="msg sec-msg" id="hid-msg" role="status"></p>
-        <ul class="hidden-list" id="hid-list"></ul>
-        <p class="empty" id="hid-empty" hidden>Nothing is hidden.</p>
-      </section>
+      <div class="panel" role="tabpanel" id="panel-hid" aria-labelledby="tab-hid" hidden>
+        <h2 class="vh">Hidden</h2>
+        <p class="list-line">Only library admins see this list.</p>
+        <p class="msg panel-msg" id="hid-msg" role="status"></p>
+        <ul class="list hlist" id="hid-list"></ul>
+        <div class="empty" id="hid-empty" hidden><p class="empty-title">Nothing is hidden.</p></div>
+      </div>
     </div>
 
-  </div>
+  </div></div>
 </main>
 
 <!-- ADD OR EDIT AN EXTENSION -->
-<dialog class="dlg dlg-wide" id="ext-dlg" aria-labelledby="ext-dlg-h">
+<dialog class="dlg" id="ext-dlg" aria-labelledby="ext-dlg-h">
   <form id="ext-form" novalidate>
     <h2 id="ext-dlg-h">Add an extension</h2>
     <div class="hp" aria-hidden="true" inert><input type="text" name="trap" id="x-trap" tabindex="-1" autocomplete="off" aria-hidden="true" /></div>
     <label class="field"><span>Name</span><input type="text" id="x-name" autocomplete="off" /></label>
-    <label class="field"><span>Also known as <em>(optional)</em></span><input type="text" id="x-aka" autocomplete="off" /></label>
     <label class="field"><span>What it is for</span><textarea id="x-purpose" rows="3"></textarea></label>
     <div class="grid2">
-      <label class="field"><span>Field or domain <em>(optional)</em></span><input type="text" id="x-field" autocomplete="off" /></label>
       <label class="field"><span>Status</span>
         <select id="x-status">
           <option value="">Choose one</option>
@@ -431,41 +499,47 @@
           <option value="in_use">In use</option>
         </select>
       </label>
-    </div>
-    <label class="field"><span>Written as <em>(optional)</em></span><input type="text" id="x-written" autocomplete="off" /><span class="hint">For example LinkML, JSON-LD, or AT Protocol lexicons.</span></label>
-    <div class="grid2">
-      <label class="field"><span>Version <em>(optional)</em></span><input type="text" id="x-version" autocomplete="off" /></label>
-      <label class="field"><span>Compared against <em>(optional)</em></span><input type="text" id="x-compared" autocomplete="off" /><span class="hint">The version of MIRA's core you compared it with.</span></label>
-    </div>
-    <label class="field"><span>How it relates to the core <em>(optional)</em></span><textarea id="x-relation" rows="3"></textarea></label>
-    <label class="field"><span>Who to talk to <em>(optional)</em></span><input type="text" id="x-contact" autocomplete="off" /></label>
-
-    <fieldset class="editor">
-      <legend>Links <em>(optional)</em></legend>
-      <ol class="ed-list" id="x-links"></ol>
-      <div class="ed-actions"><button class="btn btn-ghost btn-sm" type="button" id="x-add-link">Add a link</button></div>
-    </fieldset>
-
-    <fieldset class="editor">
-      <legend>Rows <em>(optional)</em></legend>
-      <p class="ed-hint">Each row is one thing the extension holds: a record type, a link, or a field.</p>
-      <ol class="ed-list" id="x-rows"></ol>
-      <div class="ed-actions">
-        <button class="btn btn-ghost btn-sm" type="button" id="x-add-row">Add a row</button>
-        <button class="btn btn-ghost btn-sm" type="button" id="x-paste-toggle" aria-expanded="false" aria-controls="x-paste-box">Paste several rows</button>
-      </div>
-      <div class="paste" id="x-paste-box" hidden>
-        <label class="field"><span>One row per line: name | kind | adds, pairs, or differs | core term | note</span><textarea id="x-paste" rows="5" spellcheck="false"></textarea></label>
-        <button class="btn btn-ghost btn-sm" type="button" id="x-paste-go">Add these rows</button>
-        <p class="msg" id="x-paste-msg" role="status"></p>
-      </div>
-      <p class="vh" id="x-ed-status" role="status"></p>
-    </fieldset>
-
-    <div class="grid2">
       <label class="field"><span>Your name</span><input type="text" id="x-author" autocomplete="name" /></label>
-      <label class="field" id="x-email-wrap"><span>Your email <em>(optional, never shown)</em></span><input type="email" id="x-email" autocomplete="email" /></label>
     </div>
+
+    <div class="secs">
+      <details class="sec" id="x-sec-details">
+        <summary><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"/></svg>Details <span class="count" id="x-n-details"></span><span class="opt">Optional</span></summary>
+        <div class="sec-body">
+          <label class="field"><span>Also known as</span><input type="text" id="x-aka" autocomplete="off" /></label>
+          <label class="field"><span>Field or domain</span><input type="text" id="x-field" autocomplete="off" /></label>
+          <label class="field"><span>Written as</span><input type="text" id="x-written" autocomplete="off" /><span class="hint">For example LinkML, JSON-LD, or AT Protocol lexicons.</span></label>
+          <div class="grid2">
+            <label class="field"><span>Version</span><input type="text" id="x-version" autocomplete="off" /></label>
+            <label class="field"><span>Compared against</span><input type="text" id="x-compared" autocomplete="off" /><span class="hint">The version of MIRA's core you compared it with.</span></label>
+          </div>
+          <label class="field"><span>How it relates to the core</span><textarea id="x-relation" rows="3"></textarea></label>
+          <label class="field"><span>Who to talk to</span><input type="text" id="x-contact" autocomplete="off" /></label>
+          <label class="field" id="x-email-wrap"><span>Your email <em>(never shown)</em></span><input type="email" id="x-email" autocomplete="email" /></label>
+        </div>
+      </details>
+      <details class="sec" id="x-sec-links">
+        <summary><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"/></svg>Links <span class="count" id="x-n-links"></span><span class="opt">Optional</span></summary>
+        <div class="sec-body">
+          <ol class="l-list" id="x-links"></ol>
+          <button class="btn btn-ghost btn-sm" type="button" id="x-add-link">Add a link</button>
+        </div>
+      </details>
+      <details class="sec" id="x-sec-rows">
+        <summary><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"/></svg>Rows <span class="count" id="x-n-rows"></span><span class="opt">Optional</span></summary>
+        <div class="sec-body">
+          <label class="field"><span>One row per line: name | kind | adds, pairs, or differs | core term | note</span><textarea id="x-paste" rows="4" spellcheck="false"></textarea></label>
+          <div class="paste-go">
+            <button class="btn btn-ghost btn-sm" type="button" id="x-paste-go">Add these rows</button>
+            <p class="msg" id="x-paste-msg" role="status"></p>
+          </div>
+          <ol class="r-list" id="x-rows"></ol>
+          <button class="btn btn-ghost btn-sm" type="button" id="x-add-row">Add a row</button>
+          <p class="vh" id="x-ed-status" role="status"></p>
+        </div>
+      </details>
+    </div>
+
     <p class="fine-print">Your name and what you write show on this page at once. Your email is never shown. <a href="/privacy/#extensions">What we keep</a></p>
     <p class="msg" id="ext-form-msg" role="status"></p>
     <div class="dlg-actions">
@@ -483,15 +557,27 @@
     <label class="field"><span>Title</span><input type="text" id="u-title" autocomplete="off" /></label>
     <label class="field"><span>What you are trying to do</span><textarea id="u-goal" rows="3"></textarea></label>
     <label class="field"><span>What the core does not let you record</span><textarea id="u-gap" rows="3"></textarea></label>
-    <label class="field"><span>Field or domain <em>(optional)</em></span><input type="text" id="u-field" autocomplete="off" /></label>
-    <fieldset class="picker">
-      <legend>Extensions that would cover it <em>(pick any, or none)</em></legend>
-      <ul class="pick-list" id="u-picks"></ul>
-    </fieldset>
-    <div class="grid2">
-      <label class="field"><span>Your name</span><input type="text" id="u-author" autocomplete="name" /></label>
-      <label class="field" id="u-email-wrap"><span>Your email <em>(optional, never shown)</em></span><input type="email" id="u-email" autocomplete="email" /></label>
+    <label class="field"><span>Your name</span><input type="text" id="u-author" autocomplete="name" /></label>
+
+    <div class="secs">
+      <details class="sec" id="u-sec-picks">
+        <summary><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"/></svg>Extensions that would cover it <span class="count" id="u-n-picks"></span><span class="opt">Optional</span></summary>
+        <div class="sec-body">
+          <fieldset class="picker">
+            <legend class="vh">Extensions that would cover it</legend>
+            <ul class="pick-list" id="u-picks"></ul>
+          </fieldset>
+        </div>
+      </details>
+      <details class="sec" id="u-sec-details">
+        <summary><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"/></svg>Details <span class="count" id="u-n-details"></span><span class="opt">Optional</span></summary>
+        <div class="sec-body">
+          <label class="field"><span>Field or domain</span><input type="text" id="u-field" autocomplete="off" /></label>
+          <label class="field" id="u-email-wrap"><span>Your email <em>(never shown)</em></span><input type="email" id="u-email" autocomplete="email" /></label>
+        </div>
+      </details>
     </div>
+
     <p class="fine-print">Your name and what you write show on this page at once. Your email is never shown. <a href="/privacy/#extensions">What we keep</a></p>
     <p class="msg" id="uc-form-msg" role="status"></p>
     <div class="dlg-actions">
@@ -515,7 +601,8 @@
   </form>
 </dialog>
 
-<template id="tpl-thumb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 10v11H4a1 1 0 0 1-1-1v-9a1 1 0 0 1 1-1h3Zm0 0 4-8a3 3 0 0 1 3 3v4h5.5a2 2 0 0 1 2 2.3l-1.4 8A2 2 0 0 1 18.1 21H7"/></svg></template>
+<template id="tpl-thumb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M7 10v11H4a1 1 0 0 1-1-1v-9a1 1 0 0 1 1-1h3Zm0 0 4-8a3 3 0 0 1 3 3v4h5.5a2 2 0 0 1 2 2.3l-1.4 8A2 2 0 0 1 18.1 21H7"/></svg></template>
+<template id="tpl-chev"><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"/></svg></template>
 
 <!-- FOOTER -->
 <footer>
@@ -597,7 +684,10 @@
   const STATUS={idea:'Idea',experimenting:'Experimenting',in_use:'In use'};
   const KIND={record_type:'Record type',link:'Link',field:'Field',other:'Other'};
   const STANDING={adds:'Adds',pairs:'Pairs with',differs:'Differs from'};
-  const GROUPS={adds:'What it adds',pairs:'What it pairs with in the core',differs:'Where it differs from the core'};
+  const STANDINGS=['adds','pairs','differs'];
+  const ROW_TAB={adds:'Adds',pairs:'Pairs with',differs:'Differs'};
+  const ROW_COUNT={adds:'adds',pairs:'pairs',differs:'differs'};
+  const ROWS_SHOWN=8;
   const FAILED='The lists could not be loaded. Try again in a minute.';
   const GENERIC='Something went wrong. Try again in a minute.';
   const UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -619,6 +709,10 @@
   const str=v=>typeof v==='string'?v:(v==null?'':String(v));
   function say(target,text,kind){const m=typeof target==='string'?$(target):target;m.textContent=text||'';m.className=m.className.replace(/\s*\b(err|ok)\b/g,'')+(kind?' '+kind:'');}
   function fmtDate(s){const d=new Date(s);return isNaN(d)?'':d.toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});}
+  const plural=(n,one,many)=>n+' '+(n===1?one:many);
+  const reduced=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const icon=name=>$('tpl-'+name).content.firstElementChild.cloneNode(true);
+  const valid=items=>(Array.isArray(items)?items:[]).filter(i=>i&&UUID.test(str(i.id)));
 
   /* ---------- what this browser keeps ---------- */
 
@@ -709,10 +803,52 @@
   }
   const status=v=>STATUS[v]?{value:v}:{error:'Choose a status.'};
   const firstError=checks=>{for(const c of Object.values(checks))if(c.error)return c.error;return '';};
+  // A check's result, with the field to go to when it fails.
+  const at=(id,r)=>r.error?{error:r.error,focus:$(id)}:r;
 
-  /* ---------- state and loading ---------- */
+  /* ---------- state, tabs, and loading ---------- */
 
-  const state={ext:[],uc:[],admin:false,loaded:false,open:new Set()};
+  // What stays as it was when the lists are drawn again: open entries, open comments, the rows
+  // choice of each extension, and the row tables shown in full.
+  const state={ext:[],uc:[],admin:false,loaded:false,tab:'ext',open:new Set(),comments:new Set(),rowTab:new Map(),showAll:new Set()};
+
+  const TABS={ext:['tab-ext','panel-ext','add-ext'],uc:['tab-uc','panel-uc','add-uc'],hid:['tab-hid','panel-hid',null]};
+  function selectTab(name){
+    if(!TABS[name]||(name==='hid'&&!state.admin))name='ext';
+    state.tab=name;
+    for(const [k,[tab,panel,add]] of Object.entries(TABS)){
+      const on=k===name;
+      $(tab).setAttribute('aria-selected',String(on));
+      $(tab).tabIndex=on?0:-1;
+      $(panel).hidden=!on;
+      if(add)$(add).hidden=!on;
+    }
+  }
+  // Left and right arrows, Home, and End move between the tabs of a tab list and choose the one they
+  // reach; a tab that is turned off is passed over.
+  function arrowKeys(list,choose){
+    list.addEventListener('keydown',e=>{
+      const tabs=[...list.querySelectorAll('[role="tab"]')].filter(t=>!t.hidden&&t.getAttribute('aria-disabled')!=='true');
+      const i=tabs.indexOf(e.target);
+      if(i<0)return;
+      const j=e.key==='ArrowRight'?(i+1)%tabs.length:e.key==='ArrowLeft'?(i-1+tabs.length)%tabs.length:e.key==='Home'?0:e.key==='End'?tabs.length-1:-1;
+      if(j<0)return;
+      e.preventDefault();
+      choose(tabs[j]);
+      tabs[j].focus();
+    });
+  }
+  const tabList=document.querySelector('.tabs');
+  tabList.addEventListener('click',e=>{const t=e.target.closest('[role="tab"]');if(t)selectTab(t.dataset.tab);});
+  arrowKeys(tabList,t=>selectTab(t.dataset.tab));
+
+  function skeleton(){
+    const rows=()=>Array.from({length:4},()=>el('li',{class:'skel','aria-hidden':'true'},el('span'),el('span'),el('span')));
+    for(const name of ['ext','uc']){
+      $(name+'-list').replaceChildren(...rows());
+      $(name+'-list').hidden=false;$(name+'-empty').hidden=true;
+    }
+  }
 
   async function load(){
     try{
@@ -721,156 +857,226 @@
         api('use_cases_shown?select=*&order=support_count.desc,created_at.desc')
       ]);
       if(!Array.isArray(ext)||!Array.isArray(uc))throw new Error(FAILED);
-      state.ext=ext.filter(x=>x&&UUID.test(str(x.id)));
-      state.uc=uc.filter(x=>x&&UUID.test(str(x.id)));
+      state.ext=valid(ext);
+      state.uc=valid(uc);
       state.loaded=true;
-      $('load-msg').hidden=true;$('lists-wrap').hidden=false;say('lists-msg','');
+      $('load-box').hidden=true;$('lists-wrap').hidden=false;$('lists-wrap').removeAttribute('aria-busy');
+      say('lists-msg','');say('lists-status','');
       render();
       if(state.admin)await loadHidden();
       return true;
     }catch(_){
       if(state.loaded)say('lists-msg',FAILED,'err');
-      else{$('load-msg').textContent=FAILED;$('load-msg').hidden=false;$('lists-wrap').hidden=true;}
+      else{
+        $('load-msg').textContent=FAILED;
+        $('retry').hidden=false;$('retry').disabled=false;
+        $('load-box').hidden=false;$('lists-wrap').hidden=true;
+      }
       return false;
     }
   }
 
   function render(){
-    $('ext-list').replaceChildren(...state.ext.map(x=>card('extension',x)));
-    $('uc-list').replaceChildren(...state.uc.map(x=>card('use_case',x)));
-    $('ext-empty').hidden=state.ext.length>0;
-    $('uc-empty').hidden=state.uc.length>0;
-    $('n-ext').textContent=state.ext.length?String(state.ext.length):'';
-    $('n-uc').textContent=state.uc.length?String(state.uc.length):'';
-    for(const k of [...state.open]){
-      const c=document.querySelector('.card[data-key="'+k+'"]');
-      if(c)openComments(c);else state.open.delete(k);
-    }
+    fill('ext',state.ext.map(x=>entry('extension',x)));
+    fill('uc',state.uc.map(x=>entry('use_case',x)));
+    for(const k of [...state.open]){const li=entryFor(k);if(li)setOpen(li,true);else state.open.delete(k);}
+    for(const k of [...state.comments]){const li=entryFor(k);if(li&&state.open.has(k))openComments(li);else state.comments.delete(k);}
+  }
+  function fill(name,items){
+    $(name+'-list').replaceChildren(...items);
+    $(name+'-list').hidden=!items.length;
+    $(name+'-empty').hidden=items.length>0;
+    $('n-'+name).textContent=String(items.length);
   }
 
-  /* ---------- cards ---------- */
+  /* ---------- one entry: a row that opens ---------- */
 
   const anchor=(kind,id)=>(kind==='extension'?'extension-':'use-case-')+id;
-  function fact(label,...value){return el('div',{class:'fact'},el('dt',{},label),el('dd',{},...value));}
-  function xrefs(items,kind,labelKey){
-    const list=(Array.isArray(items)?items:[]).filter(i=>i&&UUID.test(str(i.id)));
+  const entryFor=key=>document.querySelector('.entry[data-key="'+key+'"]');
+
+  function entry(kind,x){
+    const ext=kind==='extension';
+    const key=kind+':'+x.id,a=anchor(kind,x.id);
+    const st=ext&&STATUS[x.status]?x.status:null;
+    const li=el('li',{class:'entry',id:a,'data-key':key});
+    const toggle=el('button',{type:'button',class:'toggle','aria-expanded':'false','aria-controls':'dt-'+a,
+        'aria-labelledby':'nm-'+a+(st?' st-'+a:''),'aria-describedby':'sm-'+a+' mt-'+a},
+      el('span',{class:'lines'},
+        el('span',{class:'l1'},
+          el('span',{class:'name',id:'nm-'+a},str(ext?x.name:x.title)),
+          st?el('span',{class:'status status-'+st,id:'st-'+a},STATUS[st]):null),
+        el('span',{class:'l2',id:'sm-'+a},str(ext?x.purpose:x.goal)),
+        meta(kind,x,'mt-'+a)),
+      icon('chev'));
+    toggle.addEventListener('click',()=>setOpen(li,toggle.getAttribute('aria-expanded')!=='true'));
+    li.append(
+      el('div',{class:'entry-head'},thumb(kind,x),el('h3',{class:'entry-h'},toggle)),
+      el('p',{class:'msg entry-msg',role:'status'}),
+      detail(kind,x,a));
+    li._entry={kind,x,toggle,ctoggle:li.querySelector('.disc')};
+    return li;
+  }
+
+  // The third line: only the parts that exist.
+  function meta(kind,x,id){
+    const parts=[];
+    if(x.field)parts.push(str(x.field));
+    if(kind==='extension'){
+      const rows=valid(x.rows);
+      for(const s of STANDINGS){const n=rows.filter(r=>r.standing===s).length;if(n)parts.push(n+' '+ROW_COUNT[s]);}
+      const u=valid(x.use_cases).length;
+      if(u)parts.push(plural(u,'use case','use cases'));
+    }else{
+      const exts=valid(x.extensions);
+      parts.push(exts.length?'Covered by '+exts.map(e=>str(e.name)).join(', '):'No extension yet');
+    }
+    const c=Number(x.comment_count)||0;
+    if(c)parts.push(plural(c,'comment','comments'));
+    return el('span',{class:'l3',id},parts.map(p=>el('span',{},p)));
+  }
+  function refreshMeta(li){const old=li.querySelector('.l3');old.replaceWith(meta(li._entry.kind,li._entry.x,old.id));}
+
+  function setOpen(li,open){
+    li._entry.toggle.setAttribute('aria-expanded',String(open));
+    li.querySelector('.detail').hidden=!open;
+    li.classList.toggle('open',open);
+    if(open)state.open.add(li.dataset.key);else state.open.delete(li.dataset.key);
+  }
+
+  const part=(label,...kids)=>el('div',{class:'d-part'},label?el('h4',{class:'d-label'},label):null,...kids);
+
+  function detail(kind,x,a){
+    const d=el('div',{class:'detail',id:'dt-'+a,hidden:true});
+    if(kind==='extension'){
+      d.append(part(null,el('p',{class:'d-text'},str(x.purpose))));
+      const facts=[['Also known as',x.also_known_as],['Written as',x.written_as],['Version',x.version],
+        ['Compared against',x.compared_against],['Who to talk to',x.contact]].filter(f=>f[1]).map(([k,v])=>[k,str(v)]);
+      const links=linkList(x.links);
+      if(links)facts.push(['Links',links]);
+      if(facts.length)d.append(part(null,el('dl',{class:'facts'},facts.map(([k,v])=>el('div',{class:'fact'},el('dt',{},k),el('dd',{},v))))));
+      if(x.core_relation)d.append(part('How it relates to the core',el('p',{class:'d-text'},str(x.core_relation))));
+      const rows=rowsPart(x,a);
+      if(rows)d.append(rows);
+      const ucs=refList(x.use_cases,'use_case','title');
+      if(ucs)d.append(part('Use cases that need it',ucs));
+    }else{
+      d.append(
+        part('What they are trying to do',el('p',{class:'d-text'},str(x.goal))),
+        part('What the core does not let them record',el('p',{class:'d-text'},str(x.gap))),
+        part('Covered by',coveredBy(x.extensions)||el('p',{class:'d-text d-none'},'No extension yet')));
+    }
+    d.append(commentsPart(kind,x,a),foot(kind,x));
+    return d;
+  }
+
+  // Links to other entries on this page.
+  function refList(items,kind,labelKey){
+    const list=valid(items);
     if(!list.length)return null;
-    return el('ul',{class:'xrefs'},list.map(i=>el('li',{},el('a',{href:'#'+anchor(kind,i.id)},str(i[labelKey])))));
+    return el('ul',{class:'refs'},list.map(i=>el('li',{},el('a',{class:'xref',href:'#'+anchor(kind,i.id)},str(i[labelKey])))));
   }
   // An extension's links: each label is the link, with the address's host beside it. Only an https://
   // address becomes a link.
   function linkList(links){
     const list=(Array.isArray(links)?links:[]).filter(k=>k&&str(k.url).startsWith('https://'));
     if(!list.length)return null;
-    return el('ul',{class:'links'},list.map(k=>{
+    return el('ul',{class:'refs'},list.map(k=>{
       let host='';try{host=new URL(str(k.url)).host;}catch(_){}
       return el('li',{},el('a',{class:'out',href:str(k.url),target:'_blank',rel:'noopener noreferrer nofollow ugc'},str(k.label)||str(k.url)),
         host?el('span',{class:'host'},host):null);
     }));
   }
-  // An extension's rows in three groups; a group of more than five starts closed.
-  function rowGroups(rows){
-    const list=(Array.isArray(rows)?rows:[]).filter(r=>r&&UUID.test(str(r.id)));
-    const out=[];
-    for(const [standing,title] of Object.entries(GROUPS)){
-      const items=list.filter(r=>r.standing===standing);
-      if(!items.length)continue;
-      const ul=el('ul',{class:'rlist'},items.map(rowItem));
-      const n=el('span',{class:'n'},String(items.length));
-      if(items.length>5){
-        out.push(el('details',{class:'rgroup'},el('summary',{},el('span',{class:'rg-title'},title),n),ul));
-      }else{
-        out.push(el('div',{class:'rgroup'},el('p',{class:'rg-head'},el('span',{class:'rg-title'},title),n),ul));
-      }
-    }
-    return out.length?el('div',{class:'rgroups'},out):null;
-  }
-  function rowItem(r){
-    const uses=xrefs(r.use_cases,'use_case','title');
-    return el('li',{class:'rrow'},
-      el('p',{class:'rr-top'},el('span',{class:'rr-name'},str(r.name)),KIND[r.kind]?el('span',{class:'rr-kind'},KIND[r.kind]):null),
-      r.core_term?el('p',{class:'rr-term'},'Core term: '+str(r.core_term)):null,
-      r.note?el('p',{class:'rr-note'},str(r.note)):null,
-      uses?el('div',{class:'rr-uses'},el('span',{class:'rr-uses-label'},'Needed by'),uses):null);
-  }
   // A use case's extensions, each followed by the rows of it the use case picked.
-  function extensionPicks(items){
-    const list=(Array.isArray(items)?items:[]).filter(i=>i&&UUID.test(str(i.id)));
+  function coveredBy(items){
+    const list=valid(items);
     if(!list.length)return null;
-    return el('ul',{class:'xrefs xrefs-rows'},list.map(i=>{
+    return el('ul',{class:'covered'},list.map(i=>{
       const rows=(Array.isArray(i.rows)?i.rows:[]).map(r=>str(r&&r.name)).filter(Boolean);
-      return el('li',{},el('a',{href:'#'+anchor('extension',i.id)},str(i.name)),
-        rows.length?el('span',{class:'xr-rows'},rows.join(', ')):null);
+      return el('li',{},el('a',{class:'xref',href:'#'+anchor('extension',i.id)},str(i.name)),
+        rows.length?el('span',{class:'picked'},rows.join(', ')):null);
     }));
   }
 
-  function card(kind,x){
-    const key=kind+':'+x.id;
-    const c=el('li',{class:'card',id:anchor(kind,x.id),'data-key':key});
-    if(kind==='extension'){
-      const st=STATUS[x.status]?x.status:null;
-      const ucs=xrefs(x.use_cases,'use_case','title');
-      const about=el('dl',{class:'facts compact'},
-        x.also_known_as?fact('Also known as',str(x.also_known_as)):null,
-        x.written_as?fact('Written as',str(x.written_as)):null,
-        x.version?fact('Version',str(x.version)):null,
-        x.compared_against?fact('Compared against',str(x.compared_against)):null);
-      const links=linkList(x.links);
-      c.append(
-        el('div',{class:'card-tags'},st?el('span',{class:'chip chip-'+st},STATUS[st]):null,x.field?el('span',{class:'tag'},str(x.field)):null),
-        el('h3',{class:'card-title'},str(x.name)),
-        el('p',{class:'card-text'},str(x.purpose)),
-        ...[about.childNodes.length?about:null,rowGroups(x.rows)].filter(Boolean),
-        el('dl',{class:'facts'},
-          links?fact('Links',links):null,
-          x.core_relation?fact('How it relates to the core',str(x.core_relation)):null,
-          x.contact?fact('Who to talk to',str(x.contact)):null,
-          ucs?fact('Use cases that need it',ucs):null)
-      );
-    }else{
-      const exts=extensionPicks(x.extensions);
-      if(x.field)c.append(el('div',{class:'card-tags'},el('span',{class:'tag'},str(x.field))));
-      c.append(
-        el('h3',{class:'card-title'},str(x.title)),
-        el('dl',{class:'facts'},
-          fact('What they are trying to do',str(x.goal)),
-          fact('What the core does not let them record',str(x.gap)),
-          fact('Extensions that would cover it',exts||el('span',{class:'none-yet'},'No extension yet')))
-      );
+  // An extension's rows: one choice of three over one table.
+  function rowsPart(x,a){
+    const key='extension:'+x.id;
+    const by={adds:[],pairs:[],differs:[]};
+    for(const r of valid(x.rows))if(by[r.standing])by[r.standing].push(r);
+    const first=STANDINGS.find(s=>by[s].length);
+    if(!first)return null;
+    const list=el('div',{class:'seg',role:'tablist','aria-label':'Rows'});
+    const panel=el('div',{class:'rpanel',role:'tabpanel',id:'rp-'+a});
+    const tabs={};
+    const show=s=>{
+      state.rowTab.set(key,s);
+      for(const [k,b] of Object.entries(tabs)){const on=k===s;b.setAttribute('aria-selected',String(on));b.tabIndex=on?0:-1;}
+      panel.setAttribute('aria-labelledby',tabs[s].id);
+      panel.replaceChildren(...rowTable(by[s],s,key));
+    };
+    for(const s of STANDINGS){
+      const n=by[s].length;
+      const b=el('button',{type:'button',role:'tab',class:'seg-btn',id:'rt-'+s+'-'+a,'aria-controls':'rp-'+a,'aria-selected':'false',
+        tabindex:'-1','aria-disabled':n?null:'true'},ROW_TAB[s],el('span',{class:'count'},String(n)));
+      b.addEventListener('click',()=>{if(n)show(s);});
+      tabs[s]=b;list.append(b);
     }
-    c.append(el('p',{class:'by'},'Added by '+str(x.author_name)+(fmtDate(x.created_at)?' · '+fmtDate(x.created_at):'')));
+    arrowKeys(list,b=>b.click());
+    const kept=state.rowTab.get(key);
+    show(kept&&by[kept]&&by[kept].length?kept:first);
+    return part('Rows',list,panel);
+  }
+  function rowTable(list,s,key){
+    const term=s!=='adds';
+    const shown=state.showAll.has(key+'|'+s)?list:list.slice(0,ROWS_SHOWN);
+    const table=el('table',{class:'rtable'},
+      el('thead',{},el('tr',{},
+        el('th',{scope:'col',class:'c-name'},'Name'),el('th',{scope:'col',class:'c-kind'},'Kind'),
+        term?el('th',{scope:'col',class:'c-term'},'Core term'):null,el('th',{scope:'col',class:'c-note'},'Note'))),
+      el('tbody',{},shown.map(r=>el('tr',{},
+        el('td',{class:'c-name'},str(r.name)),
+        el('td',{class:'c-kind'},KIND[r.kind]||''),
+        term?el('td',{class:'c-term'},str(r.core_term)):null,
+        el('td',{class:'c-note'},r.note?el('span',{class:'note'},str(r.note)):null,neededBy(r))))));
+    if(shown.length===list.length)return [table];
+    const more=el('button',{type:'button',class:'act show-all'},'Show all '+list.length);
+    more.addEventListener('click',()=>{
+      state.showAll.add(key+'|'+s);
+      const holder=table.parentNode;
+      holder.replaceChildren(...rowTable(list,s,key));
+      const tr=holder.querySelectorAll('tbody tr')[shown.length];
+      if(tr){tr.tabIndex=-1;tr.focus();}
+    });
+    return [table,more];
+  }
+  function neededBy(r){
+    const l=refList(r.use_cases,'use_case','title');
+    return l?el('div',{class:'uses'},el('span',{class:'uses-label'},'Needed by'),l):null;
+  }
 
-    const acts=el('div',{class:'card-actions'},thumb(kind,x));
-    const ct=el('button',{type:'button',class:'act','aria-expanded':'false'},commentsLabel(x.comment_count));
-    ct.addEventListener('click',()=>{if(c.querySelector('.comments').hidden)openComments(c);else closeComments(c);});
-    acts.append(ct);
-    const end=el('span',{class:'acts-end'});
+  function foot(kind,x){
+    const key=kind+':'+x.id;
+    const f=el('div',{class:'d-foot'},el('span',{class:'by'},'Added by '+str(x.author_name)+(fmtDate(x.created_at)?' · '+fmtDate(x.created_at):'')));
     if(state.admin||editKeys[key]){
       const ed=el('button',{type:'button',class:'act'},'Edit');
       ed.addEventListener('click',()=>kind==='extension'?openExtension(x):openUseCase(x));
-      end.append(ed);
+      f.append(ed);
     }
     if(state.admin){
       const hd=el('button',{type:'button',class:'act act-danger'},'Hide');
-      hd.addEventListener('click',()=>setHidden(kind,x.id,true,hd,c.querySelector('.card-msg')));
-      end.append(hd);
+      hd.addEventListener('click',()=>setHidden(kind,x.id,true,hd,hd.closest('.entry').querySelector('.entry-msg')));
+      f.append(hd);
     }
-    if(end.childNodes.length)acts.append(end);
-    c.append(acts,el('p',{class:'msg card-msg',role:'status'}),commentsBox(kind,x));
-    c._entry={kind,x,toggle:ct};
-    return c;
+    return f;
   }
-  const commentsLabel=n=>'Comments ('+(Number(n)||0)+')';
 
   /* ---------- thumbs up ---------- */
 
   function thumb(kind,x){
     const key=kind+':'+x.id;
     const b=el('button',{type:'button',class:'thumb'});
-    b.append($('tpl-thumb').content.cloneNode(true),el('span',{class:'n'}));
+    b.append(icon('thumb'),el('span',{class:'n'}));
     const show=()=>{
       const on=supported.has(key),n=Number(x.support_count)||0;
-      b.classList.toggle('on',on);
       b.setAttribute('aria-pressed',String(on));
       b.setAttribute('aria-label','Thumbs up ('+n+')');
       b.title=on?'Take back your thumbs up':'Give a thumbs up';
@@ -878,7 +1084,7 @@
     };
     show();
     b.addEventListener('click',async()=>{
-      const msg=b.closest('.card').querySelector('.card-msg');
+      const msg=b.closest('.entry').querySelector('.entry-msg');
       const on=!supported.has(key);
       b.disabled=true;say(msg,'');
       try{
@@ -895,27 +1101,32 @@
 
   /* ---------- comments ---------- */
 
-  // The card for an entry as it is on the page now; a reload of the lists draws new cards.
-  const cardFor=key=>document.querySelector('.card[data-key="'+key+'"]');
-
   // A spam-trap field: never seen, never reached with the keyboard, and left out for screen readers.
   function trapField(){
     return el('div',{class:'hp','aria-hidden':'true',inert:true},
       el('input',{type:'text',name:'trap',tabindex:'-1',autocomplete:'off','aria-hidden':'true'}));
   }
 
-  // Entries whose comment is being saved, so that a card drawn again meanwhile cannot start a second one.
+  // Entries whose comment is being saved, so that an entry drawn again meanwhile cannot start a second one.
   const commentSaving=new Set();
 
-  function commentsBox(kind,x){
+  function commentsPart(kind,x,a){
+    const box=commentsBox(kind,x,'cm-'+a);
+    const b=el('button',{type:'button',class:'disc','aria-expanded':'false','aria-controls':'cm-'+a},
+      el('span',{},'Comments'),el('span',{class:'count'},String(Number(x.comment_count)||0)),icon('chev'));
+    b.addEventListener('click',()=>{const li=b.closest('.entry');if(box.hidden)openComments(li);else closeComments(li);});
+    return el('div',{class:'d-part'},b,box);
+  }
+
+  function commentsBox(kind,x,id){
     const key=kind+':'+x.id;
-    const box=el('div',{class:'comments',hidden:true});
+    const box=el('div',{class:'comments',id,hidden:true});
     const form=el('form',{class:'c-form',novalidate:true});
     const trap=trapField();
     const name=el('input',{type:'text',autocomplete:'name'});
     const body=el('textarea',{rows:'3'});
     const msg=el('p',{class:'msg',role:'status'});
-    const go=el('button',{type:'submit',class:'btn btn-primary btn-sm',disabled:commentSaving.has(key)},'Add comment');
+    const go=el('button',{type:'submit',class:'btn btn-ghost btn-sm',disabled:commentSaving.has(key)},'Add comment');
     form.append(trap,el('label',{class:'field'},el('span',{},'Your name'),name),el('label',{class:'field'},el('span',{},'Comment'),body),msg,go);
     form.addEventListener('submit',async e=>{
       e.preventDefault();
@@ -931,7 +1142,7 @@
       }catch(er){failed=er.message;}
       commentSaving.delete(key);
       go.disabled=false;
-      const cur=cardFor(key);
+      const cur=entryFor(key);
       const curForm=cur&&cur.querySelector('.c-form');
       if(curForm&&curForm!==form)curForm.querySelector('button[type=submit]').disabled=false;
       if(failed){say(curForm?curForm.querySelector('.msg'):msg,failed,'err');return;}
@@ -941,20 +1152,21 @@
     return box;
   }
 
-  function openComments(c){
-    const box=c.querySelector('.comments');
-    box.hidden=false;c._entry.toggle.setAttribute('aria-expanded','true');
-    state.open.add(c.dataset.key);
-    loadComments(c);
+  function openComments(li){
+    li.querySelector('.comments').hidden=false;
+    li._entry.ctoggle.setAttribute('aria-expanded','true');
+    state.comments.add(li.dataset.key);
+    loadComments(li);
   }
-  function closeComments(c){
-    c.querySelector('.comments').hidden=true;c._entry.toggle.setAttribute('aria-expanded','false');
-    state.open.delete(c.dataset.key);
+  function closeComments(li){
+    li.querySelector('.comments').hidden=true;
+    li._entry.ctoggle.setAttribute('aria-expanded','false');
+    state.comments.delete(li.dataset.key);
   }
 
-  async function loadComments(c){
-    const {kind,x,toggle}=c._entry;
-    const box=c.querySelector('.comments');
+  async function loadComments(li){
+    const {kind,x,ctoggle}=li._entry;
+    const box=li.querySelector('.comments');
     const load=box.querySelector('.c-load');
     say(load,'');
     try{
@@ -962,7 +1174,9 @@
       if(!Array.isArray(rows))throw new Error();
       box.querySelector('.comment-list').replaceChildren(...rows.filter(r=>r&&UUID.test(str(r.id))).map(commentItem));
       box.querySelector('.c-none').hidden=rows.length>0;
-      x.comment_count=rows.length;toggle.textContent=commentsLabel(rows.length);
+      x.comment_count=rows.length;
+      ctoggle.querySelector('.count').textContent=String(rows.length);
+      refreshMeta(li);
     }catch(_){say(load,'The comments could not be loaded. Try again in a minute.','err');}
   }
 
@@ -978,6 +1192,38 @@
     }
     return li;
   }
+
+  /* ---------- links to entries ---------- */
+
+  // A link to an entry (#extension-…, #use-case-…) opens its tab and the entry, and scrolls to it;
+  // #extensions and #use-cases open a tab.
+  function goTo(hash,how){
+    let id='';
+    try{id=decodeURIComponent(String(hash||'').replace(/^#/,''));}catch(_){return false;}
+    if(id==='extensions'||id==='use-cases'){selectTab(id==='extensions'?'ext':'uc');return true;}
+    const m=/^(extension|use-case)-(.+)$/.exec(id);
+    const li=m&&UUID.test(m[2])?document.getElementById(id):null;
+    if(!li||!li.classList.contains('entry'))return false;
+    selectTab(m[1]==='extension'?'ext':'uc');
+    setOpen(li,true);
+    li.scrollIntoView({block:'start',behavior:how==='load'||reduced()?'instant':'smooth'});
+    if(how!=='load')li._entry.toggle.focus({preventScroll:true});
+    li.classList.add('flash');
+    setTimeout(()=>li.classList.remove('flash'),1600);
+    return true;
+  }
+  document.addEventListener('click',e=>{
+    const a=e.target.closest&&e.target.closest('a.xref');
+    if(!a||e.button!==0||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;
+    const h=a.getAttribute('href');
+    let id='';try{id=decodeURIComponent(h.slice(1));}catch(_){return;}
+    if(!document.getElementById(id))return;
+    e.preventDefault();
+    if(location.hash!==h)history.pushState(null,'',h);
+    goTo(h,'click');
+  });
+  addEventListener('hashchange',()=>goTo(location.hash,'nav'));
+  addEventListener('popstate',()=>goTo(location.hash,'nav'));
 
   /* ---------- adding and editing ---------- */
 
@@ -995,6 +1241,7 @@
     d.opened++;d.entry=entry||null;
     d.go.disabled=d.busy;
     say(d.msg,d.busy?'The last save is still running.':'');
+    d.box.querySelectorAll('[aria-invalid]').forEach(f=>f.removeAttribute('aria-invalid'));
     clearMessages();
     d.box.showModal();focus.focus();
   }
@@ -1019,41 +1266,77 @@
     await done(entry,result);
   }
 
-  /* ---------- the link and row editors ---------- */
+  // A refused field: its section (and row) opens by itself, and the field takes the focus.
+  function reveal(f){
+    for(let n=f.parentElement;n;n=n.parentElement){
+      if(n.tagName==='DETAILS')n.open=true;
+      else if(n.classList.contains('r-item'))openRow(n,true);
+    }
+  }
+  function refuse(d,c){
+    say(d.msg,c.error,'err');
+    if(!c.focus)return;
+    reveal(c.focus);
+    c.focus.setAttribute('aria-invalid','true');
+    c.focus.focus();
+  }
+  const closeSections=form=>form.querySelectorAll('details').forEach(s=>{s.open=false;});
+
+  // The count beside each closed section: filled fields, links, rows, or extensions picked.
+  function filled(ids){return ids.filter(id=>{const f=$(id);return f&&!f.closest('[hidden]')&&f.value.trim();}).length;}
+  function setCount(id,n){$(id).textContent=n?String(n):'';}
+  function counts(){
+    setCount('x-n-details',filled(['x-aka','x-field','x-written','x-version','x-compared','x-relation','x-contact','x-email']));
+    setCount('x-n-links',$('x-links').children.length);
+    setCount('x-n-rows',$('x-rows').children.length);
+    setCount('u-n-picks',$('u-picks').querySelectorAll('.pick-ext:checked').length);
+    setCount('u-n-details',filled(['u-field','u-email']));
+  }
+  for(const f of [$('ext-form'),$('uc-form')]){
+    f.addEventListener('input',e=>{if(e.target.removeAttribute)e.target.removeAttribute('aria-invalid');counts();});
+    f.addEventListener('change',counts);
+  }
+
+  /* ---------- the links and rows of an extension ---------- */
 
   const MAX_LINKS=8,MAX_ROWS=100;
   const choices=map=>[el('option',{value:''},'Choose one'),...Object.entries(map).map(([v,l])=>el('option',{value:v},l))];
+  let rowSeq=0;
 
-  // Numbers the links and rows as the form shows them, and turns off what cannot be used.
+  // Numbers the rows as the form shows them, names each control by its row, and turns off what cannot
+  // be used.
   function renumber(){
-    [...$('x-links').children].forEach((li,i)=>{li.querySelector('legend').textContent='Link '+(i+1);});
     const rows=[...$('x-rows').children];
     rows.forEach((li,i)=>{
-      li.querySelector('legend').textContent='Row '+(i+1);
+      const n=i+1;
+      li.querySelector('.r-num').textContent=String(n);
+      li.querySelector('.r-edit').setAttribute('aria-label','Edit row '+n);
+      li.querySelector('.r-rm').setAttribute('aria-label','Remove row '+n);
+      li.querySelector('[data-move="-1"]').setAttribute('aria-label','Move row '+n+' up');
+      li.querySelector('[data-move="1"]').setAttribute('aria-label','Move row '+n+' down');
       li.querySelector('[data-move="-1"]').disabled=i===0;
       li.querySelector('[data-move="1"]').disabled=i===rows.length-1;
     });
+    [...$('x-links').children].forEach((li,i)=>li.querySelector('.l-rm').setAttribute('aria-label','Remove link '+(i+1)));
     $('x-add-link').hidden=$('x-links').children.length>=MAX_LINKS;
     $('x-add-row').disabled=rows.length>=MAX_ROWS;
+    counts();
   }
 
   function linkEditor(k){
-    const li=el('li',{class:'ed-item'});
+    const li=el('li',{class:'l-item'});
     const label=el('input',{type:'text',class:'l-label',autocomplete:'off'});
     const url=el('input',{type:'url',class:'l-url',inputmode:'url',autocomplete:'off',placeholder:'https://'});
     label.value=str(k&&k.label);url.value=str(k&&k.url);
-    const rm=el('button',{type:'button',class:'act act-danger'},'Remove');
+    const rm=el('button',{type:'button',class:'act act-danger l-rm'},'Remove');
     rm.addEventListener('click',()=>removeItem(li,$('x-add-link')));
-    li.append(el('fieldset',{class:'ed-box'},el('legend',{}),
-      el('div',{class:'ed-grid ed-link'},
-        el('label',{class:'field'},el('span',{},'Label'),label),
-        el('label',{class:'field'},el('span',{},'Address'),url)),
-      el('div',{class:'ed-btns'},rm)));
+    li.append(el('label',{class:'field'},el('span',{},'Label'),label),el('label',{class:'field'},el('span',{},'Address'),url),rm);
     return li;
   }
 
+  // A row shows as one line (name, kind, standing, core term); Edit opens its fields, one row at a time.
   function rowEditor(r){
-    const li=el('li',{class:'ed-item','data-id':r&&UUID.test(str(r.id))?r.id:null});
+    const li=el('li',{class:'r-item','data-id':r&&UUID.test(str(r.id))?r.id:null});
     const name=el('input',{type:'text',class:'r-name',autocomplete:'off'});
     const kind=el('select',{class:'r-kind'},choices(KIND));
     const standing=el('select',{class:'r-standing'},choices(STANDING));
@@ -1063,22 +1346,42 @@
     kind.value=r&&KIND[r.kind]?r.kind:'';
     standing.value=r&&STANDING[r.standing]?r.standing:'';
     term.value=str(r&&r.core_term);note.value=str(r&&r.note);
-    const up=el('button',{type:'button',class:'act','data-move':'-1'},'Move up');
-    const down=el('button',{type:'button',class:'act','data-move':'1'},'Move down');
-    const rm=el('button',{type:'button',class:'act act-danger'},'Remove');
+    const fid='x-row-'+(++rowSeq);
+    const edit=el('button',{type:'button',class:'act r-edit','aria-expanded':'false','aria-controls':fid},'Edit');
+    const up=el('button',{type:'button',class:'icon-btn r-up','data-move':'-1',title:'Move up'},icon('chev'));
+    const down=el('button',{type:'button',class:'icon-btn r-down','data-move':'1',title:'Move down'},icon('chev'));
+    const rm=el('button',{type:'button',class:'act act-danger r-rm'},'Remove');
+    edit.addEventListener('click',()=>openRow(li,edit.getAttribute('aria-expanded')!=='true'));
     up.addEventListener('click',()=>moveRow(li,-1,up));
     down.addEventListener('click',()=>moveRow(li,1,down));
     rm.addEventListener('click',()=>removeItem(li,$('x-add-row')));
-    li.append(el('fieldset',{class:'ed-box'},el('legend',{}),
-      el('div',{class:'ed-grid ed-row'},
-        el('label',{class:'field'},el('span',{},'Name'),name),
-        el('label',{class:'field'},el('span',{},'Kind'),kind),
-        el('label',{class:'field'},el('span',{},'Against the core'),standing)),
-      el('div',{class:'ed-grid ed-row2'},
-        el('label',{class:'field'},el('span',{},'Core term ',el('em',{},'(optional)')),term),
-        el('label',{class:'field'},el('span',{},'Note ',el('em',{},'(optional)')),note)),
-      el('div',{class:'ed-btns'},up,down,rm)));
+    const optional=t=>el('span',{},t+' ',el('em',{},'(optional)'));
+    li.append(
+      el('div',{class:'r-sum'},el('span',{class:'r-num'}),el('span',{class:'r-text'}),el('span',{class:'r-btns'},edit,up,down,rm)),
+      el('div',{class:'r-fields',id:fid,hidden:true},
+        el('div',{class:'r-grid'},
+          el('label',{class:'field'},el('span',{},'Name'),name),
+          el('label',{class:'field'},el('span',{},'Kind'),kind),
+          el('label',{class:'field'},el('span',{},'Against the core'),standing)),
+        el('div',{class:'r-grid2'},
+          el('label',{class:'field'},optional('Core term'),term),
+          el('label',{class:'field'},optional('Note'),note))));
+    for(const f of [name,kind,standing,term])f.addEventListener('input',()=>summarize(li));
+    for(const f of [kind,standing])f.addEventListener('change',()=>summarize(li));
+    summarize(li);
     return li;
+  }
+  function summarize(li){
+    const q=s=>li.querySelector(s);
+    const n=q('.r-name').value.trim();
+    const bits=[KIND[q('.r-kind').value],STANDING[q('.r-standing').value],q('.r-term').value.trim()].filter(Boolean);
+    q('.r-text').replaceChildren(...[el('span',{class:n?'rn':'rn none'},n||'New row'),bits.length?el('span',{class:'rm'},bits.join(' · ')):null].filter(Boolean));
+  }
+  function openRow(li,open){
+    if(open)[...$('x-rows').children].forEach(o=>{if(o!==li&&o.classList.contains('editing'))openRow(o,false);});
+    li.querySelector('.r-fields').hidden=!open;
+    li.querySelector('.r-edit').setAttribute('aria-expanded',String(open));
+    li.classList.toggle('editing',open);
   }
 
   // Moving a row keeps the keyboard on the same button, or on the other one at either end.
@@ -1088,12 +1391,13 @@
     li.parentNode.insertBefore(dir<0?li:sib,dir<0?sib:li);
     renumber();
     (btn.disabled?li.querySelector('[data-move="'+(-dir)+'"]'):btn).focus();
-    say('x-ed-status','Moved to '+li.querySelector('legend').textContent.toLowerCase()+'.');
+    say('x-ed-status','Moved to row '+li.querySelector('.r-num').textContent+'.');
   }
+  // Removing a link or a row moves the keyboard to the next one, or to the button that adds one.
   function removeItem(li,fallback){
     const next=li.nextElementSibling||li.previousElementSibling;
     li.remove();renumber();
-    const f=next&&next.querySelector('input,select,textarea');
+    const f=next&&(next.querySelector('.r-edit')||next.querySelector('input'));
     (f||fallback).focus();
   }
 
@@ -1103,7 +1407,7 @@
   });
   $('x-add-row').addEventListener('click',()=>{
     if($('x-rows').children.length>=MAX_ROWS)return;
-    const li=rowEditor(null);$('x-rows').append(li);renumber();li.querySelector('input').focus();
+    const li=rowEditor(null);$('x-rows').append(li);renumber();openRow(li,true);li.querySelector('.r-name').focus();
   });
 
   // Pasting rows: one per line, as name | kind | adds, pairs, or differs | core term | note. A kind or a
@@ -1121,11 +1425,6 @@
     if(kind===undefined||standing===undefined)return null;
     return {name:parts[0],kind,standing,core_term:parts[3]||'',note:parts.slice(4).join(' | ')};
   }
-  $('x-paste-toggle').addEventListener('click',()=>{
-    const box=$('x-paste-box');box.hidden=!box.hidden;
-    $('x-paste-toggle').setAttribute('aria-expanded',String(!box.hidden));
-    if(!box.hidden)$('x-paste').focus();
-  });
   $('x-paste-go').addEventListener('click',()=>{
     const bad=[],full=[],keep=[];let added=0;
     $('x-paste').value.split(/\r?\n/).forEach((line,i)=>{
@@ -1202,23 +1501,23 @@
     $('x-links').replaceChildren(...(x&&Array.isArray(x.links)?x.links:[]).slice(0,MAX_LINKS).map(linkEditor));
     $('x-rows').replaceChildren(...(x&&Array.isArray(x.rows)?x.rows:[]).slice(0,MAX_ROWS).map(rowEditor));
     $('x-paste').value='';say('x-paste-msg','');say('x-ed-status','');
-    $('x-paste-box').hidden=true;$('x-paste-toggle').setAttribute('aria-expanded','false');
+    $('x-author').value=x?str(x.author_name):'';
+    $('x-email').value='';$('x-trap').value='';
+    $('x-email-wrap').hidden=!!x;
     renumber();
     // What the editors hold as the form opens. An edit sends the links or the rows only when they no
     // longer read the same (order included), so an edit of the texts alone counts one write unit, and a
     // change that is undone counts as none.
     dialogs.ext.linksAtOpen=x?editorValue(readLinks):null;
     dialogs.ext.rowsAtOpen=x?editorValue(()=>readRows(true)):null;
-    $('x-author').value=x?str(x.author_name):'';
-    $('x-email').value='';$('x-trap').value='';
-    $('x-email-wrap').hidden=!!x;
+    closeSections($('ext-form'));
     openDialog(dialogs.ext,x,$('x-name'));
   }
   $('add-ext').addEventListener('click',()=>openExtension(null));
-  // Enter in a one-line field of the link editor, the row editor, or the paste box does not send the
-  // whole form; it stays where it is.
+  // Enter in a one-line field of the link editor or the row editor does not send the whole form; it
+  // stays where it is.
   $('ext-form').addEventListener('keydown',e=>{
-    if(e.key==='Enter'&&!e.isComposing&&e.target.matches('.editor input'))e.preventDefault();
+    if(e.key==='Enter'&&!e.isComposing&&e.target.matches('.l-list input, .r-list input'))e.preventDefault();
   });
 
   $('ext-form').addEventListener('submit',e=>{
@@ -1226,25 +1525,24 @@
     const d=dialogs.ext;
     if(d.busy)return;
     dropEmpty();
+    // In the order the form shows them, so the first refusal is the first field it names.
     const checks={
-      name:text($('x-name').value,'Name',120,true),
-      aka:text($('x-aka').value,'Also known as',200,false),
-      purpose:text($('x-purpose').value,'What it is for',2000,true),
-      field:text($('x-field').value,'Field or domain',120,false),
-      status:status($('x-status').value),
-      written:text($('x-written').value,'Written as',200,false),
-      version:text($('x-version').value,'Version',200,false),
-      compared:text($('x-compared').value,'Compared against',300,false),
-      relation:text($('x-relation').value,'How it relates to the core',2000,false),
-      contact:text($('x-contact').value,'Who to talk to',300,false),
+      name:at('x-name',text($('x-name').value,'Name',120,true)),
+      purpose:at('x-purpose',text($('x-purpose').value,'What it is for',2000,true)),
+      status:at('x-status',status($('x-status').value)),
+      author:at('x-author',text($('x-author').value,'Your name',120,true)),
+      aka:at('x-aka',text($('x-aka').value,'Also known as',200,false)),
+      field:at('x-field',text($('x-field').value,'Field or domain',120,false)),
+      written:at('x-written',text($('x-written').value,'Written as',200,false)),
+      version:at('x-version',text($('x-version').value,'Version',200,false)),
+      compared:at('x-compared',text($('x-compared').value,'Compared against',300,false)),
+      relation:at('x-relation',text($('x-relation').value,'How it relates to the core',2000,false)),
+      contact:at('x-contact',text($('x-contact').value,'Who to talk to',300,false)),
+      email:d.entry?{value:null}:at('x-email',email($('x-email').value)),
       links:readLinks(),
-      rows:readRows(!!d.entry),
-      author:text($('x-author').value,'Your name',120,true),
-      email:d.entry?{value:null}:email($('x-email').value)
+      rows:readRows(!!d.entry)
     };
-    for(const c of Object.values(checks)){
-      if(c.error){say(d.msg,c.error,'err');if(c.focus)c.focus.focus();return;}
-    }
+    for(const c of Object.values(checks)){if(c.error){refuse(d,c);return;}}
     const body={p_name:checks.name.value,p_purpose:checks.purpose.value,p_status:checks.status.value,p_author_name:checks.author.value,
       p_also_known_as:checks.aka.value,p_field:checks.field.value,p_written_as:checks.written.value,p_version:checks.version.value,
       p_compared_against:checks.compared.value,p_core_relation:checks.relation.value,p_contact:checks.contact.value,
@@ -1284,7 +1582,7 @@
       const on=chosen.has(e.id);
       const box=el('input',{type:'checkbox',class:'pick-ext',value:e.id,checked:on});
       const li=el('li',{},el('label',{},box,el('span',{},str(e.name))));
-      const rows=(Array.isArray(e.rows)?e.rows:[]).filter(r=>r&&UUID.test(str(r.id)));
+      const rows=valid(e.rows);
       if(rows.length){
         const picked=chosen.get(e.id)||new Set();
         const set=el('fieldset',{class:'pick-rows',hidden:!on},
@@ -1300,6 +1598,8 @@
     $('u-picks').replaceChildren(...(picks.length?picks:[el('li',{class:'pick-none'},'No extensions yet.')]));
     // The row picks as the form opens: an edit sends them only when the set has changed.
     dialogs.uc.picksAtOpen=x?readPicks().rowIds.sort().join():null;
+    closeSections($('uc-form'));
+    counts();
     openDialog(dialogs.uc,x,$('u-title'));
   }
   $('add-uc').addEventListener('click',()=>openUseCase(null));
@@ -1321,17 +1621,16 @@
     const d=dialogs.uc;
     if(d.busy)return;
     const checks={
-      title:text($('u-title').value,'Title',200,true),
-      goal:text($('u-goal').value,'What you are trying to do',2000,true),
-      gap:text($('u-gap').value,'What the core does not let you record',2000,true),
-      field:text($('u-field').value,'Field or domain',120,false),
-      author:text($('u-author').value,'Your name',120,true),
-      email:d.entry?{value:null}:email($('u-email').value)
+      title:at('u-title',text($('u-title').value,'Title',200,true)),
+      goal:at('u-goal',text($('u-goal').value,'What you are trying to do',2000,true)),
+      gap:at('u-gap',text($('u-gap').value,'What the core does not let you record',2000,true)),
+      author:at('u-author',text($('u-author').value,'Your name',120,true)),
+      field:at('u-field',text($('u-field').value,'Field or domain',120,false)),
+      email:d.entry?{value:null}:at('u-email',email($('u-email').value))
     };
-    const err=firstError(checks);
-    if(err){say(d.msg,err,'err');return;}
+    for(const c of Object.values(checks)){if(c.error){refuse(d,c);return;}}
     const {ids,rowIds}=readPicks();
-    if(rowIds.length>200){say(d.msg,'Pick at most 200 rows.','err');return;}
+    if(rowIds.length>200){refuse(d,{error:'Pick at most 200 rows.',focus:$('u-picks').querySelector('.pick-row:checked')});return;}
     const body={p_title:checks.title.value,p_goal:checks.goal.value,p_gap:checks.gap.value,p_author_name:checks.author.value,
       p_field:checks.field.value,p_extension_ids:ids,
       p_row_ids:d.entry&&[...rowIds].sort().join()===d.picksAtOpen?null:rowIds};
@@ -1352,20 +1651,23 @@
     });
   });
 
+  // After a save: the entry's tab, the entry marked for a moment, and the keyboard on it.
   function flash(kind,id){
     if(!UUID.test(str(id)))return;
-    const c=$(anchor(kind,id));
-    if(!c)return;
-    c.classList.add('flash');
-    c.scrollIntoView({block:'center',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});
-    setTimeout(()=>c.classList.remove('flash'),2600);
+    const li=$(anchor(kind,id));
+    if(!li)return;
+    selectTab(kind==='extension'?'ext':'uc');
+    li.classList.add('flash');
+    li.scrollIntoView({block:'center',behavior:reduced()?'instant':'smooth'});
+    li._entry.toggle.focus({preventScroll:true});
+    setTimeout(()=>li.classList.remove('flash'),2600);
   }
 
   /* ---------- library admins ---------- */
 
   function openComment(cm,li){
     $('c-author').value=str(cm.author_name);$('c-body').value=str(cm.body);
-    const c=li.closest('.card');
+    const c=li.closest('.entry');
     openDialog(dialogs.cm,{cm,key:c?c.dataset.key:null},$('c-body'));
   }
   $('cm-form').addEventListener('submit',e=>{
@@ -1376,7 +1678,7 @@
     const err=firstError(checks);
     if(err){say(d.msg,err,'err');return;}
     save(d,entry=>rpc('edit_entry_comment',{p_id:entry.cm.id,p_body:checks.body.value,p_author_name:checks.author.value},true),
-      async entry=>{const c=entry.key&&cardFor(entry.key);if(c)await loadComments(c);});
+      async entry=>{const c=entry.key&&entryFor(entry.key);if(c)await loadComments(c);});
   });
 
   async function setHidden(kind,id,hidden,btn,msg){
@@ -1387,12 +1689,12 @@
     catch(e){if(msg)say(msg,e.message,'err');if(btn)btn.disabled=false;return;}
     await load();
     if(!hidden)say('hid-msg','Shown again.','ok');
-    else if(kind!=='comment')say(kind==='extension'?'ext-msg':'uc-msg','Hidden. It is listed under Hidden at the end of the page.','ok');
+    else if(kind!=='comment')say(kind==='extension'?'ext-msg':'uc-msg','Hidden. It is listed under Hidden.','ok');
   }
   function clearMessages(){['ext-msg','uc-msg','hid-msg'].forEach(id=>say(id,''));}
 
   async function loadHidden(){
-    $('hidden-sec').hidden=false;
+    $('tab-hid').hidden=false;
     try{
       const h=await rpc('hidden_entries',{},true);
       const rows=[];
@@ -1406,21 +1708,30 @@
       (h&&h.use_cases||[]).forEach(i=>add('use_case','Use case',i,str(i.title)+' · '+str(i.author_name)));
       (h&&h.comments||[]).forEach(i=>{const b=str(i.body);add('comment','Comment',i,(b.length>160?b.slice(0,160)+'…':b)+' · '+str(i.author_name));});
       $('hid-list').replaceChildren(...rows);
+      $('hid-list').hidden=!rows.length;
       $('hid-empty').hidden=rows.length>0;
+      $('n-hid').textContent=String(rows.length);
     }catch(e){say('hid-msg',e.message,'err');}
   }
 
   /* ---------- start ---------- */
 
+  $('retry').addEventListener('click',async()=>{
+    $('retry').disabled=true;$('load-msg').textContent='Loading…';
+    if(await load())goTo(location.hash,'load');
+  });
+
   (async function start(){
-    $('load-msg').textContent='Loading…';
+    $('load-box').hidden=true;
+    $('lists-wrap').hidden=false;$('lists-wrap').setAttribute('aria-busy','true');
+    say('lists-status','Loading…');
+    skeleton();
     if(adminToken()){
       try{state.admin=(await rpc('can_moderate_entries',{},true))===true;}catch(_){state.admin=false;}
     }
-    await load();
-    let target=null;
-    try{target=location.hash.length>1?document.getElementById(decodeURIComponent(location.hash.slice(1))):null;}catch(_){}
-    if(target&&target.classList.contains('card'))target.scrollIntoView();
+    $('tab-hid').hidden=!state.admin;
+    selectTab('ext');
+    if(await load())goTo(location.hash,'load');
   })();
 })();
 </script>
