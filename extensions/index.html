@@ -889,10 +889,25 @@
   }
 
   function render(){
+    // When the keyboard is on an entry's control, the same control of the redrawn entry takes it back.
+    const a=document.activeElement,was=a&&a.closest&&a.closest('.entry');
+    const sel=was&&['.thumb','.disc','.seg-btn[aria-selected="true"]','.toggle'].find(s=>a.matches(s)||s==='.toggle');
+    const key=was&&was.dataset.key;
     fill('ext',state.ext.map(x=>entry('extension',x)));
     fill('uc',state.uc.map(x=>entry('use_case',x)));
     for(const k of [...state.open]){const li=entryFor(k);if(li)setOpen(li,true);else state.open.delete(k);}
     for(const k of [...state.comments]){const li=entryFor(k);if(li&&state.open.has(k))openComments(li);else state.comments.delete(k);}
+    const back=key&&entryFor(key),t=back&&back.querySelector(sel);
+    if(t&&visible(t))t.focus({preventScroll:true});
+  }
+
+  // After a redraw the keyboard goes to the element given (or returned by the function given) when it is
+  // on the page and visible, and otherwise to the chosen tab. While a dialog is open it stays there.
+  const visible=n=>n.checkVisibility?n.checkVisibility():n.getClientRects().length>0;
+  function settle(target){
+    if(document.querySelector('dialog[open]'))return;
+    const t=typeof target==='function'?target():target;
+    (t&&t.isConnected&&visible(t)?t:$(TABS[state.tab][0])).focus();
   }
   function fill(name,items){
     $(name+'-list').replaceChildren(...items);
@@ -1079,7 +1094,10 @@
     }
     if(state.admin){
       const hd=el('button',{type:'button',class:'act act-danger'},'Hide');
-      hd.addEventListener('click',()=>setHidden(kind,x.id,true,hd,hd.closest('.entry').querySelector('.entry-msg')));
+      hd.addEventListener('click',()=>{
+        const li=hd.closest('.entry'),near=li.nextElementSibling||li.previousElementSibling,nearKey=near&&near.dataset.key;
+        setHidden(kind,x.id,true,hd,li.querySelector('.entry-msg'),()=>{const n=nearKey&&entryFor(nearKey);return n&&n._entry.toggle;});
+      });
       f.append(hd);
     }
     return f;
@@ -1089,7 +1107,7 @@
 
   function thumb(kind,x){
     const key=kind+':'+x.id;
-    const b=el('button',{type:'button',class:'thumb'});
+    const b=el('button',{type:'button',class:'thumb','aria-describedby':'nm-'+anchor(kind,x.id)});
     b.append(icon('thumb'),el('span',{class:'n'}));
     const show=()=>{
       const on=supported.has(key),n=Number(x.support_count)||0;
@@ -1203,7 +1221,10 @@
       const ed=el('button',{type:'button',class:'act'},'Edit');
       ed.addEventListener('click',()=>openComment(cm,li));
       const hd=el('button',{type:'button',class:'act act-danger'},'Hide');
-      hd.addEventListener('click',()=>setHidden('comment',cm.id,true,hd,li.closest('.comments').querySelector('.c-load')));
+      hd.addEventListener('click',()=>{
+        const key=li.closest('.entry').dataset.key;
+        setHidden('comment',cm.id,true,hd,li.closest('.comments').querySelector('.c-load'),()=>{const e=entryFor(key);return e&&e._entry.ctoggle;});
+      });
       by.append(ed,hd);
     }
     return li;
@@ -1446,12 +1467,12 @@
   });
 
   // Pasting rows: one per line, as name | kind | addition, match, or difference | core term | note. A kind
-  // or a standing may be written as its label or its stored value, in any case; a standing also as a plural
-  // or as its earlier label (adds, pairs with, differs from). Parts past the fifth stay in the note. A
+  // or a standing may be written as its label, its plural, or its stored value, in any case; a standing
+  // also as its earlier label (adds, pairs with, differs from). Parts past the fifth stay in the note. A
   // line without a name, or with a kind or standing that is not one of these, is not read and stays in
   // the box.
   const WORDS=map=>Object.fromEntries(Object.entries(map).flatMap(([v,l])=>[[v,v],[l.toLowerCase(),v]]));
-  const KIND_WORDS=WORDS(KIND);
+  const KIND_WORDS={...WORDS(KIND),'record types':'record_type',links:'link',fields:'field',others:'other'};
   const STANDING_WORDS={...WORDS(STANDING),additions:'adds',matches:'pairs',differences:'differs','pairs with':'pairs','differs from':'differs'};
   const word=s=>s.trim().toLowerCase().replace(/\s+/g,' ');
   function pastedRow(line){
@@ -1696,9 +1717,9 @@
 
   // After a save: the entry's tab, the entry marked for a moment, and the keyboard on it.
   function flash(kind,id){
-    if(!UUID.test(str(id)))return;
+    if(!UUID.test(str(id))){settle(null);return;}
     const li=$(anchor(kind,id));
-    if(!li)return;
+    if(!li){settle(null);return;}
     selectTab(kind==='extension'?'ext':'uc');
     li.classList.add('flash');
     li.scrollIntoView({block:'center',behavior:reduced()?'instant':'smooth'});
@@ -1721,10 +1742,14 @@
     const err=firstError(checks);
     if(err){say(d.msg,err,'err');return;}
     save(d,entry=>rpc('edit_entry_comment',{p_id:entry.cm.id,p_body:checks.body.value,p_author_name:checks.author.value},true),
-      async entry=>{const c=entry.key&&entryFor(entry.key);if(c)await loadComments(c);});
+      async entry=>{
+        const c=entry.key&&entryFor(entry.key);
+        if(c)await loadComments(c);
+        settle(()=>{const e=entry.key&&entryFor(entry.key);return e&&e._entry.ctoggle;});
+      });
   });
 
-  async function setHidden(kind,id,hidden,btn,msg){
+  async function setHidden(kind,id,hidden,btn,msg,next){
     if(btn)btn.disabled=true;
     if(msg)say(msg,'');
     clearMessages();
@@ -1733,6 +1758,7 @@
     await load();
     if(!hidden)say('hid-msg','Shown again.','ok');
     else if(kind!=='comment')say(kind==='extension'?'ext-msg':'uc-msg','Hidden. It is listed under Hidden.','ok');
+    settle(next);
   }
   function clearMessages(){['ext-msg','uc-msg','hid-msg'].forEach(id=>say(id,''));}
 
@@ -1744,7 +1770,10 @@
       const add=(kind,label,item,main)=>{
         if(!item||!UUID.test(str(item.id)))return;
         const b=el('button',{type:'button',class:'btn btn-ghost btn-sm'},'Show again');
-        b.addEventListener('click',()=>setHidden(kind,item.id,false,b,$('hid-msg')));
+        b.addEventListener('click',()=>{
+          const i=[...$('hid-list').children].indexOf(b.closest('li'));
+          setHidden(kind,item.id,false,b,$('hid-msg'),()=>{const bs=[...$('hid-list').querySelectorAll('button')];return bs[Math.min(i,bs.length-1)]||$('tab-hid');});
+        });
         rows.push(el('li',{},el('span',{class:'h-main'},el('span',{class:'h-kind'},label),main),b));
       };
       (h&&h.extensions||[]).forEach(i=>add('extension','Extension',i,str(i.name)+' · '+str(i.author_name)));
@@ -1761,7 +1790,11 @@
 
   $('retry').addEventListener('click',async()=>{
     $('retry').disabled=true;$('load-msg').textContent='Loading…';
-    if(await load())goTo(location.hash,'load');
+    if(await load()){
+      const opened=goTo(location.hash,'load');
+      const li=opened&&location.hash.length>1?document.querySelector('.entry.open'):null;
+      settle(li&&li._entry.toggle);
+    }
   });
 
   (async function start(){
