@@ -51,7 +51,6 @@
   [hidden]{display:none !important}
   a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
   .wrap{max-width:var(--maxw);margin:0 auto;padding:0 32px}
-  .col{max-width:860px}
   .vh{position:absolute !important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}
   .count{font-variant-numeric:tabular-nums}
 
@@ -95,7 +94,7 @@
   /* PAGE HEADER */
   .page-head{padding:52px 0 0}
   .page-head h1{font-size:38px;line-height:1.12;font-weight:500;letter-spacing:-.028em;color:var(--ink)}
-  .page-head .lede{font-size:18px;line-height:1.55;color:var(--ink-2);max-width:62ch;margin-top:14px}
+  .page-head .lede{font-size:18px;line-height:1.55;color:var(--ink-2);max-width:57ch;margin-top:14px}
   .page-head .aside{font-size:15px;line-height:1.5;color:var(--muted);margin-top:6px}
 
   /* BUTTONS AND FIELDS */
@@ -190,9 +189,9 @@
   .detail{padding:2px 18px 22px 80px}
   .d-part + .d-part{margin-top:20px}
   .d-label{font-size:13.5px;line-height:1.4;font-weight:600;color:var(--ink-2);margin-bottom:6px}
-  .d-text{font-size:15.5px;line-height:1.6;color:var(--ink);white-space:pre-line;overflow-wrap:anywhere;max-width:68ch}
+  .d-text{font-size:15.5px;line-height:1.6;color:var(--ink);white-space:pre-line;overflow-wrap:anywhere;max-width:57ch}
   .d-none{color:var(--muted)}
-  .facts{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:5px 24px;font-size:15px;line-height:1.5;max-width:68ch}
+  .facts{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:5px 24px;font-size:15px;line-height:1.5;max-width:80ch}
   .fact{display:contents}
   .facts dt{color:var(--muted)}
   .facts dd{min-width:0;color:var(--ink);white-space:pre-line;overflow-wrap:anywhere}
@@ -205,6 +204,7 @@
   .covered li{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 10px;font-size:15px;line-height:1.5}
   .picked{font-size:14px;color:var(--muted);overflow-wrap:anywhere}
   .seg{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+  .d-text + .seg{margin-top:14px}
   .seg-btn{display:inline-flex;align-items:baseline;gap:7px;padding:5px 12px;border:1px solid var(--line);border-radius:7px;background:var(--bg);font-size:14px;font-weight:500;line-height:1.4;color:var(--ink-2);cursor:pointer;transition:border-color .15s,background-color .15s,color .15s}
   .seg-btn .count{font-weight:400;color:var(--muted)}
   .seg-btn:hover{border-color:var(--ink-2);color:var(--ink)}
@@ -234,7 +234,7 @@
   .comments{margin-top:12px}
   .comment-list{list-style:none;display:grid;gap:14px;margin-bottom:16px}
   .comment-list:empty{display:none}
-  .c-body{font-size:15px;line-height:1.55;color:var(--ink);white-space:pre-line;overflow-wrap:anywhere;max-width:68ch}
+  .c-body{font-size:15px;line-height:1.55;color:var(--ink);white-space:pre-line;overflow-wrap:anywhere;max-width:57ch}
   .c-by{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 14px;margin-top:3px;font-size:13px;color:var(--muted);overflow-wrap:anywhere}
   .c-by .act{font-size:13px;padding:0}
   .c-none{font-size:14.5px;color:var(--muted);margin-bottom:14px}
@@ -285,14 +285,15 @@
   .pick-rows li{break-inside:avoid}
   .pick-list .pick-rows label{font-size:14px;padding:2px 0}
   .pick-tag{font-size:12.5px;color:var(--muted);white-space:nowrap}
-  .paste-go{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px}
-  .paste-go .msg{margin:0}
+  .paste-go,.r-actions{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+  .r-actions:not([hidden]) + .paste-box{margin-top:16px}
+  #x-paste-msg{margin-top:10px}
   #x-paste{font-family:var(--mono);font-size:13.5px}
   .l-list{list-style:none}
   .l-list:empty{display:none}
   .l-item{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.7fr) auto;gap:0 10px;align-items:end}
   .l-item .act{margin-bottom:25px}
-  .r-list{list-style:none;margin:16px 0 12px;border-top:1px solid var(--line)}
+  .r-list{list-style:none;margin:2px 0 14px;border-top:1px solid var(--line)}
   .r-list:empty{display:none}
   .r-item{border-bottom:1px solid var(--line)}
   .r-item.editing{background:var(--tint-1)}
@@ -323,8 +324,8 @@
     .entry-head{grid-template-columns:42px minmax(0,1fr);gap:12px;padding:14px}
     .toggle{gap:10px}
     .thumb{width:42px}
-    .entry-msg{padding:0 14px 10px 68px}
-    .detail{padding:2px 14px 20px 68px}
+    .entry-msg{padding:0 14px 10px}
+    .detail{padding:2px 14px 20px}
     .skel{padding-left:68px}
     .skel::before{left:14px;width:42px}
     .facts{grid-template-columns:minmax(0,1fr);gap:0}
@@ -425,15 +426,15 @@
 
 <!-- PAGE HEADER -->
 <header class="page-head">
-  <div class="wrap"><div class="col">
+  <div class="wrap">
     <h1>Extensions and use cases</h1>
     <p class="lede">What people are building on top of MIRA's core, and what they need that the core does not hold yet.</p>
     <p class="aside">Nothing listed here is part of the core.</p>
-  </div></div>
+  </div>
 </header>
 
 <main class="ext">
-  <div class="wrap"><div class="col">
+  <div class="wrap">
 
     <!-- Shown as it is when JavaScript is off; the script hides it while the lists load. -->
     <div class="load-box" id="load-box">
@@ -480,7 +481,7 @@
       </div>
     </div>
 
-  </div></div>
+  </div>
 </main>
 
 <!-- ADD OR EDIT AN EXTENSION -->
@@ -527,14 +528,21 @@
       </details>
       <details class="sec" id="x-sec-rows">
         <summary><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"/></svg>Rows <span class="count" id="x-n-rows"></span><span class="opt">Optional</span></summary>
+        <!-- With rows: the rows, then "Add a row" and "Paste rows". Without: the paste box, with "Add a row"
+             beside "Add these rows". The script moves "Add a row" between the two places. -->
         <div class="sec-body">
-          <label class="field"><span>One row per line: name | kind | adds, pairs, or differs | core term | note</span><textarea id="x-paste" rows="4" spellcheck="false"></textarea></label>
-          <div class="paste-go">
-            <button class="btn btn-ghost btn-sm" type="button" id="x-paste-go">Add these rows</button>
-            <p class="msg" id="x-paste-msg" role="status"></p>
-          </div>
           <ol class="r-list" id="x-rows"></ol>
-          <button class="btn btn-ghost btn-sm" type="button" id="x-add-row">Add a row</button>
+          <div class="r-actions" id="x-row-actions" hidden>
+            <button class="btn btn-ghost btn-sm" type="button" id="x-paste-open" aria-expanded="false" aria-controls="x-paste-box">Paste rows</button>
+          </div>
+          <div class="paste-box" id="x-paste-box">
+            <label class="field"><span>One row per line: name | kind | addition, match, or difference | core term | note</span><textarea id="x-paste" rows="4" spellcheck="false"></textarea></label>
+            <div class="paste-go" id="x-paste-actions">
+              <button class="btn btn-ghost btn-sm" type="button" id="x-paste-go">Add these rows</button>
+              <button class="btn btn-ghost btn-sm" type="button" id="x-add-row">Add a row</button>
+            </div>
+          </div>
+          <p class="msg" id="x-paste-msg" role="status"></p>
           <p class="vh" id="x-ed-status" role="status"></p>
         </div>
       </details>
@@ -683,10 +691,11 @@
   const LIBRARY_SESSION='sb-vcdkoqpvurrdheyxeduu-auth-token';  // the library's sign-in, kept by supabase-js
   const STATUS={idea:'Idea',experimenting:'Experimenting',in_use:'In use'};
   const KIND={record_type:'Record type',link:'Link',field:'Field',other:'Other'};
-  const STANDING={adds:'Adds',pairs:'Pairs with',differs:'Differs from'};
+  // How a row stands against the core: stored as adds, pairs, or differs; shown as nouns.
+  const STANDING={adds:'Addition',pairs:'Match',differs:'Difference'};
   const STANDINGS=['adds','pairs','differs'];
-  const ROW_TAB={adds:'Adds',pairs:'Pairs with',differs:'Differs'};
-  const ROW_COUNT={adds:'adds',pairs:'pairs',differs:'differs'};
+  const ROW_TAB={adds:'Additions',pairs:'Matches',differs:'Differences'};
+  const ROW_COUNT={adds:['addition','additions'],pairs:['match','matches'],differs:['difference','differences']};
   const ROWS_SHOWN=8;
   const FAILED='The lists could not be loaded. Try again in a minute.';
   const GENERIC='Something went wrong. Try again in a minute.';
@@ -898,13 +907,16 @@
     const ext=kind==='extension';
     const key=kind+':'+x.id,a=anchor(kind,x.id);
     const st=ext&&STATUS[x.status]?x.status:null;
+    // The quiet label beside the name: an extension's status, or a use case that no extension covers yet.
+    const label=st?el('span',{class:'status status-'+st,id:'st-'+a},STATUS[st])
+      :!ext&&!valid(x.extensions).length?el('span',{class:'status status-none',id:'st-'+a},'No extension yet'):null;
     const li=el('li',{class:'entry',id:a,'data-key':key});
     const toggle=el('button',{type:'button',class:'toggle','aria-expanded':'false','aria-controls':'dt-'+a,
-        'aria-labelledby':'nm-'+a+(st?' st-'+a:''),'aria-describedby':'sm-'+a+' mt-'+a},
+        'aria-labelledby':'nm-'+a+(label?' st-'+a:''),'aria-describedby':'sm-'+a+' mt-'+a},
       el('span',{class:'lines'},
         el('span',{class:'l1'},
           el('span',{class:'name',id:'nm-'+a},str(ext?x.name:x.title)),
-          st?el('span',{class:'status status-'+st,id:'st-'+a},STATUS[st]):null),
+          label),
         el('span',{class:'l2',id:'sm-'+a},str(ext?x.purpose:x.goal)),
         meta(kind,x,'mt-'+a)),
       icon('chev'));
@@ -923,12 +935,12 @@
     if(x.field)parts.push(str(x.field));
     if(kind==='extension'){
       const rows=valid(x.rows);
-      for(const s of STANDINGS){const n=rows.filter(r=>r.standing===s).length;if(n)parts.push(n+' '+ROW_COUNT[s]);}
+      for(const s of STANDINGS){const n=rows.filter(r=>r.standing===s).length;if(n)parts.push(plural(n,...ROW_COUNT[s]));}
       const u=valid(x.use_cases).length;
       if(u)parts.push(plural(u,'use case','use cases'));
     }else{
       const exts=valid(x.extensions);
-      parts.push(exts.length?'Covered by '+exts.map(e=>str(e.name)).join(', '):'No extension yet');
+      if(exts.length)parts.push('Covered by '+exts.map(e=>str(e.name)).join(', '));
     }
     const c=Number(x.comment_count)||0;
     if(c)parts.push(plural(c,'comment','comments'));
@@ -954,9 +966,10 @@
       const links=linkList(x.links);
       if(links)facts.push(['Links',links]);
       if(facts.length)d.append(part(null,el('dl',{class:'facts'},facts.map(([k,v])=>el('div',{class:'fact'},el('dt',{},k),el('dd',{},v))))));
-      if(x.core_relation)d.append(part('How it relates to the core',el('p',{class:'d-text'},str(x.core_relation))));
-      const rows=rowsPart(x,a);
-      if(rows)d.append(rows);
+      // Against the core: how it relates, when given, then the rows under one choice of three.
+      const relation=x.core_relation?el('p',{class:'d-text'},str(x.core_relation)):null;
+      const rows=rowsChoice(x,a);
+      if(relation||rows)d.append(part('Against the core',relation,rows));
       const ucs=refList(x.use_cases,'use_case','title');
       if(ucs)d.append(part('Use cases that need it',ucs));
     }else{
@@ -997,14 +1010,14 @@
     }));
   }
 
-  // An extension's rows: one choice of three over one table.
-  function rowsPart(x,a){
+  // An extension's rows: one choice of three (additions, matches, differences) over one table.
+  function rowsChoice(x,a){
     const key='extension:'+x.id;
     const by={adds:[],pairs:[],differs:[]};
     for(const r of valid(x.rows))if(by[r.standing])by[r.standing].push(r);
     const first=STANDINGS.find(s=>by[s].length);
     if(!first)return null;
-    const list=el('div',{class:'seg',role:'tablist','aria-label':'Rows'});
+    const list=el('div',{class:'seg',role:'tablist','aria-label':'Against the core'});
     const panel=el('div',{class:'rpanel',role:'tabpanel',id:'rp-'+a});
     const tabs={};
     const show=s=>{
@@ -1023,7 +1036,7 @@
     arrowKeys(list,b=>b.click());
     const kept=state.rowTab.get(key);
     show(kept&&by[kept]&&by[kept].length?kept:first);
-    return part('Rows',list,panel);
+    return [list,panel];
   }
   function rowTable(list,s,key){
     const term=s!=='adds';
@@ -1320,8 +1333,27 @@
     [...$('x-links').children].forEach((li,i)=>li.querySelector('.l-rm').setAttribute('aria-label','Remove link '+(i+1)));
     $('x-add-link').hidden=$('x-links').children.length>=MAX_LINKS;
     $('x-add-row').disabled=rows.length>=MAX_ROWS;
+    rowLayout();
     counts();
   }
+
+  // The Rows section: with rows, the list comes first, then "Add a row" and "Paste rows", and the paste
+  // box shows only once "Paste rows" opens it; without rows, the paste box shows, with "Add a row" beside
+  // "Add these rows".
+  let pasteOpen=false;
+  function rowLayout(){
+    const has=$('x-rows').children.length>0;
+    const add=$('x-add-row'),home=has?$('x-row-actions'):$('x-paste-actions');
+    if(add.parentNode!==home){if(has)home.prepend(add);else home.append(add);}
+    $('x-row-actions').hidden=!has;
+    $('x-paste-box').hidden=has&&!pasteOpen;
+    $('x-paste-open').setAttribute('aria-expanded',String(!$('x-paste-box').hidden));
+  }
+  $('x-paste-open').addEventListener('click',()=>{
+    pasteOpen=$('x-paste-box').hidden;
+    rowLayout();
+    if(pasteOpen)$('x-paste').focus();
+  });
 
   function linkEditor(k){
     const li=el('li',{class:'l-item'});
@@ -1410,12 +1442,14 @@
     const li=rowEditor(null);$('x-rows').append(li);renumber();openRow(li,true);li.querySelector('.r-name').focus();
   });
 
-  // Pasting rows: one per line, as name | kind | adds, pairs, or differs | core term | note. A kind or a
-  // standing may be written as its label or its stored value, in any case. Parts past the fifth stay in
-  // the note. A line without a name, or with a kind or standing that is not one of these, is not read
-  // and stays in the box.
+  // Pasting rows: one per line, as name | kind | addition, match, or difference | core term | note. A kind
+  // or a standing may be written as its label or its stored value, in any case; a standing also as a plural
+  // or as its earlier label (adds, pairs with, differs from). Parts past the fifth stay in the note. A
+  // line without a name, or with a kind or standing that is not one of these, is not read and stays in
+  // the box.
   const WORDS=map=>Object.fromEntries(Object.entries(map).flatMap(([v,l])=>[[v,v],[l.toLowerCase(),v]]));
-  const KIND_WORDS=WORDS(KIND),STANDING_WORDS=WORDS(STANDING);
+  const KIND_WORDS=WORDS(KIND);
+  const STANDING_WORDS={...WORDS(STANDING),additions:'adds',matches:'pairs',differences:'differs','pairs with':'pairs','differs from':'differs'};
   const word=s=>s.trim().toLowerCase().replace(/\s+/g,' ');
   function pastedRow(line){
     const parts=line.split('|').map(p=>p.trim());
@@ -1434,7 +1468,12 @@
       if($('x-rows').children.length>=MAX_ROWS){full.push(i+1);keep.push(line);return;}
       $('x-rows').append(rowEditor(r));added++;
     });
+    // When every line was read the box closes and the keyboard goes to "Paste rows"; lines left over
+    // keep it open.
+    const wasOpen=!$('x-paste-box').hidden;
+    pasteOpen=keep.length>0;
     renumber();
+    if(wasOpen&&$('x-paste-box').hidden)$('x-paste-open').focus();
     $('x-paste').value=keep.join('\n');
     const out=[];
     if(added)out.push(added===1?'Added 1 row.':'Added '+added+' rows.');
@@ -1471,7 +1510,7 @@
       const kind=q('.r-kind').value;
       if(!KIND[kind])return {error:p+'“Kind” must be Record type, Link, Field, or Other.',focus:q('.r-kind')};
       const standing=q('.r-standing').value;
-      if(!STANDING[standing])return {error:p+'“Against the core” must be Adds, Pairs with, or Differs from.',focus:q('.r-standing')};
+      if(!STANDING[standing])return {error:p+'“Against the core” must be Addition, Match, or Difference.',focus:q('.r-standing')};
       const term=text(q('.r-term').value,'Core term',200,false);
       if(term.error)return {error:p+term.error,focus:q('.r-term')};
       const note=text(q('.r-note').value,'Note',600,false);
@@ -1501,6 +1540,7 @@
     $('x-links').replaceChildren(...(x&&Array.isArray(x.links)?x.links:[]).slice(0,MAX_LINKS).map(linkEditor));
     $('x-rows').replaceChildren(...(x&&Array.isArray(x.rows)?x.rows:[]).slice(0,MAX_ROWS).map(rowEditor));
     $('x-paste').value='';say('x-paste-msg','');say('x-ed-status','');
+    pasteOpen=false;
     $('x-author').value=x?str(x.author_name):'';
     $('x-email').value='';$('x-trap').value='';
     $('x-email-wrap').hidden=!!x;
