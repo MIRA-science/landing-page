@@ -431,7 +431,7 @@
 <header class="page-head">
   <div class="wrap">
     <h1>Extensions and use cases</h1>
-    <p class="lede">What people are building on top of MIRA's core, and what they need that the core does not hold yet.</p>
+    <p class="lede">What people are building on top of MIRA's core, and what they still need from the core.</p>
     <p class="aside">Nothing listed here is part of the core.</p>
   </div>
 </header>
@@ -463,15 +463,15 @@
         <p class="list-line">Schemas, fields, and links that people are trying on top of the core.</p>
         <p class="msg panel-msg" id="ext-msg" role="status"></p>
         <ul class="list" id="ext-list"></ul>
-        <div class="empty" id="ext-empty" hidden><p class="empty-title">No extensions yet.</p><p class="empty-hint">Add the first one with “Add an extension”.</p></div>
+        <div class="empty" id="ext-empty" hidden><p class="empty-title">Nobody has added an extension.</p><p class="empty-hint">Add the first one with “Add an extension”.</p></div>
       </div>
 
       <div class="panel" role="tabpanel" id="panel-uc" aria-labelledby="tab-uc" hidden>
         <h2 class="vh">Use cases</h2>
-        <p class="list-line">Things people want to record that the core does not hold yet.</p>
+        <p class="list-line">Things people still cannot record with MIRA's core.</p>
         <p class="msg panel-msg" id="uc-msg" role="status"></p>
         <ul class="list" id="uc-list"></ul>
-        <div class="empty" id="uc-empty" hidden><p class="empty-title">No use cases yet.</p><p class="empty-hint">Add the first one with “Add a use case”.</p></div>
+        <div class="empty" id="uc-empty" hidden><p class="empty-title">Nobody has added a use case.</p><p class="empty-hint">Add the first one with “Add a use case”.</p></div>
       </div>
 
       <!-- Library admins only -->
@@ -925,9 +925,9 @@
     const ext=kind==='extension';
     const key=kind+':'+x.id,a=anchor(kind,x.id);
     const st=ext&&STATUS[x.status]?x.status:null;
-    // The quiet label beside the name: an extension's status, or a use case that no extension covers yet.
+    // The quiet label beside the name: an extension's status, or a use case that no extension covers so far.
     const label=st?el('span',{class:'status status-'+st,id:'st-'+a},STATUS[st])
-      :!ext&&!valid(x.extensions).length?el('span',{class:'status status-none',id:'st-'+a},'No extension yet'):null;
+      :!ext&&!valid(x.extensions).length?el('span',{class:'status status-none',id:'st-'+a},'Not covered by an extension'):null;
     const li=el('li',{class:'entry',id:a,'data-key':key});
     const toggle=el('button',{type:'button',class:'toggle','aria-expanded':'false','aria-controls':'dt-'+a,
         'aria-labelledby':'nm-'+a+(label?' st-'+a:''),'aria-describedby':'sm-'+a+' mt-'+a},
@@ -994,7 +994,7 @@
       d.append(
         part('What they are trying to do',el('p',{class:'d-text'},str(x.goal))),
         part('What the core does not let them record',el('p',{class:'d-text'},str(x.gap))),
-        part('Covered by',coveredBy(x.extensions)||el('p',{class:'d-text d-none'},'No extension yet')));
+        part('Covered by',coveredBy(x.extensions)||el('p',{class:'d-text d-none'},'Not covered by an extension')));
     }
     d.append(commentsPart(kind,x,a),foot(kind,x));
     return d;
@@ -1182,7 +1182,7 @@
       if(failed){say(curForm?curForm.querySelector('.msg'):msg,failed,'err');return;}
       if(cur)await loadComments(cur);
     });
-    box.append(el('ul',{class:'comment-list'}),el('p',{class:'c-none',hidden:true},'No comments yet.'),el('p',{class:'msg c-load',role:'status'}),form);
+    box.append(el('ul',{class:'comment-list'}),el('p',{class:'c-none',hidden:true},'Nobody has commented.'),el('p',{class:'msg c-load',role:'status'}),form);
     return box;
   }
 
@@ -1659,7 +1659,7 @@
       }
       return li;
     });
-    $('u-picks').replaceChildren(...(picks.length?picks:[el('li',{class:'pick-none'},'No extensions yet.')]));
+    $('u-picks').replaceChildren(...(picks.length?picks:[el('li',{class:'pick-none'},'Nobody has added an extension.')]));
     // The row picks as the form opens: an edit sends them only when the set has changed.
     dialogs.uc.picksAtOpen=x?readPicks().rowIds.sort().join():null;
     closeSections($('uc-form'));
