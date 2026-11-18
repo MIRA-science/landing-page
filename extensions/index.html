@@ -335,7 +335,10 @@
     .rtable tr{padding:10px 0;border-bottom:1px solid var(--line)}
     .rtable tr:last-child{border-bottom:0}
     .rtable td{padding:0;border:0}
+    /* Three full-width lines a row: the name with its kind beside it, then "Core term: …", then the note.
+       The column widths of the table are undone here, and a word breaks only when it cannot fit a line. */
     .rtable td.c-name,.rtable td.c-kind{display:inline;width:auto}
+    .rtable td.c-term,.rtable td.c-note{display:block;width:auto;overflow-wrap:break-word}
     .rtable td.c-kind{margin-left:8px;font-size:13.5px}
     .rtable td.c-term:empty,.rtable td.c-note:empty{display:none}
     .rtable td.c-term::before{content:"Core term: ";color:var(--muted)}
