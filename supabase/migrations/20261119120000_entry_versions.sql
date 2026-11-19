@@ -4,12 +4,17 @@
 -- - Each entry has a version number, 1 when added; entries already listed become version 1.
 -- - A save by the entry's key holder or a library admin that changes anything a visitor sees (a shown
 --   field, the links, the rows, or a use case's picks) makes the next version and moves updated_at to
---   that moment. A save that changes nothing, and hiding or showing an entry, make no version. Such a
---   save still counts its write units as before: the write limits are unchanged.
+--   that moment. A save that changes nothing, and hiding or showing an entry, make no version.
 -- - Each version's content is kept, with its number and time, in a private table no visitor can read.
 --   A version holds an extension's rows (or a use case's picks) only when they changed in that version;
 --   otherwise it names the earlier version that holds them, so editing the texts of a large extension
---   does not store all its rows again.
+--   does not store all its rows again. A use case's picks are kept as ids only (of the extensions and
+--   rows it picked), not with their names.
+-- - A save pays for the version it keeps. Write units are counted as before, and a save whose version
+--   takes more than 24 KB of storage for each unit it was charged is charged one more unit for every
+--   further 24 KB (admins excepted, as before). With the write limits of the first migration, that holds
+--   the version table to about 26 KB per unit, page overhead included, however little the text
+--   compresses; a save with ordinary text is charged nothing more.
 -- - A thumbs up records the version it was given to. Giving one again after the entry changed moves
 --   that visitor's thumbs up to the current version (still one per visitor per entry); taking it back
 --   removes it. The lists count the thumbs up on the current version (support_count) and on earlier
@@ -75,8 +80,9 @@ as $$
    where r.extension_id = p_id;
 $$;
 
--- What a visitor sees of a use case: its shown fields, and the extensions and rows it picks (by id, so
--- renaming an extension does not count as a change of the use case).
+-- What a visitor sees of a use case: its shown fields, and the extensions and rows it picks, as ids only
+-- (so renaming an extension does not count as a change of the use case, and a version does not keep
+-- copies of the names).
 create function private.extensions_page_use_case_fields(p_id uuid)
   returns jsonb
   language sql stable set search_path = ''
@@ -92,25 +98,25 @@ create function private.extensions_page_use_case_picks(p_id uuid)
   language sql stable set search_path = ''
 as $$
   select jsonb_build_object(
-    'extensions', coalesce((select jsonb_agg(jsonb_build_object('id', e.id, 'name', e.name) order by e.id)
-                              from public.use_case_extensions l join public.extensions e on e.id = l.extension_id
-                             where l.use_case_id = p_id), '[]'::jsonb),
-    'rows', coalesce((select jsonb_agg(jsonb_build_object('id', r.id, 'name', r.name, 'extension_id', r.extension_id)
-                                       order by r.id)
-                        from public.use_case_rows p join public.extension_rows r on r.id = p.row_id
-                       where p.use_case_id = p_id), '[]'::jsonb));
+    'extensions', coalesce((select jsonb_agg(l.extension_id order by l.extension_id)
+                              from public.use_case_extensions l where l.use_case_id = p_id), '[]'::jsonb),
+    'rows', coalesce((select jsonb_agg(p.row_id order by p.row_id)
+                        from public.use_case_rows p where p.use_case_id = p_id), '[]'::jsonb));
 $$;
 
--- Keeps version p_no of an entry. p_full: whether this version stores the rows (extension) or the picks
--- (use case); when false, the version names the earlier version that holds them.
+-- Keeps version p_no of an entry and returns how many bytes it takes in storage (after compression).
+-- p_full: whether this version stores the rows (extension) or the picks (use case); when false, the
+-- version names the earlier version that holds them.
 create function private.extensions_page_keep_version(p_extension_id uuid, p_use_case_id uuid, p_no integer,
                                                      p_full boolean)
-  returns void
+  returns integer
   language plpgsql volatile set search_path = ''
 as $$
 declare
   v_from integer;
   v_content jsonb;
+  v_id bigint;
+  v_bytes integer;
 begin
   if not p_full then
     select coalesce((v.content ->> 'same_as_version')::integer, v.version_no) into v_from
@@ -129,13 +135,33 @@ begin
                          else jsonb_build_object('same_as_version', v_from) end;
   end if;
   insert into private.extensions_page_versions (extension_id, use_case_id, version_no, content)
-  values (p_extension_id, p_use_case_id, p_no, v_content);
+  values (p_extension_id, p_use_case_id, p_no, v_content)
+  returning id into v_id;
+  select pg_column_size(v.content) into v_bytes from private.extensions_page_versions v where v.id = v_id;
+  return v_bytes;
+end;
+$$;
+
+-- A save pays for the version it kept: when the version takes more than 24 KB of storage for each of the
+-- p_paid units the save was charged, it is charged one more unit for every further 24 KB (at most 11
+-- units in one entry of the write log, as everywhere). A refusal undoes the whole save.
+create function private.extensions_page_pay_for_version(p_bytes integer, p_paid integer)
+  returns void
+  language plpgsql volatile set search_path = ''
+as $$
+declare
+  v_owed integer := ceil(coalesce(p_bytes, 0) / 24576.0)::integer - coalesce(p_paid, 0);
+begin
+  while v_owed > 0 loop
+    perform private.extensions_page_limit('content', least(v_owed, 11));
+    v_owed := v_owed - 11;
+  end loop;
 end;
 $$;
 
 revoke execute on function private.extensions_page_extension_fields, private.extensions_page_extension_rows,
   private.extensions_page_use_case_fields, private.extensions_page_use_case_picks,
-  private.extensions_page_keep_version
+  private.extensions_page_keep_version, private.extensions_page_pay_for_version
   from public, anon, authenticated;
 
 -- Every entry already listed becomes version 1, its content kept as it is now.
@@ -155,7 +181,7 @@ select u.id, 1,
 
 -- The write functions, with versions --------------------------------------------------------------
 -- Each is the first migration's function with the version steps added; signatures, checks, messages,
--- and write units are unchanged.
+-- and write units are unchanged, except that a save also pays for a version larger than its units cover.
 
 create or replace function public.add_extension(
   p_name text,
@@ -230,7 +256,9 @@ begin
   insert into private.extensions_page_secrets (extension_id, email, edit_key_hash)
   values (v_id, v_email, private.extensions_page_hash(v_key));
 
-  perform private.extensions_page_keep_version(v_id, null, 1, true);
+  -- Version 1, paid for beyond the units above when it takes more than they cover.
+  perform private.extensions_page_pay_for_version(private.extensions_page_keep_version(v_id, null, 1, true),
+                                                  1 + ceil(jsonb_array_length(v_rows) / 10.0)::integer);
 
   return jsonb_build_object('id', v_id, 'edit_key', v_key);
 end;
@@ -293,7 +321,9 @@ begin
   insert into private.extensions_page_secrets (use_case_id, email, edit_key_hash)
   values (v_id, v_email, private.extensions_page_hash(v_key));
 
-  perform private.extensions_page_keep_version(null, v_id, 1, true);
+  -- Version 1, paid for beyond the units above when it takes more than they cover.
+  perform private.extensions_page_pay_for_version(private.extensions_page_keep_version(null, v_id, 1, true),
+                                                  1 + ceil(cardinality(v_rows) / 20.0)::integer);
 
   return jsonb_build_object('id', v_id, 'edit_key', v_key);
 end;
@@ -399,6 +429,7 @@ declare
   v_rows_before jsonb;
   v_rows_changed boolean;
   v_no integer;
+  v_bytes integer;
 begin
   -- The key comes first, so that without it a hidden entry and a missing one look the same.
   if not private.extensions_page_may_edit(p_id, null, p_edit_key) then
@@ -481,7 +512,11 @@ begin
     update public.extensions set version_no = version_no + 1, updated_at = now()
      where id = p_id
      returning version_no into v_no;
-    perform private.extensions_page_keep_version(p_id, null, v_no, v_rows_changed);
+    v_bytes := private.extensions_page_keep_version(p_id, null, v_no, v_rows_changed);
+    if not v_admin then
+      perform private.extensions_page_pay_for_version(v_bytes,
+        1 + case when v_keep_rows then 0 else ceil(jsonb_array_length(v_rows) / 10.0)::integer end);
+    end if;
   end if;
 
   return jsonb_build_object('id', p_id, 'version_no', v_no);
@@ -518,6 +553,7 @@ declare
   v_picks_before jsonb;
   v_picks_changed boolean;
   v_no integer;
+  v_bytes integer;
 begin
   -- The key comes first, so that without it a hidden entry and a missing one look the same.
   if not private.extensions_page_may_edit(null, p_id, p_edit_key) then
@@ -583,7 +619,11 @@ begin
     update public.use_cases set version_no = version_no + 1, updated_at = now()
      where id = p_id
      returning version_no into v_no;
-    perform private.extensions_page_keep_version(null, p_id, v_no, v_picks_changed);
+    v_bytes := private.extensions_page_keep_version(null, p_id, v_no, v_picks_changed);
+    if not v_admin then
+      perform private.extensions_page_pay_for_version(v_bytes,
+        1 + case when v_keep_picks then 0 else ceil(cardinality(v_rows) / 20.0)::integer end);
+    end if;
   end if;
 
   return jsonb_build_object('id', p_id, 'version_no', v_no);
