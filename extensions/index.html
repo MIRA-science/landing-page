@@ -95,7 +95,9 @@
   .page-head{padding:52px 0 0}
   .page-head h1{font-size:38px;line-height:1.12;font-weight:500;letter-spacing:-.028em;color:var(--ink)}
   .page-head .lede{font-size:18px;line-height:1.55;color:var(--ink-2);max-width:57ch;margin-top:14px}
-  .page-head .aside{font-size:15px;line-height:1.5;color:var(--muted);margin-top:6px}
+  .page-head .aside{font-size:15px;line-height:1.5;color:var(--muted);margin-top:6px;max-width:66ch}
+  .page-head .aside a{color:var(--accent);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
+  .page-head .aside a:hover{color:var(--accent-deep);text-decoration-thickness:2px}
 
   /* BUTTONS AND FIELDS */
   .btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;font-size:15px;font-weight:500;line-height:1.2;border-radius:8px;padding:11px 18px;cursor:pointer;border:1px solid transparent;transition:background-color .15s,border-color .15s,color .15s;white-space:nowrap}
@@ -245,6 +247,7 @@
   .c-form .msg{margin:0 0 10px}
   .d-foot{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 18px;margin-top:22px;font-size:13.5px;color:var(--muted)}
   .d-foot .by{overflow-wrap:anywhere}
+  .d-foot .ver:empty{display:none}
   .d-foot .act{font-size:13.5px}
 
   /* HIDDEN (admins) */
@@ -269,6 +272,7 @@
   .sec > summary .count{font-weight:400;color:var(--muted)}
   .sec > summary .opt{margin-left:auto;font-size:13px;font-weight:400;color:var(--muted)}
   .sec-body{padding:4px 2px 16px}
+  .sec-hint{font-size:14px;line-height:1.5;color:var(--muted);margin-bottom:12px;max-width:66ch}
   .fine-print{font-size:13px;line-height:1.5;color:var(--muted)}
   .fine-print a{text-decoration:underline;text-underline-offset:2px}
   .dlg-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:18px}
@@ -432,7 +436,7 @@
   <div class="wrap">
     <h1>Extensions and use cases</h1>
     <p class="lede">What people are building on top of MIRA's core, and what they still need from the core.</p>
-    <p class="aside">Nothing listed here is part of the core.</p>
+    <p class="aside">Nothing listed here is part of the core. To propose a change to the core, open an issue or a pull request in the <a href="https://github.com/MIRA-science/schema">MIRA schema repository</a> on GitHub.</p>
   </div>
 </header>
 
@@ -525,21 +529,23 @@
       <details class="sec" id="x-sec-links">
         <summary><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"/></svg>Links <span class="count" id="x-n-links"></span><span class="opt">Optional</span></summary>
         <div class="sec-body">
+          <p class="sec-hint">For example your code, your schema files at an exact commit, or a proposal in the MIRA schema repository.</p>
           <ol class="l-list" id="x-links"></ol>
           <button class="btn btn-ghost btn-sm" type="button" id="x-add-link">Add a link</button>
         </div>
       </details>
       <details class="sec" id="x-sec-rows">
-        <summary><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"/></svg>Rows <span class="count" id="x-n-rows"></span><span class="opt">Optional</span></summary>
+        <summary><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m6 9 6 6 6-6"/></svg>Mapping to the core <span class="count" id="x-n-rows"></span><span class="opt">Optional</span></summary>
         <!-- With rows: the rows, then "Add a row" and "Paste rows". Without: the paste box, with "Add a row"
              beside "Add these rows". The script moves "Add a row" between the two places. -->
         <div class="sec-body">
+          <p class="sec-hint">What you use from the core, and what you added or changed.</p>
           <ol class="r-list" id="x-rows"></ol>
           <div class="r-actions" id="x-row-actions" hidden>
             <button class="btn btn-ghost btn-sm" type="button" id="x-paste-open" aria-expanded="false" aria-controls="x-paste-box">Paste rows</button>
           </div>
           <div class="paste-box" id="x-paste-box">
-            <label class="field"><span>One row per line: name | kind | addition, match, or difference | core term | note</span><textarea id="x-paste" rows="4" spellcheck="false"></textarea></label>
+            <label class="field"><span>One row per line: name | kind | uses, adds, or changes | core term | note</span><textarea id="x-paste" rows="4" spellcheck="false"></textarea></label>
             <div class="paste-go" id="x-paste-actions">
               <button class="btn btn-ghost btn-sm" type="button" id="x-paste-go">Add these rows</button>
               <button class="btn btn-ghost btn-sm" type="button" id="x-add-row">Add a row</button>
@@ -694,11 +700,13 @@
   const LIBRARY_SESSION='sb-vcdkoqpvurrdheyxeduu-auth-token';  // the library's sign-in, kept by supabase-js
   const STATUS={idea:'Idea',experimenting:'Experimenting',in_use:'In use'};
   const KIND={record_type:'Record type',link:'Link',field:'Field',other:'Other'};
-  // How a row stands against the core: stored as adds, pairs, or differs; shown as nouns.
-  const STANDING={adds:'Addition',pairs:'Match',differs:'Difference'};
-  const STANDINGS=['adds','pairs','differs'];
-  const ROW_TAB={adds:'Additions',pairs:'Matches',differs:'Differences'};
-  const ROW_COUNT={adds:['addition','additions'],pairs:['match','matches'],differs:['difference','differences']};
+  // How a row relates to the core: stored as pairs, adds, or differs; shown in that order as what the
+  // extension uses from the core, adds, and changes.
+  const STANDING={pairs:'Uses from the core',adds:'Adds',differs:'Changes'};
+  const STANDING_SHORT={pairs:'Uses',adds:'Adds',differs:'Changes'};
+  const STANDINGS=['pairs','adds','differs'];
+  const ROW_TAB=STANDING;
+  const ROW_COUNT={pairs:'used',adds:'added',differs:'changed'};
   const ROWS_SHOWN=8;
   const FAILED='The lists could not be loaded. Try again in a minute.';
   const GENERIC='Something went wrong. Try again in a minute.';
@@ -746,7 +754,18 @@
     voterId=v;
     return v;
   }
-  const supported=new Set([].concat(readJSON(STORE.supported,[])).filter(s=>typeof s==='string'));
+  // This browser's thumbs up: each entry's key, with the version it was given to. A list kept by the page
+  // before versions holds keys only; those count for version 1.
+  const supported=(()=>{
+    const v=readJSON(STORE.supported,{}),m=new Map();
+    if(Array.isArray(v))v.forEach(k=>{if(typeof k==='string')m.set(k,1);});
+    else if(v&&typeof v==='object')for(const [k,n] of Object.entries(v))if(Number.isInteger(n)&&n>0)m.set(k,n);
+    return m;
+  })();
+  // An entry's version and its thumbs up on earlier versions; lists read before versions existed have
+  // neither, and count as version 1 with none.
+  const versionOf=x=>Number.isInteger(x.version_no)&&x.version_no>0?x.version_no:1;
+  const earlierOf=x=>Math.max(0,Math.floor(Number(x.earlier_support_count))||0);
   const editKeys=(()=>{const k=readJSON(STORE.keys,{});return k&&typeof k==='object'&&!Array.isArray(k)?k:{};})();
 
   // A library admin's sign-in, if this browser holds one that has not expired.
@@ -953,7 +972,7 @@
     if(x.field)parts.push(str(x.field));
     if(kind==='extension'){
       const rows=valid(x.rows);
-      for(const s of STANDINGS){const n=rows.filter(r=>r.standing===s).length;if(n)parts.push(plural(n,...ROW_COUNT[s]));}
+      for(const s of STANDINGS){const n=rows.filter(r=>r.standing===s).length;if(n)parts.push(n+' '+ROW_COUNT[s]);}
       const u=valid(x.use_cases).length;
       if(u)parts.push(plural(u,'use case','use cases'));
     }else{
@@ -984,10 +1003,10 @@
       const links=linkList(x.links);
       if(links)facts.push(['Links',links]);
       if(facts.length)d.append(part(null,el('dl',{class:'facts'},facts.map(([k,v])=>el('div',{class:'fact'},el('dt',{},k),el('dd',{},v))))));
-      // Against the core: how it relates, when given, then the rows under one choice of three.
+      // The mapping to the core: how it relates, when given, then the rows under one choice of three.
       const relation=x.core_relation?el('p',{class:'d-text'},str(x.core_relation)):null;
       const rows=rowsChoice(x,a);
-      if(relation||rows)d.append(part('Against the core',relation,rows));
+      if(relation||rows)d.append(part('Mapping to the core',relation,rows));
       const ucs=refList(x.use_cases,'use_case','title');
       if(ucs)d.append(part('Use cases that need it',ucs));
     }else{
@@ -1028,14 +1047,14 @@
     }));
   }
 
-  // An extension's rows: one choice of three (additions, matches, differences) over one table.
+  // An extension's rows: one choice of three (what it uses from the core, adds, and changes) over one table.
   function rowsChoice(x,a){
     const key='extension:'+x.id;
     const by={adds:[],pairs:[],differs:[]};
     for(const r of valid(x.rows))if(by[r.standing])by[r.standing].push(r);
     const first=STANDINGS.find(s=>by[s].length);
     if(!first)return null;
-    const list=el('div',{class:'seg',role:'tablist','aria-label':'Against the core'});
+    const list=el('div',{class:'seg',role:'tablist','aria-label':'Mapping to the core'});
     const panel=el('div',{class:'rpanel',role:'tabpanel',id:'rp-'+a});
     const tabs={};
     const show=s=>{
@@ -1084,9 +1103,17 @@
     return l?el('div',{class:'uses'},el('span',{class:'uses-label'},'Needed by'),l):null;
   }
 
+  // The version, when the entry has been edited, and the thumbs up given to earlier versions.
+  function versionText(x){
+    const v=versionOf(x),n=earlierOf(x),parts=[];
+    if(v>1){parts.push('Version '+v);if(fmtDate(x.updated_at))parts.push('edited '+fmtDate(x.updated_at));}
+    if(n)parts.push(n===1?'1 thumbs up on an earlier version':n+' thumbs up on earlier versions');
+    return parts.join(' · ');
+  }
   function foot(kind,x){
     const key=kind+':'+x.id;
-    const f=el('div',{class:'d-foot'},el('span',{class:'by'},'Added by '+str(x.author_name)+(fmtDate(x.created_at)?' · '+fmtDate(x.created_at):'')));
+    const f=el('div',{class:'d-foot'},el('span',{class:'by'},'Added by '+str(x.author_name)+(fmtDate(x.created_at)?' · '+fmtDate(x.created_at):'')),
+      el('span',{class:'ver'},versionText(x)));
     if(state.admin||editKeys[key]){
       const ed=el('button',{type:'button',class:'act'},'Edit');
       ed.addEventListener('click',()=>kind==='extension'?openExtension(x):openUseCase(x));
@@ -1109,8 +1136,10 @@
     const key=kind+':'+x.id;
     const b=el('button',{type:'button',class:'thumb','aria-describedby':'nm-'+anchor(kind,x.id)});
     b.append(icon('thumb'),el('span',{class:'n'}));
+    // Pressed only when this browser's thumbs up is on the current version. One on an earlier version
+    // moves to the current version with the next click.
     const show=()=>{
-      const on=supported.has(key),n=Number(x.support_count)||0;
+      const on=supported.get(key)===versionOf(x),n=Number(x.support_count)||0;
       b.setAttribute('aria-pressed',String(on));
       b.setAttribute('aria-label','Thumbs up ('+n+')');
       b.title=on?'Take back your thumbs up':'Give a thumbs up';
@@ -1119,14 +1148,18 @@
     show();
     b.addEventListener('click',async()=>{
       const msg=b.closest('.entry').querySelector('.entry-msg');
-      const on=!supported.has(key);
+      const on=supported.get(key)!==versionOf(x);
       b.disabled=true;say(msg,'');
       try{
         const r=await rpc('set_entry_support',{p_voter:voter(),p_on:on,[kind==='extension'?'p_extension_id':'p_use_case_id']:x.id});
-        if(r&&r.supported)supported.add(key);else supported.delete(key);
-        writeJSON(STORE.supported,[...supported]);
+        if(r&&Number.isInteger(r.version_no)&&r.version_no>0)x.version_no=r.version_no;
+        if(r&&r.earlier_support_count!=null)x.earlier_support_count=r.earlier_support_count;
+        if(r&&r.supported)supported.set(key,versionOf(x));else supported.delete(key);
+        writeJSON(STORE.supported,Object.fromEntries(supported));
         x.support_count=Number(r&&r.support_count)||0;
         show();
+        const ver=b.closest('.entry').querySelector('.d-foot .ver');
+        if(ver)ver.textContent=versionText(x);
       }catch(e){say(msg,e.message,'err');}
       b.disabled=false;
     });
@@ -1418,7 +1451,7 @@
         el('div',{class:'r-grid'},
           el('label',{class:'field'},el('span',{},'Name'),name),
           el('label',{class:'field'},el('span',{},'Kind'),kind),
-          el('label',{class:'field'},el('span',{},'Against the core'),standing)),
+          el('label',{class:'field'},el('span',{},'How it relates'),standing)),
         el('div',{class:'r-grid2'},
           el('label',{class:'field'},optional('Core term'),term),
           el('label',{class:'field'},optional('Note'),note))));
@@ -1430,7 +1463,7 @@
   function summarize(li){
     const q=s=>li.querySelector(s);
     const n=q('.r-name').value.trim();
-    const bits=[KIND[q('.r-kind').value],STANDING[q('.r-standing').value],q('.r-term').value.trim()].filter(Boolean);
+    const bits=[KIND[q('.r-kind').value],STANDING_SHORT[q('.r-standing').value],q('.r-term').value.trim()].filter(Boolean);
     q('.r-text').replaceChildren(...[el('span',{class:n?'rn':'rn none'},n||'New row'),bits.length?el('span',{class:'rm'},bits.join(' · ')):null].filter(Boolean));
   }
   function openRow(li,open){
@@ -1466,14 +1499,18 @@
     const li=rowEditor(null);$('x-rows').append(li);renumber();openRow(li,true);li.querySelector('.r-name').focus();
   });
 
-  // Pasting rows: one per line, as name | kind | addition, match, or difference | core term | note. A kind
-  // or a standing may be written as its label, its plural, or its stored value, in any case; a standing
-  // also as its earlier label (adds, pairs with, differs from). Parts past the fifth stay in the note. A
+  // Pasting rows: one per line, as name | kind | uses, adds, or changes | core term | note. A kind may be
+  // written as its label, its plural, or its stored value, in any case; how a row relates to the core as
+  // its label or stored value, or as uses, used, use, adds, added, addition, changes, changed, change, or
+  // difference, their plurals, and the words this page took before (pairs with, match, differs from). Parts past the fifth stay in the note. A
   // line without a name, or with a kind or standing that is not one of these, is not read and stays in
   // the box.
   const WORDS=map=>Object.fromEntries(Object.entries(map).flatMap(([v,l])=>[[v,v],[l.toLowerCase(),v]]));
   const KIND_WORDS={...WORDS(KIND),'record types':'record_type',links:'link',fields:'field',others:'other'};
-  const STANDING_WORDS={...WORDS(STANDING),additions:'adds',matches:'pairs',differences:'differs','pairs with':'pairs','differs from':'differs'};
+  const STANDING_WORDS={...WORDS(STANDING),
+    uses:'pairs',used:'pairs',use:'pairs','pairs with':'pairs',match:'pairs',matches:'pairs',
+    added:'adds',addition:'adds',additions:'adds',
+    changes:'differs',changed:'differs',change:'differs',difference:'differs',differences:'differs','differs from':'differs'};
   const word=s=>s.trim().toLowerCase().replace(/\s+/g,' ');
   function pastedRow(line){
     const parts=line.split('|').map(p=>p.trim());
@@ -1534,7 +1571,7 @@
       const kind=q('.r-kind').value;
       if(!KIND[kind])return {error:p+'“Kind” must be Record type, Link, Field, or Other.',focus:q('.r-kind')};
       const standing=q('.r-standing').value;
-      if(!STANDING[standing])return {error:p+'“Against the core” must be Addition, Match, or Difference.',focus:q('.r-standing')};
+      if(!STANDING[standing])return {error:p+'“How it relates” must be Uses from the core, Adds, or Changes.',focus:q('.r-standing')};
       const term=text(q('.r-term').value,'Core term',200,false);
       if(term.error)return {error:p+term.error,focus:q('.r-term')};
       const note=text(q('.r-note').value,'Note',600,false);
