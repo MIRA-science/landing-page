@@ -808,7 +808,7 @@
 
   async function enterLibrary(){
     show('loading');
-    const {data:members,error}=await sb.from('members').select('user_id,email,display_name,is_admin');
+    const {data:members,error}=await sb.from('members').select('user_id,display_name,is_admin');
     if(error){$('er-text').textContent='The library couldn’t load ('+error.message+').';show('error');return;}
     state.members=new Map(members.map(m=>[m.user_id,m]));
     state.me=state.members.get(state.session.user.id)||null;
@@ -816,7 +816,7 @@
       $('na-text').textContent='You’re signed in as '+state.session.user.email+', but that account isn’t on the library’s list yet. Ask Jonathan to add you.';
       show('noaccess');return;
     }
-    $('me-name').textContent=state.me.display_name||state.me.email;
+    $('me-name').textContent=state.me.display_name||state.session.user.email;
     $('members-link').hidden=!state.me.is_admin;
     await loadResources();
     show('library');
@@ -964,7 +964,7 @@
     return (i?n.toFixed(n<10?1:0):n)+' '+u[i];
   }
   function ext(name){const m=/\.([a-z0-9]+)$/i.exec(name||'');return m?m[1].toLowerCase():'';}
-  function memberName(id){const m=state.members.get(id);return m?(m.display_name||m.email):'a former member';}
+  function memberName(id){const m=state.members.get(id);return m?(m.display_name||'a member'):'a former member';}
 
   function itemNode(r,b){
     const open=state.open.has(r.id);
