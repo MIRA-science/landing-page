@@ -1010,10 +1010,10 @@
       const ucs=refList(x.use_cases,'use_case','title');
       if(ucs)d.append(part('Use cases that need it',ucs));
     }else{
-      d.append(
-        part('What they are trying to do',el('p',{class:'d-text'},str(x.goal))),
-        part('What the core does not let them record',el('p',{class:'d-text'},str(x.gap))),
-        part('Covered by',coveredBy(x.extensions)||el('p',{class:'d-text d-none'},'Not covered by an extension')));
+      // Use cases from the adoption map may have no goal or gap of their own.
+      if(str(x.goal))d.append(part('What they are trying to do',el('p',{class:'d-text'},str(x.goal))));
+      if(str(x.gap))d.append(part('What the core does not let them record',el('p',{class:'d-text'},str(x.gap))));
+      d.append(part('Covered by',coveredBy(x.extensions)||el('p',{class:'d-text d-none'},'Not covered by an extension')));
     }
     d.append(commentsPart(kind,x,a),foot(kind,x));
     return d;
